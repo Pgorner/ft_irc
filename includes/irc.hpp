@@ -6,12 +6,14 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 15:39:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/22 16:08:35 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_HPP_
 #define IRC_HPP_
+
+static int running = true;
 
 // ------ c++ libs -------
 #include <string>
@@ -23,6 +25,7 @@
 
 // ------- c libs --------
 #include <unistd.h>
+#include <signal.h>
 #include <termios.h>
 #include <ncurses.h>
 #include <sys/socket.h>
@@ -36,9 +39,10 @@
 int err(std::string msg);
 int welcome(int argc, char **argv);
 // utils.cpp -------------------------------------
-void SetTerminalEcho(bool enable);
-void SetTerminalNonBlocking(bool nonBlocking);
-void    clear(int i);
-void    write_nice(const char color[6], std::string str);
-void    write_irc(void);
+void	SetTerminalEcho(bool enable);
+void	SetTerminalNonBlocking(bool nonBlocking);
+void	clear(int i);
+void	write_nice(const char color[6], std::string str);
+void	write_irc(void);
+void	change_running(int signal);
 #endif

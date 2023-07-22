@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 16:08:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/22 16:26:01 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static int running = true;
 // ------- c libs --------
 #include <unistd.h>
 #include <signal.h>
-#include <termios.h>
 #include <ncurses.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -39,8 +38,6 @@ static int running = true;
 int err(std::string msg);
 int welcome(int argc, char **argv);
 // utils.cpp -------------------------------------
-void	SetTerminalEcho(bool enable);
-void	SetTerminalNonBlocking(bool nonBlocking);
 void	clear(int i);
 void	write_nice(const char color[6], std::string str);
 void	write_irc(void);

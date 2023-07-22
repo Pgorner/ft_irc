@@ -6,17 +6,16 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 16:06:18 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/22 16:25:03 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../../includes/server.hpp"
 
-Server::Server(int port, const std::string& pwd) :
-	_port(port),
-	_pwd(pwd),
-	_socket(-1)
+Server::Server(int port, const std::string& pwd) :  _port(port),
+													_pwd(pwd),
+													_socket(-1)
 {
 	start_sock();
 	sig_handler();

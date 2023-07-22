@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 15:09:45 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/22 16:02:39 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class Server {
 
     int which_ipv(void);
     int start_sock(void);
-    int signal(void);
+    int sig_handler(void);
 
  private:
     int _port;

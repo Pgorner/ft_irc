@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:53:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/21 19:06:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/22 15:33:50 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,48 +22,27 @@ bool isValidPort(const char* port) {
 }
 
 int welcome(int argc, char **argv){
-    unsigned long k = 0;
-	std::cout << "--------------------------------------------\n";
-	std::string str = "	╦╦═╗╔═╗  ╔═╗╔═╗╦═╗╦  ╦╔═╗╦═╗\n	║╠╦╝║    ╚═╗║╣ ╠╦╝╚╗╔╝║╣ ╠╦╝\n	╩╩╚═╚═╝  ╚═╝╚═╝╩╚═ ╚╝ ╚═╝╩╚═\n";
-    while (k < str.size()) 
-    {
-        std::cout << str[k++] << std::flush;
-        std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));;
-    }
-	std::cout << "--------------------------------------------\n";
+	clear(100);
+	std::string str;
+	write_irc();
 	if (argv[1] && argv[2] && (argc == 3) && isValidPort(argv[1]) == true)
 	{
 		str = "	   Selected port: ";
 		str += argv[1];
 		str += "\n";
-		k = 0;
-    	while (k < str.size()) 
-    	{
-    	    std::cout << str[k++] << std::flush;
-    	    std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));;
-    	}
+		write_nice(WHITE, str);
 		str = "	   Password     : ";
 		str += argv[2];
 		str += "\n";
-		k = 0;
-    	while (k < str.size()) 
-    	{
-    	    std::cout << str[k++] << std::flush;
-    	    std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));;
-    	}
-	std::cout << "--------------------------------------------\n";
-	return 1;
+		write_nice(WHITE, str);
+		std::cout << LINE;
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		return 1;
 	}
 	if (argc == 3 && isValidPort(argv[1]) == false)
-		str = "		Invalid Port\n";
+		write_nice(RED, "		Invalid Port\n");
 	else
-		str = "	  Please adhere to syntax:\n	 ./ircserv <port> <password>\n";
-	k = 0;
-    while (k < str.size()) 
-    {
-        std::cout << str[k++] << std::flush;
-        std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));;
-    }
-	std::cout << "--------------------------------------------\n";
+		write_nice(RED, "	  Please adhere to syntax:\n	 ./ircserv <port> <password>\n");
+	std::cout << LINE;
 	return 0;
 }

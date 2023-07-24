@@ -6,13 +6,17 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 15:38:45 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 16:14:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 16:52:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 // ----- Typography ------
-#define WRITESPEED 3000
+#if(DEBUG)
+	#define WRITESPEED 3000
+#else
+	#define WRITESPEED 0
+#endif
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
@@ -69,3 +73,10 @@ remember that you are treasured and\n\
 celebrated here.\n\
 \n\
 Safe travels and goodbye for now!\n"
+
+#define LOGFILE "\n\
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   \n\
+   _/        _/    _/  _/        _/          _/    _/        _/          \n\
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       \n\
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            \n\
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       "

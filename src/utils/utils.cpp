@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 16:27:11 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 18:26:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,17 @@ void    clear(int i)
 
 void    goodbye(void)
 {
-    clear(100);
-    write_nice(YELLOW, GOODBYE);
+    if (DEBUG){
+        clear(100);
+        write_nice(YELLOW, GOODBYE, false);
+    }
 }
-void    write_nice(const char color[6], std::string str)
+void    write_nice(const char color[6], std::string str, bool nl)
 {
     setlocale(LC_ALL, "");
+    log(str);
+    if (nl == true)
+        str += "\n";
     unsigned long k = 0;
     while (k < str.size()) 
     {
@@ -43,6 +48,10 @@ void    write_irc(void){
     }
 }
 
+void log(std::string log)
+{
+    LOG << log;
+}
 void proper_exit(void)
 {
 //add proper exit handling
@@ -56,4 +65,39 @@ void change_running(int signal)
         goodbye();
         exit(1);
     }
+}
+
+void log_creation(void){
+	std::ofstream logFile;
+    bool isOpen;
+    int logNumber = 0;
+
+    std::string folderName = "logs";
+    struct stat folderBuffer;
+    // Create the "logs" folder if it doesn't exist
+    if (stat(folderName.c_str(), &folderBuffer) != 0)
+        mkdir(folderName.c_str(), 0777);
+    // Find the latest log file number
+    DIR *dir;
+    struct dirent *ent;
+        if ((dir = opendir(folderName.c_str())) != nullptr) {
+            while ((ent = readdir(dir)) != nullptr) {
+                std::string fileName = ent->d_name;
+                if (fileName.rfind("log_", 0) == 0) { // Check if the file name starts with "log_"
+                    int fileNumber = std::stoi(fileName.substr(4, fileName.find(".txt") - 4));
+                    if (fileNumber > logNumber)
+                        logNumber = fileNumber;
+                }
+            }
+            closedir(dir);
+        }
+	logNumber++;
+	std::ostringstream oss;
+    oss << folderName << "/log_" << logNumber << ".txt";
+    std::string fileName = oss.str();
+    logFile.open(fileName.c_str(), std::ios_base::app);
+    isOpen = logFile.is_open();
+    if (isOpen)
+        logFile.close();
+    LOG << LOGFILE;
 }

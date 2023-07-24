@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/07/21 19:41:05 by pgorner          ###   ########.fr        #
+#    Updated: 2023/07/24 16:03:20 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,11 @@
 
 NAME = ircserv
 CC		 = c++
-CFLAGS   = -Wall -Werror -Wextra -std=c++98 -lncurses
+CFLAGS   = -Wall -Werror -Wextra -lncurses -std=c++98 
 AR		 = ar rcs
 RM		 = rm -rf
 
-SRC =	main.cpp				\
+SRC =	src/main.cpp			\
 		src/utils/check.cpp		\
 		src/utils/error.cpp		\
 		src/utils/utils.cpp		\
@@ -31,7 +31,6 @@ SRC =	main.cpp				\
 
 
 OBJS =		$(SRC:.cpp=.o)
-
 
 $(NAME):	$(OBJS)
 			$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
@@ -43,5 +42,7 @@ clean :
 
 fclean :	clean
 			@$(RM) $(NAME)
+			
+weechat : brew install weechat
 
-re :		fclean all
+re :		fclean all clean

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:53:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 15:33:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 16:53:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ bool isValidPort(const char* port) {
     char* end;
     long iport = std::strtol(port, &end, 10);
     if (*end != '\0' || end == port || iport < 1 || iport > 65535)
-        return false;
-    return true;
+        return log("port invalid"), false;
+    return log("port validated"), true;
 }
 
 int welcome(int argc, char **argv){
@@ -30,19 +30,23 @@ int welcome(int argc, char **argv){
 		str = "	   Selected port: ";
 		str += argv[1];
 		str += "\n";
-		write_nice(WHITE, str);
+		write_nice(WHITE, str, false);
 		str = "	   Password     : ";
 		str += argv[2];
 		str += "\n";
-		write_nice(WHITE, str);
+		write_nice(WHITE, str, false);
 		std::cout << LINE;
-		std::this_thread::sleep_for(std::chrono::seconds(5));
-		return 1;
+		if(DEBUG){std::this_thread::sleep_for(std::chrono::seconds(3));}
+		return log("welcome successfully done"), 1;
 	}
-	if (argc == 3 && isValidPort(argv[1]) == false)
-		write_nice(RED, "		Invalid Port\n");
-	else
-		write_nice(RED, "	  Please adhere to syntax:\n	 ./ircserv <port> <password>\n");
+	if (argc == 3 && isValidPort(argv[1]) == false){
+		write_nice(RED, "		Invalid Port", true);
+		return log("invalid port entry\n"), 0;
+	}
+	else{
+		write_nice(RED, "	  Please adhere to syntax:\n	 ./ircserv <port> <password>", true);
+		return log("invalid syntax\n"), 0;
+	}
 	std::cout << LINE;
-	return 0;
+	return log("error in welcome function\n"), 0;
 }

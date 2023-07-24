@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 16:25:03 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 11:44:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ Server::Server(int port, const std::string& pwd) :  _port(port),
 													_pwd(pwd),
 													_socket(-1)
 {
-	start_sock();
 	sig_handler();
+	start_sock();
 }
 
 Server::~Server() {}
@@ -75,14 +75,14 @@ int Server::which_ipv(void){
     // Cleanup
     endwin();
 	if (option == 1)
-		return 4;
-	return 6;
+		return log("IPv4 chosen"), 4;
+	return log("IPv6 chosen"), 6;
 }
 
 int Server::sig_handler(void){
 	signal(SIGINT, change_running);
 	signal(SIGQUIT, change_running);
-	return 0;
+	return log("sig_handler started"), 0;
 }
 
 

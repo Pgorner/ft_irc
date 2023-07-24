@@ -6,12 +6,13 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 15:04:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/22 15:05:41 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 10:44:04 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_ERROR_CODES_HPP
 #define IRC_ERROR_CODES_HPP
+
 
 // Sent when a user tries to send a message to a nonexistent nickname.
 #define ERR_NOSUCHNICK 401

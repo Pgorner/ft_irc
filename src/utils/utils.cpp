@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 13:47:59 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 18:26:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,17 @@ void    clear(int i)
 
 void    goodbye(void)
 {
-    clear(100);
-    write_nice(YELLOW, GOODBYE);
+    if (DEBUG){
+        clear(100);
+        write_nice(YELLOW, GOODBYE, false);
+    }
 }
-void    write_nice(const char color[6], std::string str)
+void    write_nice(const char color[6], std::string str, bool nl)
 {
     setlocale(LC_ALL, "");
+    log(str);
+    if (nl == true)
+        str += "\n";
     unsigned long k = 0;
     while (k < str.size()) 
     {
@@ -65,7 +70,7 @@ void change_running(int signal)
 void log_creation(void){
 	std::ofstream logFile;
     bool isOpen;
-    int logNumber;
+    int logNumber = 0;
 
     std::string folderName = "logs";
     struct stat folderBuffer;
@@ -87,7 +92,6 @@ void log_creation(void){
             closedir(dir);
         }
 	logNumber++;
-
 	std::ostringstream oss;
     oss << folderName << "/log_" << logNumber << ".txt";
     std::string fileName = oss.str();
@@ -95,4 +99,5 @@ void log_creation(void){
     isOpen = logFile.is_open();
     if (isOpen)
         logFile.close();
+    LOG << LOGFILE;
 }

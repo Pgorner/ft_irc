@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/07/24 13:21:45 by pgorner          ###   ########.fr        #
+#    Updated: 2023/07/24 16:03:20 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,6 @@ SRC =	src/main.cpp			\
 
 OBJS =		$(SRC:.cpp=.o)
 
-
 $(NAME):	$(OBJS)
 			$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
@@ -43,5 +42,7 @@ clean :
 
 fclean :	clean
 			@$(RM) $(NAME)
+			
+weechat : brew install weechat
 
 re :		fclean all clean

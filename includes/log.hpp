@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 10:46:57 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 13:53:33 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/24 13:56:45 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,9 @@
 #include <string>
 #include <sys/stat.h>
 #include <ctime>
-#include <dirent.h> // Include the <dirent.h> header for directory-related functions
+#include <dirent.h>
 
 namespace LogDetail {
-    // Helper struct to ensure the file stream is properly closed
     struct LogStream {
         std::ofstream logFile;
         bool isOpen;
@@ -37,7 +36,7 @@ namespace LogDetail {
             if ((dir = opendir(folderName.c_str())) != nullptr) {
                 while ((ent = readdir(dir)) != nullptr) {
                     std::string fileName = ent->d_name;
-                    if (fileName.rfind("log_", 0) == 0) { // Check if the file name starts with "log_"
+                    if (fileName.rfind("log_", 0) == 0) {
                         int fileNumber = std::stoi(fileName.substr(4, fileName.find(".txt") - 4));
                         if (fileNumber > logNumber) {
                             logNumber = fileNumber;
@@ -51,7 +50,7 @@ namespace LogDetail {
             oss << folderName << "/log_" << logNumber << ".txt";
             std::string fileName = oss.str();
             if (logNumber > 0) {
-                logFile.open(fileName.c_str(), std::ios_base::app); // Open the latest log file in append mode
+                logFile.open(fileName.c_str(), std::ios_base::app);
                 isOpen = logFile.is_open();
             }
         }
@@ -73,7 +72,7 @@ namespace LogDetail {
         template <typename T>
         LogStream &operator<<(const T &data) {
             if (isOpen) {
-                logFile << getCurrentTime() << " " << data << "\n"; // Add current time before data
+                logFile << getCurrentTime() << " " << data << "\n";
             }
             return *this;
         }

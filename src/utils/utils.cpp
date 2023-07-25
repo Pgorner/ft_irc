@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 18:26:49 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/25 17:43:12 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,8 @@ void log(std::string log)
 {
     LOG << log;
 }
-void proper_exit(void)
-{
-//add proper exit handling
-}
 
-void change_running(int signal)
+void Server::change_running(int signal)
 {
     if (signal == SIGINT || signal == SIGQUIT){
         running = false;

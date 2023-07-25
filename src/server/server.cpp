@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 18:25:39 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/25 17:50:42 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,27 @@ Server& Server::operator=(const Server& obj) {
 }
 
 // --------------------------------------------------------------
+
+void Server::proper_exit(void)
+{
+    running = false;
+
+    // Close all client sockets and remove them from the pollfd list.
+    for (size_t i = 0; i < _poll_fds.size(); i++) {
+        close(_poll_fds[i].fd);
+    }
+    _poll_fds.clear();
+
+    // Close the server socket and reset its value to -1.
+    if (_socket >= 0) {
+        close(_socket);
+        _socket = -1;
+    }
+
+    write_nice(RED, "	Server shutting down...", true);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    clear(100);
+}
 
 //creates support for both IPv4 and IPv6
 int Server::which_ipv(void) {
@@ -79,8 +100,8 @@ int Server::which_ipv(void) {
 }
 
 int Server::sig_handler(void){
-	signal(SIGINT, change_running);
-	signal(SIGQUIT, change_running);
+	// signal(SIGINT, change_running);
+	// signal(SIGQUIT, change_running);
 	return log("sig_handler started"), 0;
 }
 
@@ -102,24 +123,24 @@ int Server::start_sock(void){
 		write_nice(BLUE, "	creating an IPv6 socket...", true);
 		_socket = socket(AF_INET6, SOCK_STREAM, 0);
 		if (_socket < 0)
-			return err("socket failed at IPv6"), -1;
+			return err("	socket failed at IPv6"), -1;
 		
 		struct sockaddr_in6 addr = {};
 		addr.sin6_family = AF_INET6;
 		addr.sin6_port = htons(_port);
 		addr.sin6_addr = in6addr_any;
 		if (bind(_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-			return err("binding failed at IPv6"), -1;
+			return err("	binding failed at IPv6"), -1;
 		else
 			write_nice(GREEN, "	IPv6 socket created", true);
 		if (listen(_socket, addr.sin6_port) < 0)
-			err("listening failed at IPv6");
+			err("	listening failed at IPv6");
 	}
 	else{
 		write_nice(BLUE, "	creating an IPv4 socket...", true);
 		_socket = socket(AF_INET, SOCK_STREAM, 0);
 		if (_socket < 0)
-			return err("socket failed at IPv4"), -1;
+			return err("	socket failed at IPv4"), -1;
 
 		struct sockaddr_in addr4 = {};
 		addr4.sin_family = AF_INET;
@@ -127,35 +148,36 @@ int Server::start_sock(void){
 		addr4.sin_addr.s_addr = htonl(INADDR_ANY);
 
 		if (bind(_socket, (struct sockaddr*)&addr4, sizeof(addr4)) < 0)
-			return err("binding failed at IPv4"), -1;
+			return err("	binding failed at IPv4"), -1;
 		else
 			write_nice(GREEN, "	IPv4 socket created", true);
 		if (listen(_socket, addr4.sin_port) < 0)
-			err("listening failed at IPv4");
+			err("	listening failed at IPv4");
 	}
 	return 0;
 }
 
 void Server::run() {
     int connection = 0;
+	bool hCC = false; //ahs connected clients
     int i = 0;
 	std::string str;
     while (true) {
         int num_events = poll(_poll_fds.data(), static_cast<nfds_t>(_poll_fds.size()), POLLTIME);
-		if (connection == 0 && i == 0)
+		if (connection == 0 && i == 0 && hCC == false)
 			write_nice(YELLOW, "	waiting to connect ", false);
-		if (i++ < 3 && connection < 3)
+		if (i++ < 3 && connection < 3 && hCC == false)
 			write_nice(YELLOW, ".", false);
-		else{
+		else if (hCC == false){
 		i = 0;
 		connection++;
     	str = std::to_string(connection);
-		if (connection == 4){
+		if (connection == 4 && hCC == false){
 			write(1, "\n", 1);
 			clear(0);
 			connection = 0;
 		}
-		else
+		else if (hCC == false)
 			write_nice(YELLOW, str, false);
 		}
         if (num_events == -1) {
@@ -167,8 +189,10 @@ void Server::run() {
                 exit(1);
             }
         }
-		else if (num_events)
+		else if (num_events){
+			write(1, "\n", 1);
 			write_nice(WHITE, LINE, true);
+		}
         for (size_t i = 0; i < _poll_fds.size(); i++) {
 
             if (_poll_fds[i].revents & POLLIN) {
@@ -180,13 +204,13 @@ void Server::run() {
     				if (client_socket < 0) {
     				    // Handle the error, and optionally continue or exit.
     				} else {
-						write_nice(GREEN, "NEW CLIENT SUCESSFULLY ADDED", true);
+						write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
     				    // New client connected successfully, add it to the list of monitored file descriptors.
     				    pollfd new_client_poll_fd;
     				    new_client_poll_fd.fd = client_socket;
     				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
     				    _poll_fds.push_back(new_client_poll_fd);
-
+						hCC = true;
     				    // Optionally, you can store client information or perform other tasks here.
     			}
                 } else {
@@ -200,10 +224,13 @@ void Server::run() {
     				} else {
     				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
+						write_nice(BLUE, received_data, true);
     				    // Process the received_data here. For an IRC server, this will involve parsing and handling IRC messages.
     				}
 				}
             }
+		if (_poll_fds.size() == 1)
+            hCC = false;
         }
     }
 }

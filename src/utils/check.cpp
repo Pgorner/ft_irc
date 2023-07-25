@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:53:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 16:53:47 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/25 17:32:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ bool isValidPort(const char* port) {
         return log("port invalid"), false;
     return log("port validated"), true;
 }
+
+
 
 int welcome(int argc, char **argv){
 	clear(100);

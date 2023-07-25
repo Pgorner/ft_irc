@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 18:26:12 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/25 17:44:36 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 #include "irc.hpp"
 
-#define POLLTIME 1000
+#define POLLTIME 500
 
 class Server {
  public:
@@ -28,7 +28,10 @@ class Server {
     int start_sock(void);
 	int start_poll(void);
     int sig_handler(void);
-	void run();
+    void proper_exit(void);
+	int err(std::string msg);
+    void run(); 
+    void change_running(int signal);
 
  private:
     int _port;

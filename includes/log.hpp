@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 10:46:57 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 13:56:45 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/27 16:35:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ namespace LogDetail {
 
         LogStream() : isOpen(false), logNumber(0) {
             std::string folderName = "logs";
-            struct stat folderBuffer;
 
             // Find the latest log file number
             DIR *dir;

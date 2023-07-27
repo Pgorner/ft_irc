@@ -6,43 +6,69 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/07/24 16:03:20 by pgorner          ###   ########.fr        #
+#    Updated: 2023/07/27 18:21:41 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-#	███╗   ███╗ █████╗ ██╗  ██╗███████╗███████╗██╗██╗     ███████╗
-#	████╗ ████║██╔══██╗██║ ██╔╝██╔════╝██╔════╝██║██║     ██╔════╝
-#	██╔████╔██║███████║█████╔╝ █████╗  █████╗  ██║██║     █████╗
-#	██║╚██╔╝██║██╔══██║██╔═██╗ ██╔══╝  ██╔══╝  ██║██║     ██╔══╝
-#	██║ ╚═╝ ██║██║  ██║██║  ██╗███████╗██║     ██║███████╗███████╗
-#	╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝╚══════╝╚══════╝
+# Colors for the terminal
+YELLOW = $(shell tput setaf 3)
+GREEN = $(shell tput setaf 2)
+RESET = $(shell tput sgr0)
 
 NAME = ircserv
-CC		 = c++
-CFLAGS   = -Wall -Werror -Wextra -lncurses -std=c++98 
-AR		 = ar rcs
-RM		 = rm -rf
+CC     = c++
+AR     = ar rcs
+RM     = rm -rf
+OBJ_DIR = obj
+LOG_DIR = logs
+CFLAGS = -Wall -Werror -Wextra -std=c++98
+LDFLAGS = -lncurses
 
-SRC =	src/main.cpp			\
-		src/utils/check.cpp		\
-		src/utils/error.cpp		\
-		src/utils/utils.cpp		\
-		src/server/server.cpp	\
+# List of source files
+SRC = src/main.cpp \
+      src/utils/check.cpp \
+      src/utils/error.cpp \
+      src/utils/utils.cpp \
+      src/server/server.cpp
+
+# Convert source files to object files
+OBJS = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+
+# Default target
+all: $(NAME)
+
+# Rule to create the object files in the OBJ_DIR
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
+	@mkdir -p $(@D)
+	@echo "$(YELLOW)COMPILING $(RESET)$<$(YELLOW) ...$(RESET)"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 
-OBJS =		$(SRC:.cpp=.o)
+# Rule to create the OBJ_DIR directory if it doesn't exist
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
 
-$(NAME):	$(OBJS)
-			$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+# Target for the final executable
+$(NAME): $(OBJS)
+	@echo "$(GREEN)COMPILED $(RESET)$(NAME)$(GREEN) successfully!$(RESET)"
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(NAME)
 
-all :		$(NAME)
+# Clean up object files and logs directory
+clean:
+	@$(RM) $(OBJ_DIR)
 
-clean :
-		$(RM) $(OBJS)
+# Clean up object files, logs directory, and the executable
+fclean: clean
+	@$(RM) $(NAME) $(LOG_DIR)
 
-fclean :	clean
-			@$(RM) $(NAME)
-			
-weechat : brew install weechat
+# Target for installing irssi
+irssi: brew install irssi
 
-re :		fclean all clean
+# Rule for testing
+test: re
+	@./$(NAME) 666 1234
+
+# Target for recompiling everything
+re: fclean all
+
+.PHONY: all clean fclean irssi re

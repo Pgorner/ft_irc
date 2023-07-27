@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/25 17:43:12 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/27 20:36:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,13 @@ void log(std::string log)
     LOG << log;
 }
 
+void Server::logsend(int fd, const char* msg)
+{
+    LOG << msg;
+    std::string serv = SERVERNAME;
+    std::string fullmsg = serv + msg;
+    send(fd, fullmsg.c_str(), fullmsg.size(), 0);
+}
 void Server::change_running(int signal)
 {
     if (signal == SIGINT || signal == SIGQUIT){

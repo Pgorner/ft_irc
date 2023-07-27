@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/27 16:17:55 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/07/27 20:45:55 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ int Server::which_ipv(void) {
     char input;
     int option = 1;
 
+	if (!DEBUG)
+		return 4;
     initscr();
     cbreak();
     noecho();
@@ -161,11 +163,38 @@ int Server::start_sock(void){
 	return 0;
 }
 
+void Server::checkPwd(const std::vector<std::string>& tokens, int i) {
+    if (tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0) {
+        const char* errorMessage = "Invalid password command.\r\n"; // Customize the error message
+        logsend(_poll_fds[i].fd, errorMessage);
+        return;
+    }
+
+    if (tokens.size() < 2) {
+        const char* errorMessage = "Password not provided.\r\n"; // Customize the error message
+        logsend(_poll_fds[i].fd, errorMessage);
+        return;
+    }
+
+    if (tokens[1] == _pwd) {
+        std::cout << "Password accepted" << std::endl;
+        _clients[i - 1].passwordAccepted = TRUE;
+        const char* welcomeMessage = "Welcome to the IRC server!\r\n"; // Customize the welcome message
+        logsend(_poll_fds[i].fd, welcomeMessage);
+    } else {
+        const char* errorMessage = "Invalid password.\r\n"; // Customize the error message
+        logsend(_poll_fds[i].fd, errorMessage);
+    }
+}
+
+	
+
 void Server::run() {
     int connection = 0;
 	bool hCC = false; //ahs connected clients
     int i = 0;
 	std::string str;
+
     while (true) {
         int num_events = poll(_poll_fds.data(), static_cast<nfds_t>(_poll_fds.size()), POLLTIME);
 		if (connection == 0 && i == 0 && hCC == false)
@@ -209,19 +238,26 @@ void Server::run() {
     				    // Handle the error, and optionally continue or exit.
     				} else {
 						write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
-    				    // New client connected successfully, add it to the list of monitored file descriptors.
+    				    // New client connected successfully, add it to the list of monitored file descriptors.	
     				    pollfd new_client_poll_fd;
     				    new_client_poll_fd.fd = client_socket;
     				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
     				    _poll_fds.push_back(new_client_poll_fd);
+						_clients.push_back(ClientData(client_socket, INDETERMINATE));
 						hCC = true;
     				    // Optionally, you can store client information or perform other tasks here.
     			}
                 } else {
     				// Handle events on other file descriptors (clients).
+					size_t cc = 0;
+            		for (; cc < _clients.size(); cc++) {
+            		    if (_clients[cc].fd == _poll_fds[i].fd) {
+            		        break;
+            		    }
+            		}
     				char buffer[1024];
     				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
-					std::cout << buffer << std::endl;
+					// std::cout << buffer << std::endl; 
     				if (bytes_received <= 0) {
     				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
@@ -234,29 +270,15 @@ void Server::run() {
 						std::stringstream iss(received_data);
 						std::string token;
 
-						while (std::getline(iss, token, ' ')) 
-						{
+						while (iss >> token)
 							tokens.push_back(token);
-						}
 
-						// Now the 'tokens' vector contains the individual tokens from the input string
-						bool passwordAccepted = false;
-						std::cout << tokens[2] << std::endl;
-						// while (!passwordAccepted)
-						// {
-						// 	if (tokens[0].compare(0, 5, "PASS") == 0)
-						// 	{
-						// 		if (tokens[1] == _pwd)
-						// 		{
-									
-						// 			std::cout << "Password accepted" << std::endl;
-						// 			passwordAccepted = true;
-						// 		}
-						// 		else
-						// 			std::cout << "Invalid password" << std::endl;
-						// 	}
-							
-						// }
+						if (_clients[cc].passwordAccepted == FALSE)
+							checkPwd(tokens, i);
+						else if(_clients[cc].passwordAccepted == INDETERMINATE){
+							_clients[cc].passwordAccepted = FALSE;
+        					logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n");
+						}
 						write_nice(BLUE, received_data, true);
     				    // Process the received_data here. For an IRC server, this will involve parsing and handling IRC messages.
     				}

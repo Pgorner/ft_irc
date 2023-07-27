@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/25 17:51:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/27 16:14:55 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_HPP_
 #define IRC_HPP_
 
-#define DEBUG 1 //set to 0 for debugging mode (NO ANIMATIONS)
+#define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
 
 static int running = true;
 

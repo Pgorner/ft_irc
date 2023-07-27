@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/25 17:50:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/27 16:17:55 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../../includes/server.hpp"
+#include <fcntl.h> 
 
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
@@ -124,7 +125,8 @@ int Server::start_sock(void){
 		_socket = socket(AF_INET6, SOCK_STREAM, 0);
 		if (_socket < 0)
 			return err("	socket failed at IPv6"), -1;
-		
+		if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0)
+			return err("	Unable to set the file descriptor to non-blocking mode"), -1;
 		struct sockaddr_in6 addr = {};
 		addr.sin6_family = AF_INET6;
 		addr.sin6_port = htons(_port);
@@ -146,7 +148,9 @@ int Server::start_sock(void){
 		addr4.sin_family = AF_INET;
 		addr4.sin_port = htons(_port);
 		addr4.sin_addr.s_addr = htonl(INADDR_ANY);
-
+		int reuse = 1;
+    	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1)
+			return err("	Failed to set SO_REUSEADDR option."), -1;
 		if (bind(_socket, (struct sockaddr*)&addr4, sizeof(addr4)) < 0)
 			return err("	binding failed at IPv4"), -1;
 		else
@@ -217,13 +221,42 @@ void Server::run() {
     				// Handle events on other file descriptors (clients).
     				char buffer[1024];
     				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
+					std::cout << buffer << std::endl;
     				if (bytes_received <= 0) {
     				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
     				    _poll_fds.erase(_poll_fds.begin() + i);
-    				} else {
+    				} else 
+					{
     				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
+						std::vector<std::string> tokens;
+						std::stringstream iss(received_data);
+						std::string token;
+
+						while (std::getline(iss, token, ' ')) 
+						{
+							tokens.push_back(token);
+						}
+
+						// Now the 'tokens' vector contains the individual tokens from the input string
+						bool passwordAccepted = false;
+						std::cout << tokens[2] << std::endl;
+						// while (!passwordAccepted)
+						// {
+						// 	if (tokens[0].compare(0, 5, "PASS") == 0)
+						// 	{
+						// 		if (tokens[1] == _pwd)
+						// 		{
+									
+						// 			std::cout << "Password accepted" << std::endl;
+						// 			passwordAccepted = true;
+						// 		}
+						// 		else
+						// 			std::cout << "Invalid password" << std::endl;
+						// 	}
+							
+						// }
 						write_nice(BLUE, received_data, true);
     				    // Process the received_data here. For an IRC server, this will involve parsing and handling IRC messages.
     				}

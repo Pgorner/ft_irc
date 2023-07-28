@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/27 20:47:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/28 11:37:14 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,11 @@
     struct ClientData {
         int fd;               // File descriptor for the client
         int passwordAccepted; // Flag indicating if the password is accepted for this client
-        ClientData(int client_socket, int pwdAccepted) : fd(client_socket), passwordAccepted(pwdAccepted) {}
+        bool cap; // Flag indicating if the password is accepted for this client
+        std::string nick;
+        std::string user;       
+        std::string realname;       
+        ClientData(int client_socket, int pwdAccepted, bool cap) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap) {}
     };
 
 
@@ -45,7 +49,9 @@ class Server {
     void run(); 
     void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i);
-    void logsend(int fd, const char* msg);
+    void logsend(int fd, const char* msg, bool servname);
+    bool contains(const std::vector<std::string>& tokens, std::string search);
+    void cap(int fd, const std::vector<std::string>& tokens, bool cap);
  private:
     int _port;
     std::string _pwd;

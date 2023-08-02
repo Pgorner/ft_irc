@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 18:46:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 20:35:45 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,13 @@ class Server {
     void logsend(int fd, const char* msg, bool servname);
     bool contains(const std::vector<std::string>& tokens, std::string search);
     void cap(int fd, const std::vector<std::string>& tokens, bool cap);
-    void commands(int cc, std::vector<std::string> tokens);
+    void commands(int i, int cc, std::vector<std::string> tokens);
+    const char* mode(int cc, std::vector<std::string> tokens);
+    //cmd functions
+    int oper(std::vector<std::string> tokens);
+
+    static Server* server_ptr;
+
  private:
     int _port;
     std::string _pwd;
@@ -67,7 +73,5 @@ class Server {
     std::vector<ClientData> _clients;
 
 };
-
-static Server* server_ptr = nullptr;
 
 #endif  // SERVER_HPP_

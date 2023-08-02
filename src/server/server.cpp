@@ -6,13 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 18:45:48 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 20:36:48 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../../includes/server.hpp"
-#include <fcntl.h> 
 
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
@@ -47,7 +46,6 @@ Server& Server::operator=(const Server& obj) {
 
 void Server::proper_exit(void)
 {
-    running = false;
     // Close all client sockets and remove them from the pollfd list.
     for (size_t i = 0; i < _poll_fds.size(); i++) {
         close(_poll_fds[i].fd);
@@ -60,7 +58,8 @@ void Server::proper_exit(void)
         _socket = -1;
     }
     write_nice(RED, "	Server shutting down...", true);
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+	if (DEBUG)
+    	std::this_thread::sleep_for(std::chrono::seconds(3));
     clear(100);
 }
 
@@ -102,8 +101,8 @@ int Server::which_ipv(void) {
 }
 
 int Server::sig_handler(void){
-	signal(SIGINT, change_running);
-	signal(SIGQUIT, change_running);
+	signal(SIGINT, Server::change_running);
+	signal(SIGQUIT, Server::change_running);
 	return log("sig_handler started"), 0;
 }
 
@@ -163,19 +162,19 @@ int Server::start_sock(void){
 }
 
 void Server::checkPwd(const std::vector<std::string>& tokens, int i) {
-    if (tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0) {
+    if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0)) {
         const char* errorMessage = "Invalid password command.\r\n"; // Customize the error message
         logsend(_poll_fds[i].fd, errorMessage, true);
         return;
     }
 
-    if (tokens.size() < 2) {
+    else if (tokens.size() < 2) {
         const char* errorMessage = "Password not provided.\r\n"; // Customize the error message
         logsend(_poll_fds[i].fd, errorMessage, true);
         return;
     }
 
-    if (tokens[1] == _pwd) {
+    else if (tokens[1] == _pwd) {
         std::cout << "Password accepted" << std::endl;
         _clients[i - 1].passwordAccepted = TRUE;
         const char* welcomeMessage = "Welcome to the IRC server!\r\n"; // Customize the welcome message
@@ -276,25 +275,50 @@ void Server::run() {
     				    _poll_fds.erase(_poll_fds.begin() + i);
     				} else 
 					{
+						std::cout << "cc :" << cc << "i :" << i << std::endl;
     				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
 						std::vector<std::string> tokens;
 						std::stringstream iss(received_data);
 						std::string token;
+						std::string line;
 
-						while (iss >> token)
-							tokens.push_back(token);
+    					while (std::getline(iss, line)) {
+        				// Tokenize the current line
+        				std::istringstream lineStream(line);
+        				std::string token;
+						
+        				while (lineStream >> token) {
+        				    tokens.push_back(token);
+        				}
+		
 						if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-						if(_clients[cc].passwordAccepted == TRUE)
-							commands(cc, tokens);
-						if (_clients[cc].passwordAccepted == FALSE){checkPwd(tokens, i);}
+						if(_clients[cc].passwordAccepted == TRUE){
+							commands(i, cc, tokens);
+						}
+						if (tokens[0] == "NICK") {
+							std::cout << "token is nick\n";
+						if (tokens.size() > 1)
+						    	_clients[cc].nick = tokens[1];
+							else
+						    	logsend(_poll_fds[i].fd, "You forgot your nickname\n", true);
+						} else if (tokens[0] == "USER") {
+							std::cout << "token is USER\n";
+							if (tokens.size() > 1)
+								_clients[cc].user = tokens[1];
+							else
+								logsend(_poll_fds[i].fd, "You forgot your username\n", true);
+						}
+						else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i);}
 						else if(_clients[cc].passwordAccepted == INDETERMINATE){
 							_clients[cc].passwordAccepted = FALSE;
         					logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n", true);
 						}
 						write_nice(BLUE, received_data, true);
     				    // Process the received_data here. For an IRC server, this will involve parsing and handling IRC messages.
-    				}
+    					tokens.clear();
+					}
+					}
 				}
             }
 		if (_poll_fds.size() == 1)
@@ -304,59 +328,64 @@ void Server::run() {
 }
 	
 	
-void Server::commands(int cc, std::vector<std::string> tokens)
+void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
-	if (tokens[0] == "NICK") {
-		if (tokens.size() > 1)
-	    	_clients[cc].nick = tokens[1];
-		else
-	    	logsend(_poll_fds[cc].fd, "You forgot your nickname\n", true);
-	} else if (tokens[0] == "USER") {
-		if (tokens.size() > 1)
-			_clients[cc].user = tokens[1];
-		else
-			logsend(_poll_fds[cc].fd, "You forgot your username\n", true);
+	if (tokens[0] == "OPER") {
+		if (tokens[1].empty() || tokens[2].empty())
+			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+		else if(oper(tokens) == 1){
+			_clients[cc].mode = "o";
+			logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
+		}
+		else if(oper(tokens) == 0)
+			logsend(_poll_fds[i].fd, ERR_NOOPERHOST_MSG, true);
+		else if(oper(tokens) == 2)
+			logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
 	}
-	// } else if (tokens[0] == "OPER") {
-	// } else if (tokens[0] == "MODE") {
-	// } else if (tokens[0] == "SERVICE") {
-	// } else if (tokens[0] == "QUIT") {
-	// } else if (tokens[0] == "SQUIT") {
-	// } else if (tokens[0] == "JOIN") {
-	// } else if (tokens[0] == "PART") {
-	// } else if (tokens[0] == "TOPIC") {
-	// } else if (tokens[0] == "NAMES") {
-	// } else if (tokens[0] == "LIST") {
-	// } else if (tokens[0] == "INVITE") {
-	// } else if (tokens[0] == "KICK") {
-	// } else if (tokens[0] == "NOTICE") {
-	// } else if (tokens[0] == "MOTD") {
-	// } else if (tokens[0] == "LUSERS") {
-	// } else if (tokens[0] == "VERSION") {
-	// } else if (tokens[0] == "STATS") {
-	// } else if (tokens[0] == "LINKS") {
-	// } else if (tokens[0] == "TIME") {
-	// } else if (tokens[0] == "CONNECT") {
-	// } else if (tokens[0] == "TRACE") {
-	// } else if (tokens[0] == "ADMIN") {
-	// } else if (tokens[0] == "INFO") {
-	// } else if (tokens[0] == "SERVLIST") {
-	// } else if (tokens[0] == "SQUERY") {
-	// } else if (tokens[0] == "WHO") {
-	// } else if (tokens[0] == "WHOIS") {
-	// } else if (tokens[0] == "WHOWAS") {
-	// } else if (tokens[0] == "KILL") {
-	// } else if (tokens[0] == "PING") {
-	// } else if (tokens[0] == "PONG") {
-	// } else if (tokens[0] == "ERROR") {
-	// } else if (tokens[0] == "AWAY") {
-	// } else if (tokens[0] == "REHASH") {
-	// } else if (tokens[0] == "DIE") {
-	// } else if (tokens[0] == "RESTART") {
-	// } else if (tokens[0] == "SUMMON") {
-	// } else if (tokens[0] == "USERS") {
-	// } else if (tokens[0] == "WALLOPS") {
-	// } else if (tokens[0] == "USERHOST") {
-	// } else if (tokens[0] == "ISON") {
-	// } else if (tokens[0] == "ISON") {
+	else if (tokens[0] == "MODE") {
+		if (tokens[1].empty() || tokens[2].empty())
+			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+		else
+			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
+	}
+	// else if (tokens[0] == "SERVICE") {}
+	// else if (tokens[0] == "QUIT") {}
+	// else if (tokens[0] == "SQUIT") {}
+	// else if (tokens[0] == "JOIN") {}
+	// else if (tokens[0] == "PART") {}
+	// else if (tokens[0] == "TOPIC") {}
+	// else if (tokens[0] == "NAMES") {}
+	// else if (tokens[0] == "LIST") {}
+	// else if (tokens[0] == "INVITE") {}
+	// else if (tokens[0] == "KICK") {}
+	// else if (tokens[0] == "NOTICE") {}
+	// else if (tokens[0] == "MOTD") {}
+	// else if (tokens[0] == "LUSERS") {}
+	// else if (tokens[0] == "VERSION") {}
+	// else if (tokens[0] == "STATS") {}
+	// else if (tokens[0] == "LINKS") {}
+	// else if (tokens[0] == "TIME") {}
+	// else if (tokens[0] == "CONNECT") {}
+	// else if (tokens[0] == "TRACE") {}
+	// else if (tokens[0] == "ADMIN") {}
+	// else if (tokens[0] == "INFO") {}
+	// else if (tokens[0] == "SERVLIST") {}
+	// else if (tokens[0] == "SQUERY") {}
+	// else if (tokens[0] == "WHO") {}
+	// else if (tokens[0] == "WHOIS") {}
+	// else if (tokens[0] == "WHOWAS") {}
+	// else if (tokens[0] == "KILL") {}
+	// else if (tokens[0] == "PING") {}
+	// else if (tokens[0] == "PONG") {}
+	// else if (tokens[0] == "ERROR") {}
+	// else if (tokens[0] == "AWAY") {}
+	// else if (tokens[0] == "REHASH") {}
+	// else if (tokens[0] == "DIE") {}
+	// else if (tokens[0] == "RESTART") {}
+	// else if (tokens[0] == "SUMMON") {}
+	// else if (tokens[0] == "USERS") {}
+	// else if (tokens[0] == "WALLOPS") {}
+	// else if (tokens[0] == "USERHOST") {}
+	// else if (tokens[0] == "ISON") {}
+	// else if (tokens[0] == "ISON") {}
 }

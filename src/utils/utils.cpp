@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 18:44:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 20:07:14 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,15 @@ void Server::logsend(int fd, const char* msg, bool servname)
     else
         serv = "";
     std::string fullmsg = serv + msg;
+    bool hasNewline = false;
+    for (size_t i = 0; i < fullmsg.length(); ++i) {
+        if (fullmsg[i] == '\n') {
+            hasNewline = true;
+            break;
+        }
+    }
+    if (!hasNewline)
+        fullmsg += "\n";
     send(fd, fullmsg.c_str(), fullmsg.size(), 0);
 }
 
@@ -76,10 +85,9 @@ bool Server::contains(const std::vector<std::string>& tokens, std::string search
 
 void Server::change_running(int signal) {
     if (signal == SIGINT || signal == SIGQUIT) {
-        server_ptr->running = false;
         server_ptr->proper_exit();
-        server_ptr->goodbye();
-        exit(1);
+        // server_ptr->goodbye();
+        exit(0);
     }
 }
 

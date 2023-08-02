@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/07/27 18:21:41 by pgorner          ###   ########.fr        #
+#    Updated: 2023/08/02 18:52:07 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,8 @@ SRC = src/main.cpp \
       src/utils/check.cpp \
       src/utils/error.cpp \
       src/utils/utils.cpp \
-      src/server/server.cpp
+      src/server/server.cpp \
+      src/server/server_func.cpp \
 
 # Convert source files to object files
 OBJS = $(SRC:%.cpp=$(OBJ_DIR)/%.o)

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/28 11:37:14 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 18:46:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@
         int fd;               // File descriptor for the client
         int passwordAccepted; // Flag indicating if the password is accepted for this client
         bool cap; // Flag indicating if the password is accepted for this client
+        std::string mode;       
         std::string nick;
         std::string user;       
         std::string realname;       
-        ClientData(int client_socket, int pwdAccepted, bool cap) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap) {}
+        ClientData(int client_socket, int pwdAccepted, bool cap, std::string mode) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), mode(mode) {}
     };
 
 
@@ -45,17 +46,20 @@ class Server {
 	int start_poll(void);
     int sig_handler(void);
     void proper_exit(void);
+    void goodbye(void);
 	int err(std::string msg);
     void run(); 
-    void change_running(int signal);
+    static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i);
     void logsend(int fd, const char* msg, bool servname);
     bool contains(const std::vector<std::string>& tokens, std::string search);
     void cap(int fd, const std::vector<std::string>& tokens, bool cap);
+    void commands(int cc, std::vector<std::string> tokens);
  private:
     int _port;
     std::string _pwd;
     int _socket;
+    bool running;
     time_t _start_time;
     time_t _last_ping;
 	struct pollfd _poll_fd;  // poll file descriptor
@@ -64,5 +68,6 @@ class Server {
 
 };
 
+static Server* server_ptr = nullptr;
 
 #endif  // SERVER_HPP_

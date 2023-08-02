@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/28 11:02:38 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 18:44:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void    clear(int i)
         std::cout << "\033[A\033[2K";
 }
 
-void    goodbye(void)
+void    Server::goodbye(void)
 {
     if (DEBUG){
         clear(100);
@@ -74,12 +74,11 @@ bool Server::contains(const std::vector<std::string>& tokens, std::string search
     return false;
 }
 
-void Server::change_running(int signal)
-{
-    if (signal == SIGINT || signal == SIGQUIT){
-        running = false;
-        proper_exit();
-        goodbye();
+void Server::change_running(int signal) {
+    if (signal == SIGINT || signal == SIGQUIT) {
+        server_ptr->running = false;
+        server_ptr->proper_exit();
+        server_ptr->goodbye();
         exit(1);
     }
 }

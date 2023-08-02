@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 17:52:07 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 18:45:48 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
       _pwd(pwd),
-      _socket(-1),
+	  _socket(-1),
+	  running(false),
       _start_time(std::time(NULL)),
       _last_ping(std::time(NULL))
 {
@@ -47,7 +48,6 @@ Server& Server::operator=(const Server& obj) {
 void Server::proper_exit(void)
 {
     running = false;
-
     // Close all client sockets and remove them from the pollfd list.
     for (size_t i = 0; i < _poll_fds.size(); i++) {
         close(_poll_fds[i].fd);
@@ -59,7 +59,6 @@ void Server::proper_exit(void)
         close(_socket);
         _socket = -1;
     }
-
     write_nice(RED, "	Server shutting down...", true);
     std::this_thread::sleep_for(std::chrono::seconds(3));
     clear(100);
@@ -103,8 +102,8 @@ int Server::which_ipv(void) {
 }
 
 int Server::sig_handler(void){
-	// signal(SIGINT, change_running);
-	// signal(SIGQUIT, change_running);
+	signal(SIGINT, change_running);
+	signal(SIGQUIT, change_running);
 	return log("sig_handler started"), 0;
 }
 
@@ -256,7 +255,7 @@ void Server::run() {
     				    new_client_poll_fd.fd = client_socket;
     				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
     				    _poll_fds.push_back(new_client_poll_fd);
-						_clients.push_back(ClientData(client_socket, INDETERMINATE, false));
+						_clients.push_back(ClientData(client_socket, INDETERMINATE, false, "/"));
 						hCC = true;
     				    // Optionally, you can store client information or perform other tasks here.
     			}
@@ -286,7 +285,8 @@ void Server::run() {
 						while (iss >> token)
 							tokens.push_back(token);
 						if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-						commands(tokens);
+						if(_clients[cc].passwordAccepted == TRUE)
+							commands(cc, tokens);
 						if (_clients[cc].passwordAccepted == FALSE){checkPwd(tokens, i);}
 						else if(_clients[cc].passwordAccepted == INDETERMINATE){
 							_clients[cc].passwordAccepted = FALSE;
@@ -304,21 +304,59 @@ void Server::run() {
 }
 	
 	
-void commands(std::vector<std::string> tokens)
+void Server::commands(int cc, std::vector<std::string> tokens)
 {
 	if (tokens[0] == "NICK") {
-	if (tokens.size() > 1) {
-	    _clients[cc].nick = tokens[1];
-	} else {
-	    logsend(_poll_fds[i].fd, "You forgot your nickname\n", true);
+		if (tokens.size() > 1)
+	    	_clients[cc].nick = tokens[1];
+		else
+	    	logsend(_poll_fds[cc].fd, "You forgot your nickname\n", true);
+	} else if (tokens[0] == "USER") {
+		if (tokens.size() > 1)
+			_clients[cc].user = tokens[1];
+		else
+			logsend(_poll_fds[cc].fd, "You forgot your username\n", true);
 	}
-	} else if (tokens[0] == "USER") {
-	    if (tokens.size() > 1) {
-	        _clients[cc].user = tokens[1];
-	    } else {
-	        logsend(_poll_fds[i].fd, "You forgot your username\n", true);
-	    }
-	}
-	} else if (tokens[0] == "USER") {
-	} else if (tokens[0] == "USER") {
+	// } else if (tokens[0] == "OPER") {
+	// } else if (tokens[0] == "MODE") {
+	// } else if (tokens[0] == "SERVICE") {
+	// } else if (tokens[0] == "QUIT") {
+	// } else if (tokens[0] == "SQUIT") {
+	// } else if (tokens[0] == "JOIN") {
+	// } else if (tokens[0] == "PART") {
+	// } else if (tokens[0] == "TOPIC") {
+	// } else if (tokens[0] == "NAMES") {
+	// } else if (tokens[0] == "LIST") {
+	// } else if (tokens[0] == "INVITE") {
+	// } else if (tokens[0] == "KICK") {
+	// } else if (tokens[0] == "NOTICE") {
+	// } else if (tokens[0] == "MOTD") {
+	// } else if (tokens[0] == "LUSERS") {
+	// } else if (tokens[0] == "VERSION") {
+	// } else if (tokens[0] == "STATS") {
+	// } else if (tokens[0] == "LINKS") {
+	// } else if (tokens[0] == "TIME") {
+	// } else if (tokens[0] == "CONNECT") {
+	// } else if (tokens[0] == "TRACE") {
+	// } else if (tokens[0] == "ADMIN") {
+	// } else if (tokens[0] == "INFO") {
+	// } else if (tokens[0] == "SERVLIST") {
+	// } else if (tokens[0] == "SQUERY") {
+	// } else if (tokens[0] == "WHO") {
+	// } else if (tokens[0] == "WHOIS") {
+	// } else if (tokens[0] == "WHOWAS") {
+	// } else if (tokens[0] == "KILL") {
+	// } else if (tokens[0] == "PING") {
+	// } else if (tokens[0] == "PONG") {
+	// } else if (tokens[0] == "ERROR") {
+	// } else if (tokens[0] == "AWAY") {
+	// } else if (tokens[0] == "REHASH") {
+	// } else if (tokens[0] == "DIE") {
+	// } else if (tokens[0] == "RESTART") {
+	// } else if (tokens[0] == "SUMMON") {
+	// } else if (tokens[0] == "USERS") {
+	// } else if (tokens[0] == "WALLOPS") {
+	// } else if (tokens[0] == "USERHOST") {
+	// } else if (tokens[0] == "ISON") {
+	// } else if (tokens[0] == "ISON") {
 }

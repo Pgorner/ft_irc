@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/27 20:36:49 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/07/28 11:02:38 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,27 @@ void log(std::string log)
     LOG << log;
 }
 
-void Server::logsend(int fd, const char* msg)
+void Server::logsend(int fd, const char* msg, bool servname)
 {
     LOG << msg;
-    std::string serv = SERVERNAME;
+    std::string serv;
+    if (servname == true)
+        serv = SERVERNAME;
+    else
+        serv = "";
     std::string fullmsg = serv + msg;
     send(fd, fullmsg.c_str(), fullmsg.size(), 0);
 }
+
+bool Server::contains(const std::vector<std::string>& tokens, std::string search) {
+    for (std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        if (*it == search) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Server::change_running(int signal)
 {
     if (signal == SIGINT || signal == SIGQUIT){

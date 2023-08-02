@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/27 16:14:55 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/02 18:13:59 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ static int running = true;
 
 // ------ own libs -------
 #include "server.hpp"
+#include "errcode.hpp"
+#include "replies.hpp"
 #include "typography.hpp"
 #include "log.hpp"
 

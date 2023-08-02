@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/28 11:45:53 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 17:52:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,19 +286,7 @@ void Server::run() {
 						while (iss >> token)
 							tokens.push_back(token);
 						if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-						if (tokens[0] == "NICK") {
-						    if (tokens.size() > 1) {
-						        _clients[cc].nick = tokens[1];
-						    } else {
-						        logsend(_poll_fds[i].fd, "You forgot your nickname\n", true);
-						    }
-						} else if (tokens[0] == "USER") {
-						    if (tokens.size() > 1) {
-						        _clients[cc].user = tokens[1];
-						    } else {
-						        logsend(_poll_fds[i].fd, "You forgot your username\n", true);
-						    }
-						}
+						commands(tokens);
 						if (_clients[cc].passwordAccepted == FALSE){checkPwd(tokens, i);}
 						else if(_clients[cc].passwordAccepted == INDETERMINATE){
 							_clients[cc].passwordAccepted = FALSE;
@@ -315,3 +303,22 @@ void Server::run() {
     }
 }
 	
+	
+void commands(std::vector<std::string> tokens)
+{
+	if (tokens[0] == "NICK") {
+	if (tokens.size() > 1) {
+	    _clients[cc].nick = tokens[1];
+	} else {
+	    logsend(_poll_fds[i].fd, "You forgot your nickname\n", true);
+	}
+	} else if (tokens[0] == "USER") {
+	    if (tokens.size() > 1) {
+	        _clients[cc].user = tokens[1];
+	    } else {
+	        logsend(_poll_fds[i].fd, "You forgot your username\n", true);
+	    }
+	}
+	} else if (tokens[0] == "USER") {
+	} else if (tokens[0] == "USER") {
+}

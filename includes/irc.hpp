@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 18:13:59 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 19:06:42 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ static int running = true;
 
 // ------- c libs --------
 #include <poll.h>
+#include <fcntl.h> 
 #include <unistd.h>
+#include <dirent.h>
 #include <signal.h>
 #include <ncurses.h>
 #include <sys/stat.h>

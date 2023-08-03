@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 20:36:33 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/03 17:21:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,50 +78,118 @@ int Server::oper(std::vector<std::string> tokens){
 		return 0;
 }
 
+std::string Server::rmletter(char letter, std::string mode){
+	std::string result;
+    for (std::size_t i = 0; i < mode.length(); ++i) {
+        if (mode[i] != letter)
+            result += mode[i];
+    }
+    return result;
+}
+
+std::string Server::addmode(char letter, std::string mode){
+	if(mode.find(letter) != std::string::npos)
+		return (mode += letter);
+	else
+		return mode;
+}
+
 const char* Server::mode(int cc, std::vector<std::string> tokens){
 	if (tokens[1] == _clients[cc].nick){
 		if (tokens[2] == "+o" || tokens[2] == "+o" || tokens[2] == "a")
 			return "no";
-		else if (tokens[2] == "-o" || tokens[2] == "-o"){
-			return("/");
+		else if (tokens[2] == "-o" || tokens[2] == "-O"){
+			_clients[cc].mode = rmletter('o', _clients[cc].mode);
+			_clients[cc].mode = rmletter('O', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "i"){
-			_clients[cc].mode = "i";
+			_clients[cc].mode = addmode('i', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "-i"){
-			if (_clients[cc].mode == "i")
-				_clients[cc].mode = "/";
+			_clients[cc].mode = rmletter('i', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "w"){
-			return ("w");
+			_clients[cc].mode = addmode('w', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "-w"){
-			if (_clients[cc].mode == "w")
-				_clients[cc].mode = "/";
+			_clients[cc].mode = rmletter('i', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "r"){
-			_clients[cc].mode = "r";
+			_clients[cc].mode = addmode('r', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "-r"){
-			if (_clients[cc].mode == "r")
-				_clients[cc].mode = "/";
+			_clients[cc].mode = rmletter('r', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "s")
-			_clients[cc].mode = "s";
+			_clients[cc].mode = addmode('s', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
 		}
 		else if (tokens[2] == "-s"){
-			if (_clients[cc].mode == "s")
-				_clients[cc].mode = "/";
+			_clients[cc].mode = rmletter('s', _clients[cc].mode);
 			return (RPL_UMODEIS_MSG);
-	}
-	std::cout << tokens[1] << "!=" << _clients[cc].nick;
+		}
 	return (ERR_USERSDONTMATCH_MSG);
+}
+
+void Server::user(std::vector<std::string> tokens, int cc, int i){
+	bool user = false;
+	for(size_t i = 0; i < _clients.size(); i++){
+		if (_clients[i].user == tokens[1])
+			user = true;
+	}
+	if (tokens[1].empty() == true)
+	   	logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+	else if (tokens[1].size() < 1)
+	    logsend(_poll_fds[i].fd, "USER too short", true);
+	else if (tokens.size() > 1 && user == false){
+		_clients[cc].user = tokens[1];
+	    logsend(_poll_fds[i].fd, "USER has been set to", true);
+	    logsend(_poll_fds[i].fd, tokens[1].c_str(), true);
+		if (tokens[2].empty() == false){
+			if (tokens[2] == "8")
+				_clients[cc].mode = addmode('i', _clients[cc].mode);
+			logsend(_poll_fds[i].fd, "MODE has been set to", true);
+			logsend(_poll_fds[i].fd, tokens[2].c_str(), true);
+		}
+		if (tokens[4].empty() == false){
+			_clients[cc].realname = tokens[4];
+			logsend(_poll_fds[i].fd, "REALNAME has been set to", true);
+			logsend(_poll_fds[i].fd, tokens[4].c_str(), true);
+		}
+		}
+	else if (user == true)
+	   	logsend(_poll_fds[i].fd, "USER has already been taken", true);
+	else
+		logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+}
+
+void Server::nick(std::vector<std::string> tokens, int cc, int i){
+	bool nick = false;
+	for(size_t i = 0; i < _clients.size(); i++){
+		if (_clients[i].nick == tokens[1])
+			nick = true;}
+	if (tokens[1].empty() == true)
+	   	logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+	else if (tokens[1].size() < 1)
+	    logsend(_poll_fds[i].fd, "NICK too short", true);
+	else if (tokens.size() > 1 && nick == false){
+	    _clients[cc].nick = tokens[1];
+	    logsend(_poll_fds[i].fd, "NICK has been set to", true);
+	    logsend(_poll_fds[i].fd, tokens[1].c_str(), true);
+	}
+	else if (nick == false)
+	   	logsend(_poll_fds[i].fd, "NICK has already been taken", true);
+}
+
+void Server::quit(std::vector<std::string> tokens, int i){
+	if (tokens[1].empty() == false)
+	    logsend(_poll_fds[i].fd, tokens[1].c_str(), true);
+	close(_poll_fds[i].fd);
 }

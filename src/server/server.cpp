@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 20:36:48 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/03 17:25:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ int Server::start_sock(void){
 	return 0;
 }
 
-void Server::checkPwd(const std::vector<std::string>& tokens, int i) {
+void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0)) {
         const char* errorMessage = "Invalid password command.\r\n"; // Customize the error message
         logsend(_poll_fds[i].fd, errorMessage, true);
@@ -179,6 +179,8 @@ void Server::checkPwd(const std::vector<std::string>& tokens, int i) {
         _clients[i - 1].passwordAccepted = TRUE;
         const char* welcomeMessage = "Welcome to the IRC server!\r\n"; // Customize the welcome message
         logsend(_poll_fds[i].fd, welcomeMessage, true);
+		if(_clients[cc].auth == false)
+        	logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
     } else {
         const char* errorMessage = "Invalid password.\r\n"; // Customize the error message
         logsend(_poll_fds[i].fd, errorMessage, true);
@@ -254,7 +256,7 @@ void Server::run() {
     				    new_client_poll_fd.fd = client_socket;
     				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
     				    _poll_fds.push_back(new_client_poll_fd);
-						_clients.push_back(ClientData(client_socket, INDETERMINATE, false, "/"));
+						_clients.push_back(ClientData(client_socket, INDETERMINATE, false, false, ""));
 						hCC = true;
     				    // Optionally, you can store client information or perform other tasks here.
     			}
@@ -275,7 +277,6 @@ void Server::run() {
     				    _poll_fds.erase(_poll_fds.begin() + i);
     				} else 
 					{
-						std::cout << "cc :" << cc << "i :" << i << std::endl;
     				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
 						std::vector<std::string> tokens;
@@ -284,40 +285,31 @@ void Server::run() {
 						std::string line;
 
     					while (std::getline(iss, line)) {
-        				// Tokenize the current line
-        				std::istringstream lineStream(line);
-        				std::string token;
-						
-        				while (lineStream >> token) {
-        				    tokens.push_back(token);
-        				}
-		
-						if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-						if(_clients[cc].passwordAccepted == TRUE){
-							commands(i, cc, tokens);
+        					
+							std::string token;
+        					std::istringstream lineStream(line);
+
+        					while (lineStream >> token)
+        					    tokens.push_back(token);
+							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+								if (!it->empty() && (*it)[0] == ':') {
+									it->erase(0, 1);
+								}
+							}
+							
+							if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
+							if(_clients[cc].passwordAccepted == TRUE){commands(i, cc, tokens);}
+							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i, cc);}
+							else if(_clients[cc].passwordAccepted == INDETERMINATE){
+								_clients[cc].passwordAccepted = FALSE;
+        						logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n", true);
+							}
+							if (!DEBUG){
+								for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+									write_nice(BLUE, it->c_str(), true );
+							}
+    						tokens.clear();
 						}
-						if (tokens[0] == "NICK") {
-							std::cout << "token is nick\n";
-						if (tokens.size() > 1)
-						    	_clients[cc].nick = tokens[1];
-							else
-						    	logsend(_poll_fds[i].fd, "You forgot your nickname\n", true);
-						} else if (tokens[0] == "USER") {
-							std::cout << "token is USER\n";
-							if (tokens.size() > 1)
-								_clients[cc].user = tokens[1];
-							else
-								logsend(_poll_fds[i].fd, "You forgot your username\n", true);
-						}
-						else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i);}
-						else if(_clients[cc].passwordAccepted == INDETERMINATE){
-							_clients[cc].passwordAccepted = FALSE;
-        					logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n", true);
-						}
-						write_nice(BLUE, received_data, true);
-    				    // Process the received_data here. For an IRC server, this will involve parsing and handling IRC messages.
-    					tokens.clear();
-					}
 					}
 				}
             }
@@ -326,15 +318,19 @@ void Server::run() {
         }
     }
 }
-	
-	
+
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
+	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
+		_clients[cc].auth = true;
+	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
+	else if (tokens[0] == "USER") {user(tokens, cc, i);}
+	else if (_clients[cc].auth == true){
 	if (tokens[0] == "OPER") {
 		if (tokens[1].empty() || tokens[2].empty())
 			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
 		else if(oper(tokens) == 1){
-			_clients[cc].mode = "o";
+			_clients[cc].mode += "o";
 			logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
 		}
 		else if(oper(tokens) == 0)
@@ -343,13 +339,19 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 			logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
 	}
 	else if (tokens[0] == "MODE") {
-		if (tokens[1].empty() || tokens[2].empty())
+		if (tokens[1].empty() == true)
+			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
+		else if (tokens[1].empty() || tokens[2].empty())
 			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
 		else
 			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
 	}
+	else if (tokens[0] == "QUIT") {quit(tokens, i);}
+	
+	}
+	else
+		logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
 	// else if (tokens[0] == "SERVICE") {}
-	// else if (tokens[0] == "QUIT") {}
 	// else if (tokens[0] == "SQUIT") {}
 	// else if (tokens[0] == "JOIN") {}
 	// else if (tokens[0] == "PART") {}

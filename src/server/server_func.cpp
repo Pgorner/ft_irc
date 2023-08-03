@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:21:32 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/03 17:33:14 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,12 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 		if (tokens[2].empty() == false){
 			if (tokens[2] == "8")
 				_clients[cc].mode = addmode('i', _clients[cc].mode);
-			logsend(_poll_fds[i].fd, "MODE has been set to", true);
-			logsend(_poll_fds[i].fd, tokens[2].c_str(), true);
+			else if (tokens[2] == "2")
+				_clients[cc].mode = addmode('w', _clients[cc].mode);
+			if (tokens[2] == "8" || tokens[2] == "2"){
+				logsend(_poll_fds[i].fd, "MODE has been set to", true);
+				logsend(_poll_fds[i].fd, tokens[2].c_str(), true);
+			}
 		}
 		if (tokens[4].empty() == false){
 			_clients[cc].realname = tokens[4];

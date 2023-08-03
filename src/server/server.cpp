@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:25:07 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/03 17:39:12 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,6 +275,10 @@ void Server::run() {
     				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
     				    _poll_fds.erase(_poll_fds.begin() + i);
+						write_nice(RED, "Client: ", false);
+						write_nice(RED, _clients[cc].realname, false);
+						write_nice(RED, " disconnected", true);
+						_clients.erase(_clients.begin() + cc);
     				} else 
 					{
     				    // Process the received data from the client.

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:39:12 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/03 17:51:24 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,13 @@ void Server::proper_exit(void)
         close(_socket);
         _socket = -1;
     }
-    write_nice(RED, "	Server shutting down...", true);
-	if (DEBUG)
+    write_nice(RED, "\n	Server shutting down...", true);
+	if (DEBUG){
     	std::this_thread::sleep_for(std::chrono::seconds(3));
-    clear(100);
+		goodbye();
+    	std::this_thread::sleep_for(std::chrono::seconds(3));
+	}
+	clear(100);
 }
 
 //creates support for both IPv4 and IPv6

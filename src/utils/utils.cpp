@@ -6,11 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 18:07:34 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 17:37:53 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
+
 
 void    clear(int i)
 {
@@ -22,13 +23,14 @@ void    Server::goodbye(void)
 {
     if (PIGEON){
         clear(100);
+        
         for (int i = 0; i <= 10; i++){
             if (i % 2 == 0)
                 std::cout << PIGEON1;
             else
                 std::cout << PIGEON2;
             std::this_thread::sleep_for(std::chrono::seconds(2));
-            clear(30);
+            clear(50);
         }
     }
     else if (DEBUG){
@@ -95,11 +97,10 @@ bool Server::contains(const std::vector<std::string>& tokens, std::string search
 }
 
 void Server::change_running(int signal) {
-    if (signal == SIGINT || signal == SIGQUIT) {
-        server_ptr->proper_exit();
-        // server_ptr->goodbye();
-        exit(0);
-    }
+    (void)signal;
+    endwin();
+    server_ptr->proper_exit();
+    exit(0);
 }
 
 void log_creation(void){

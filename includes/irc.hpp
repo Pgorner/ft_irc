@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 18:06:14 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 17:23:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	write_irc(void);
 std::string ctstr(void);
 void	log_creation(void);
 void	log(std::string log);
-void    write_nice(const char color[6], std::string str, bool nl);
+void	write_nice(const char color[6], std::string str, bool nl);
+bool	isValidPort(const char* port);
 
 #endif

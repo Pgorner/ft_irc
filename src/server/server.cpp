@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:51:24 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 17:39:01 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,7 @@ Server::Server(const int &port, const std::string &pwd)
       _start_time(std::time(NULL)),
       _last_ping(std::time(NULL))
 {
-    sig_handler();
-    start_sock();
-	start_poll();
-	write_nice(BLUE, "	SERVER CREATION SUCCESSFUL", true);
-	write_nice(WHITE, LINE, false);
+    sig_handlerserv();
 }
 
 Server::~Server()
@@ -51,7 +47,6 @@ void Server::proper_exit(void)
         close(_poll_fds[i].fd);
     }
     _poll_fds.clear();
-
     // Close the server socket and reset its value to -1.
     if (_socket >= 0) {
         close(_socket);
@@ -103,7 +98,7 @@ int Server::which_ipv(void) {
         return log("IPv6 chosen"), 6;
 }
 
-int Server::sig_handler(void){
+int Server::sig_handlerserv(void){
 	signal(SIGINT, Server::change_running);
 	signal(SIGQUIT, Server::change_running);
 	return log("sig_handler started"), 0;

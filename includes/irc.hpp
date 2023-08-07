@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:44:28 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/07 12:34:15 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ static int running = true;
 
 // ------ own libs -------
 #include "server.hpp"
-#include "errcode.hpp"
-#include "replies.hpp"
+//#include "errcode.hpp"
+//#include "replies.hpp"
 #include "typography.hpp"
 #include "log.hpp"
 

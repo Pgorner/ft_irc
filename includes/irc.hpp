@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:52:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 17:44:28 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define IRC_HPP_
 
 #define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
+#define PIGEON 0 //set to 1 for pigeon (SET DEBUG TO 1)
 
 static int running = true;
 
@@ -54,6 +55,7 @@ void	write_irc(void);
 std::string ctstr(void);
 void	log_creation(void);
 void	log(std::string log);
-void    write_nice(const char color[6], std::string str, bool nl);
+void	write_nice(const char color[6], std::string str, bool nl);
+bool	isValidPort(const char* port);
 
 #endif

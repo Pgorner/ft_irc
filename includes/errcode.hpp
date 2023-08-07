@@ -6,183 +6,310 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 15:04:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:42:24 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 18:07:33 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_ERROR_CODES_HPP
 #define IRC_ERROR_CODES_HPP
 
-// Used to indicate the nickname parameter supplied to a command is currently unused.
-#define ERR_NOSUCHNICK 401
-#define ERR_NOSUCHNICK_MSG "<nickname> :No such nick/channel"
+#include "irc.hpp"
+#include "typography.hpp"
+#include "server.hpp"
+#include <iostream>
+#include <sstream>
 
-// Used to indicate the server name given currently does not exist.
-#define ERR_NOSUCHSERVER 402
-#define ERR_NOSUCHSERVER_MSG "<server name> :No such server"
+namespace irc
+{
+    /***********************************************
+    ERROR REPLIES
+    ***********************************************/
+    std::string ERR_NOSUCHNICK(const std::string& nickname, const std::string& channel)
+    {
+        std::cout << RED << "User tried accessing a non-existent nickname or channel!" << RESET << "\n";
+        return ":" + SERVERNAME + " 401 " + nickname + " " + channel + " :No such nick/channel\r\n";
+    }
 
-// Used to indicate the given channel name is invalid.
-#define ERR_NOSUCHCHANNEL 403
-#define ERR_NOSUCHCHANNEL_MSG "<channel name> :No such channel"
+    std::string ERR_NOSUCHSERVER(const std::string& server_name)
+    {
+        std::cout << RED << "Server name provided does not exist!" << RESET << "\n";
+        return ":" + SERVERNAME + " 402 " + server_name + " :No such server\r\n";
+    }
 
-// Sent to a user who is either (a) not on a channel which is mode +n or (b) not a chanop (or mode +v) on a channel which has mode +m set or where the user is banned and is trying to send a PRIVMSG message to that channel.
-#define ERR_CANNOTSENDTOCHAN 404
-#define ERR_CANNOTSENDTOCHAN_MSG "<channel name> :Cannot send to channel"
+    std::string ERR_NOSUCHCHANNEL(const std::string& channel_name)
+    {
+        std::cout << RED << "Given channel name is invalid!" << RESET << "\n";
+        return ":" + SERVERNAME + " 403 " + channel_name + " :No such channel\r\n";
+    }
 
-// Sent to a user when they have joined the maximum number of allowed channels and they try to join another channel.
-#define ERR_TOOMANYCHANNELS 405
-#define ERR_TOOMANYCHANNELS_MSG "<channel name> :You have joined too many channels"
+    std::string ERR_CANNOTSENDTOCHAN(const std::string& channel_name)
+    {
+        std::cout << RED << "User tried to send a message to a channel they are not allowed to send!" << RESET << "\n";
+        return ":" + SERVERNAME + " 404 " + channel_name + " :Cannot send to channel\r\n";
+    }
 
-// Returned by WHOWAS to indicate there is no history information for that nickname.
-#define ERR_WASNOSUCHNICK 406
-#define ERR_WASNOSUCHNICK_MSG "<nickname> :There was no such nickname"
+    std::string ERR_TOOMANYCHANNELS(const std::string& channel_name)
+    {
+        std::cout << RED << "User has joined the maximum number of allowed channels!" << RESET << "\n";
+        return ":" + SERVERNAME + " 405 " + channel_name + " :You have joined too many channels\r\n";
+    }
 
-// Returned to a client which is attempting to send a PRIVMSG/NOTICE using the user@host destination format and for a user@host which has several occurrences.
-// Returned to a client which trying to send a PRIVMSG/NOTICE to too many recipients.
-// Returned to a client which is attempting to JOIN a safe channel using the shortname when there are more than one such channel.
-#define ERR_TOOMANYTARGETS 407
-#define ERR_TOOMANYTARGETS_MSG "<target> :<error code> recipients. <abort message>"
+    std::string ERR_WASNOSUCHNICK(const std::string& nickname)
+    {
+        std::cout << RED << "History information not found for the provided nickname!" << RESET << "\n";
+        return ":" + SERVERNAME + " 406 " + nickname + " :There was no such nickname\r\n";
+    }
 
-// Returned to a client which is attempting to send a SQUERY to a service which does not exist.
-#define ERR_NOSUCHSERVICE 408
-#define ERR_NOSUCHSERVICE_MSG "<service name> :No such service"
+    std::string ERR_TOOMANYTARGETS(const std::string& target, const std::string& error_code, const std::string& abort_message)
+    {
+        std::cout << RED << "Too many recipients or invalid target format for the command!" << RESET << "\n";
+        return ":" + SERVERNAME + " 407 " + target + " :" + error_code + " recipients. " + abort_message + "\r\n";
+    }
 
-// PING or PONG message missing the originator parameter.
-#define ERR_NOORIGIN 409
-#define ERR_NOORIGIN_MSG ":No origin specified"
+    std::string ERR_NOSUCHSERVICE(const std::string& service_name)
+    {
+        std::cout << RED << "The service being queried does not exist!" << RESET << "\n";
+        return ":" + SERVERNAME + " 408 " + service_name + " :No such service\r\n";
+    }
 
-// Sent when a command is missing the recipient field (e.g., no target nickname or channel provided).
-#define ERR_NORECIPIENT 411
-#define ERR_NORECIPIENT_MSG ":No recipient given"
+    std::string ERR_NOORIGIN()
+    {
+        std::cout << RED << "PING or PONG message missing the originator parameter!" << RESET << "\n";
+        return ": " + SERVERNAME + " 409 :No origin specified\r\n";
+    }
 
+    std::string ERR_NORECIPIENT()
+    {
+        std::cout << RED << "A command is missing the recipient field!" << RESET << "\n";
+        return ":" + SERVERNAME + " 411 :No recipient given\r\n";
+    }
 
+    std::string ERR_NOTEXTTOSEND()
+    {
+        std::cout << RED << "A command is missing the text to send!" << RESET << "\n";
+        return ":" + SERVERNAME + " 412 :No text to send\r\n";
+    }
 
+    std::string ERR_NOTOPLEVEL(const std::string& mask)
+    {
+        std::cout << RED << "A mask used for a command doesn't specify a top-level domain!" << RESET << "\n";
+        return ":" + SERVERNAME + " 413 " + mask + " :No top-level domain specified\r\n";
+    }
 
+    std::string ERR_WILDTOPLEVEL(const std::string& mask)
+    {
+        std::cout << RED << "A mask used for a command has a wildcard in the top-level domain!" << RESET << "\n";
+        return ":" + SERVERNAME + " 414 " + mask + " :Wildcard in top-level domain\r\n";
+    }
 
-// Sent when a command is missing the text to send (e.g., no message content provided).
-#define ERR_NOTEXTTOSEND 412
-#define ERR_NOTEXTTOSEND_MSG ":No text to send"
+    std::string ERR_BADMASK(const std::string& mask)
+    {
+        std::cout << RED << "An invalid server/host mask is used!" << RESET << "\n";
+        return ":" + SERVERNAME + " 415 " + mask + " :Bad Server/host mask\r\n";
+    }
 
-// Sent when a mask used for a command doesn't specify a top-level domain.
-#define ERR_NOTOPLEVEL 413
-#define ERR_NOTOPLEVEL_MSG "<mask> :No top-level domain specified"
+    std::string ERR_UNKNOWNCOMMAND(const std::string& command)
+    {
+        std::cout << RED << "A registered client attempted to execute an unknown command!" << RESET << "\n";
+        return ":" + SERVERNAME + " 421 " + command + " :Unknown command\r\n";
+    }
 
-// Sent when a mask used for a command has a wildcard in the top-level domain.
-#define ERR_WILDTOPLEVEL 414
-#define ERR_WILDTOPLEVEL_MSG "<mask> :Wildcard in top-level domain"
+    std::string ERR_NOMOTD()
+    {
+        std::cout << RED << "The server's MOTD file could not be opened!" << RESET << "\n";
+        return ":" + SERVERNAME + " 422 :MOTD File is missing\r\n";
+    }
 
-// Sent when an invalid server/host mask is used.
-#define ERR_BADMASK 415
-#define ERR_BADMASK_MSG "<mask> :Bad Server/host mask"
+    std::string ERR_NOADMININFO(const std::string& server)
+    {
+        std::cout << RED << "Error finding appropriate information for the ADMIN message!" << RESET << "\n";
+        return ":" + SERVERNAME + " 423 " + server + " :No administrative info available\r\n";
+    }
 
-// Returned to a registered client to indicate that the command sent is unknown by the server.
-#define ERR_UNKNOWNCOMMAND 421
-#define ERR_UNKNOWNCOMMAND_MSG "<command> :Unknown command"
+    std::string ERR_FILEERROR(const std::string& file_op, const std::string& file)
+    {
+        std::cout << RED << "A generic error occurred during a file operation!" << RESET << "\n";
+        return ":" + SERVERNAME + " 424 :File error doing " + file_op + " on " + file + "\r\n";
+    }
 
-// Sent when the server's MOTD file could not be opened by the server.
-#define ERR_NOMOTD 422
-#define ERR_NOMOTD_MSG ":MOTD File is missing"
+    std::string ERR_NONICKNAMEGIVEN()
+    {
+        std::cout << RED << "A nickname parameter expected for a command is not found!" << RESET << "\n";
+        return ":" + SERVERNAME + " 431 :No nickname given\r\n";
+    }
 
-// Returned by a server in response to an ADMIN message when there is an error in finding the appropriate information.
-#define ERR_NOADMININFO 423
-#define ERR_NOADMININFO_MSG "<server> :No administrative info available"
+    std::string ERR_ERRONEUSNICKNAME(const std::string& nick)
+    {
+        std::cout << RED << "The provided nickname contains characters not falling in the defined set!" << RESET << "\n";
+        return ":" + SERVERNAME + " 432 " + nick + " :Erroneous nickname\r\n";
+    }
 
-// Generic error message used to report a failed file operation during the processing of a message.
-#define ERR_FILEERROR 424
-#define ERR_FILEERROR_MSG ":File error doing <file op> on <file>"
+    std::string ERR_NICKNAMEINUSE(const std::string& nick)
+    {
+        std::cout << RED << "A NICK message is processed that results in an attempt to change to an existing nickname!" << RESET << "\n";
+        return ":" + SERVERNAME + " 433 " + nick + " :Nickname is already in use\r\n";
+    }
 
-// Returned when a nickname parameter expected for a command and isn't found.
-#define ERR_NONICKNAMEGIVEN 431
-#define ERR_NONICKNAMEGIVEN_MSG ":No nickname given"
+    std::string ERR_NICKCOLLISION(const std::string& nick, const std::string& user, const std::string& host)
+    {
+        std::cout << RED << "Two clients are trying to use the same nickname!" << RESET << "\n";
+        return ":" + SERVERNAME + " 436 " + nick + " " + user + " " + host + " :Nickname collision KILL\r\n";
+    }
 
-// Returned after receiving a NICK message which contains characters which do not fall in the defined set. See section 2.3.1 for details on valid nicknames.
-#define ERR_ERRONEUSNICKNAME 432
-#define ERR_ERRONEUSNICKNAME_MSG "<nick> :Erroneous nickname"
+    std::string ERR_UNAVAILRESOURCE(const std::string& channel, const std::string& action)
+    {
+        std::cout << RED << "An attempt to join a channel that requires an invitation without an invite!" << RESET << "\n";
+        return ":" + SERVERNAME + " 437 " + channel + " :Cannot change nickname while banned on channel or channel requires an invitation\r\n";
+    }
 
-// Returned when a NICK message is processed that results in an attempt to change to a currently existing nickname.
-#define ERR_NICKNAMEINUSE 433
-#define ERR_NICKNAMEINUSE_MSG "<nick> :Nickname is already in use"
+    std::string ERR_USERNOTINCHANNEL(const std::string& nick, const std::string& channel)
+    {
+        std::cout << RED << "An operator command is used with a nickname that is not on the specified channel!" << RESET << "\n";
+        return ":" + SERVERNAME + " 441 " + nick + " " + channel + " :They aren't on that channel\r\n";
+    }
 
-// Returned by a server to a client when it detects a nickname collision (registered of a NICK that already exists by another server).
-#define ERR_NICKCOLLISION 436
-#define ERR_NICKCOLLISION_MSG "<nick> :Nickname collision KILL from <user>@<host>"
+    std::string ERR_NOTONCHANNEL(const std::string& channel)
+    {
+        std::cout << RED << "A command expected the client to be on a channel!" << RESET << "\n";
+        return ":" + SERVERNAME + " 442 " + channel + " :You're not on that channel\r\n";
+    }
 
-// Returned by a server to a user trying to join a channel currently blocked by the channel delay mechanism.
-// Returned by a server to a user trying to change nickname when the desired nickname is blocked by the nick delay mechanism.
-#define ERR_UNAVAILRESOURCE 437
-#define ERR_UNAVAILRESOURCE_MSG "<nick/channel> :Nick/channel is temporarily unavailable"
+    std::string ERR_USERONCHANNEL(const std::string& nick, const std::string& channel)
+    {
+        std::cout << RED << "An operator command is used with a nickname that is already on the specified channel!" << RESET << "\n";
+        return ":" + SERVERNAME + " 443 " + nick + " " + channel + " :is already on channel\r\n";
+    }
 
-// Returned by the server to indicate that the target user of the command is not on the given channel.
-#define ERR_USERNOTINCHANNEL 441
-#define ERR_USERNOTINCHANNEL_MSG "<nick> <channel> :They aren't on that channel"
+    std::string ERR_NOLOGIN(const std::string& user)
+    {
+        std::cout << RED << "An OPER command was sent with an invalid user login!" << RESET << "\n";
+        return ":" + SERVERNAME + " 444 " + user + " :User not logged in\r\n";
+    }
 
-// Returned by the server whenever a client tries to perform a channel-affecting command for which the client isn't a member.
-#define ERR_NOTONCHANNEL 442
-#define ERR_NOTONCHANNEL_MSG "<channel> :You're not on that channel"
+    std::string ERR_SUMMONDISABLED()
+    {
+        std::cout << RED << "The server's SUMMON command is disabled!" << RESET << "\n";
+        return ":" + SERVERNAME + " 445 :SUMMON has been disabled\r\n";
+    }
 
-// Returned when a client tries to invite a user to a channel they are already on.
-#define ERR_USERONCHANNEL 443
-#define ERR_USERONCHANNEL_MSG "<user> <channel> :is already on channel"
+    std::string ERR_USERSDISABLED()
+    {
+        std::cout << RED << "The server's USERS command is disabled!" << RESET << "\n";
+        return ":" + SERVERNAME + " 446 :USERS has been disabled\r\n";
+    }
 
-// Returned by the summon after a SUMMON command for a user was unable to be performed since they were not logged in.
-#define ERR_NOLOGIN 444
-#define ERR_NOLOGIN_MSG "<user> :User not logged in"
+    std::string ERR_NOTREGISTERED()
+    {
+        std::cout << RED << "The client is trying to perform a normal command before registering!" << RESET << "\n";
+        return ":" + SERVERNAME + " 451 :You have not registered\r\n";
+    }
 
-// Returned as a response to the SUMMON command. MUST be returned by any server which doesn't implement it.
-#define ERR_SUMMONDISABLED 445
-#define ERR_SUMMONDISABLED_MSG ":SUMMON has been disabled"
+    std::string ERR_NEEDMOREPARAMS(const std::string& command)
+    {
+        std::cout << RED << "More Parameters needed to execute command: " << command << "!" << RESET << "\n";
+        return ":" + SERVERNAME + " 461 " + command + " :Not enough parameters\r\n";
+    }
 
-// Returned as a response to the USERS command. MUST be returned by any server which does not implement it.
-#define ERR_USERSDISABLED 446
-#define ERR_USERSDISABLED_MSG ":USERS has been disabled"
+    std::string ERR_ALREADYREGISTRED()
+    {
+        std::cout << RED << "The client is already registered and cannot register twice!" << RESET << "\n";
+        return ":" + SERVERNAME + " 462 :You may not reregister\r\n";
+    }
 
-// Returned by the server to indicate that the client MUST be registered before the server will allow it to be parsed in detail.
-#define ERR_NOTREGISTERED 451
-#define ERR_NOTREGISTERED_MSG ":You have not registered"
+    std::string ERR_NOPERMFORHOST()
+    {
+        std::cout << RED << "The client's host is banned from this server!" << RESET << "\n";
+        return ":" + SERVERNAME + " 463 :Your host isn't among the privileged\r\n";
+    }
 
-// Returned by the server by numerous commands to indicate to the client that it didn't supply enough parameters.
-#define ERR_NEEDMOREPARAMS 462
-#define ERR_NEEDMOREPARAMS_MSG "<command> :Not enough parameters"
+    std::string ERR_PASSWDMISMATCH()
+    {
+        std::cout << RED << "Password given for OPER command is incorrect!" << RESET << "\n";
+        return ":" + SERVERNAME + " 464 :Password incorrect\r\n";
+    }
 
-// Returned by the server to any link which tries to change part of the registered details (such as password or user details from second USER message).
-#define ERR_ALREADYREGISTRED 462
-#define ERR_ALREADYREGISTRED_MSG ":Unauthorized command (already registered)"
+    std::string ERR_YOUREBANNEDCREEP()
+    {
+        std::cout << RED << "The client is banned from the server!" << RESET << "\n";
+        return ":" + SERVERNAME + " 465 :You are banned from this server\r\n";
+    }
 
-// Returned to a client which attempts to register with a server which does not been set up to allow connections from the host the attempted connection is tried.
-#define ERR_NOPERMFORHOST 463
-#define ERR_NOPERMFORHOST_MSG ":Your host isn't among the privileged"
+    std::string ERR_KEYSET(const std::string& channel)
+    {
+        std::cout << RED << "An attempt to join a channel that requires a key without a correct key!" << RESET << "\n";
+        return ":" + SERVERNAME + " 467 " + channel + " :Channel key already set\r\n";
+    }
 
-// Returned to indicate a failed attempt at registering a connection for which a password was required and was either not given or incorrect.
-#define ERR_PASSWDMISMATCH 464
-#define ERR_PASSWDMISMATCH_MSG ":Password incorrect"
+    std::string ERR_CHANNELISFULL(const std::string& channel)
+    {
+        std::cout << RED << "An attempt to join a channel that is already full!" << RESET << "\n";
+        return ":" + SERVERNAME + " 471 " + channel + " :Cannot join channel (+l)\r\n";
+    }
 
-// Returned after an attempt to connect and register yourself with a server which has been set up to explicitly deny connections to you.
-#define ERR_YOUREBANNEDCREEP 465
-#define ERR_YOUREBANNEDCREEP_MSG ":You are banned from this server"
+    std::string ERR_UNKNOWNMODE(const std::string& mode_char)
+    {
+        std::cout << RED << "An attempt to add or remove a mode that is not known!" << RESET << "\n";
+        return ":" + SERVERNAME + " 472 " + mode_char + " :is unknown mode char to me\r\n";
+    }
 
-// Sent by a server to a user to inform that access to the server will soon be denied.
-#define ERR_YOUWILLBEBANNED 466
-#define ERR_YOUWILLBEBANNED_MSG "You will be banned from this server"
+    std::string ERR_INVITEONLYCHAN(const std::string& channel)
+    {
+        std::cout << RED << "An attempt to join an invite-only channel without an invitation!" << RESET << "\n";
+        return ":" + SERVERNAME + " 473 " + channel + " :Cannot join channel (+i)\r\n";
+    }
 
-// Sent by a server to a user trying to change a channel mode for which they do not have the appropriate privileges.
-#define ERR_CHANOPRIVSNEEDED 482
-#define ERR_CHANOPRIVSNEEDED_MSG "<channel> :You're not channel operator"
+    std::string ERR_BANNEDFROMCHAN(const std::string& channel)
+    {
+        std::cout << RED << "An attempt to join a channel the user is banned from!" << RESET << "\n";
+        return ":" + SERVERNAME + " 474 " + channel + " :Cannot join channel (+b)\r\n";
+    }
 
-// Any command requiring 'chanop' privileges (such as MODE messages) MUST return this error if the client making the attempt is not a chanop on the specified channel.
-#define ERR_UNIQOPPRIVSNEEDED 485
-#define ERR_UNIQOPPRIVSNEEDED_MSG ":You're not the original channel operator"
+    std::string ERR_BADCHANNELKEY(const std::string& channel)
+    {
+        std::cout << RED << "An attempt to join a keyed channel with the wrong key!" << RESET << "\n";
+        return ":" + SERVERNAME + " 475 " + channel + " :Cannot join channel (+k)\r\n";
+    }
 
-// If a client sends an OPER message and the server has not been configured to allow connections from the client's host as an operator, this error MUST be returned.
-#define ERR_NOOPERHOST 491
-#define ERR_NOOPERHOST_MSG ":No O-lines for your host"
+    std::string ERR_NOPRIVILEGES()
+    {
+        std::cout << RED << "The client's privilege level is insufficient to perform the command!" << RESET << "\n";
+        return ":" + SERVERNAME + " 481 :Permission Denied- You're not an IRC operator\r\n";
+    }
 
-// Returned by the server to indicate that a MODE message was sent with a nickname parameter and that the mode flag sent was not recognized.
-#define ERR_UMODEUNKNOWNFLAG 501
-#define ERR_UMODEUNKNOWNFLAG_MSG ":Unknown MODE flag"
+    std::string ERR_CHANOPRIVSNEEDED(const std::string& channel)
+    {
+        std::cout << RED << "An operator command is used without having the correct privileges!" << RESET << "\n";
+        return ":" + SERVERNAME + " 482 " + channel + " :You're not channel operator\r\n";
+    }
 
-// Error sent to any user trying to view or change the user mode for a user other than themselves.
-#define ERR_USERSDONTMATCH 502
-#define ERR_USERSDONTMATCH_MSG ":Cannot change mode for other users"
+    std::string ERR_CANTKILLSERVER()
+    {
+        std::cout << RED << "The client is trying to KILL a server!" << RESET << "\n";
+        return ":" + SERVERNAME + " 483 :You cant kill a server!\r\n";
+    }
+
+    std::string ERR_NOOPERHOST()
+    {
+        std::cout << RED << "The client's host is not among the privileged for OPER!" << RESET << "\n";
+        return ":" + SERVERNAME + " 491 :No O-lines for your host\r\n";
+    }
+
+    std::string ERR_UMODEUNKNOWNFLAG()
+    {
+        std::cout << RED << "An unknown mode flag is given for the user!" << RESET << "\n";
+        return ":" + SERVERNAME + " 501 :Unknown MODE flag\r\n";
+    }
+
+    std::string ERR_USERSDONTMATCH()
+    {
+        std::cout << RED << "A user cannot change modes for other users!" << RESET << "\n";
+        return ":" + SERVERNAME + " 502 :Cannot change mode for other users\r\n";
+    }
+
+    // Add more error replies here if needed...
+
+} // namespace irc
+
 
 
 #define PIGEON1 "\

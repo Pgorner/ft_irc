@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:37:02 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/04 18:07:15 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #define INDETERMINATE 2
 
 #define POLLTIME 500 
-#define SERVERNAME "IRCSERV: "
+#define SERVERNAME "IRCSERV"
 
     struct ClientData {
         int fd;               // File descriptor for the client

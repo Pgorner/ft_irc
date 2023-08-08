@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:14:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/08 18:27:57 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Server {
     void run(); 
     static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
-    void logsend(int fd, const char* msg, bool servname);
+    void logsend(int fd, const std::string& msg, bool servname);
     bool contains(const std::vector<std::string>& tokens, std::string search);
     void cap(int fd, const std::vector<std::string>& tokens, bool cap);
     void commands(int i, int cc, std::vector<std::string> tokens);

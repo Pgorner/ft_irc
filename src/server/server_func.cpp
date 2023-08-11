@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/03 17:33:14 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/11 18:16:08 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,32 @@ bool fileExists(const std::string& fileName) {
     return false;
 }
 
+int Server::joinchannel(const std::string &channelname , int cc)
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		if (_channels[i].name == channelname)
+		{
+			_channels[i].members.push_back(_clients[cc]);
+			_clients[cc]._channels.push_back(_channels[i]);
+			return 1;
+		}
+	}
+	Channel newChannel;
+	newChannel.name = channelname;
+	newChannel.members.push_back(_clients[cc]);
+	_channels.push_back(newChannel);
+	_clients[cc]._channels.push_back(newChannel);
+	return 1;
+}
+
 int Server::oper(std::vector<std::string> tokens){
 	std::string folderPath = "src/documentation";
 	DIR* directory;
     struct dirent* entry;
 	int keeptrack = 0;
     if ((directory = opendir(folderPath.c_str())) != NULL) {
-        while ((entry = readdir(directory)) != NULL) {
+		while ((entry = readdir(directory)) != NULL) {
             if (strcmp(entry->d_name, "admins.txt") == 0) 
 				{
                 	std::string filePath = folderPath + "/" + entry->d_name;

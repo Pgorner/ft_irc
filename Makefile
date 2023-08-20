@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/08/02 18:52:07 by pgorner          ###   ########.fr        #
+#    Updated: 2023/08/20 17:18:40 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ SRC = src/main.cpp \
       src/utils/check.cpp \
       src/utils/error.cpp \
       src/utils/utils.cpp \
+      src/utils/replies.cpp \
       src/server/server.cpp \
       src/server/startup.cpp \
       src/server/server_func.cpp \

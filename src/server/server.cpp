@@ -6,12 +6,12 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/11 18:19:55 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/20 17:08:28 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "../../includes/server.hpp"
+#include "../../includes/irc.hpp"
 
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
@@ -341,29 +341,35 @@ void Server::run() {
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
-	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
-		_clients[cc].auth = true;			
-	if (tokens[0] == "NICK")
-	{
-		nick(tokens, cc, i);
-		if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
-		{
-			std::string resp;
-			const std::string SERNAME = "YourServerName";
-			resp = ":"+ SERNAME + " 001 "+ "Welcome to the Internet Relay Network\r\n"+ _clients[cc].nick +"!\r\n";
-			send(_poll_fds[i].fd, resp.c_str(), resp.size(), 0);
-		}
-	} 
-	else if (tokens[0] == "USER")
-	{
-		user(tokens, cc, i);
-		if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
-		{
+	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0){
 			std::string resp;
 			const std::string SERNAME = "YourServerName";
 			resp = ":"+ SERNAME + " 001 "+ "Welcome to the Internet Relay Network\r\n"+ _clients[cc].nick +"!\r\n";
 			send(_poll_fds[i].fd, resp.c_str(), resp.size(), 0);	
+  }
+		_clients[cc].auth = true;
+	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
+	else if (tokens[0] == "USER") {user(tokens, cc, i);}
+	else if (_clients[cc].auth == true){
+	if (tokens[0] == "OPER") {
+		if (tokens[1].empty() || tokens[2].empty())
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"), true);
+		else if(oper(tokens) == 1){
+			_clients[cc].mode += "o";
+			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER(), true);
 		}
+		else if(oper(tokens) == 0)
+			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST(), true);
+		else if(oper(tokens) == 2)
+			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH(), true);
+	}
+	else if (tokens[0] == "MODE") {
+		if (tokens[1].empty() == true)
+			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
+		else if (tokens[1].empty() || tokens[2].empty())
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"), true);
+		else
+			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
 	}
 	else if (_clients[cc].auth == true)
 	{

@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/11 18:06:50 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/20 16:26:14 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 #define INDETERMINATE 2
 
 #define POLLTIME 500 
-#define SERVERNAME "IRCSERV"
 
 	struct Channel;
 	

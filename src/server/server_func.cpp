@@ -6,12 +6,12 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/11 18:16:08 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/20 17:08:30 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "../../includes/server.hpp"
+#include "../../includes/irc.hpp"
 
 
 bool validateUser(const std::string& filePath, const std::string& username, const std::string& password) {
@@ -120,41 +120,41 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 		else if (tokens[2] == "-o" || tokens[2] == "-O"){
 			_clients[cc].mode = rmletter('o', _clients[cc].mode);
 			_clients[cc].mode = rmletter('O', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "i"){
 			_clients[cc].mode = addmode('i', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-i"){
 			_clients[cc].mode = rmletter('i', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "w"){
 			_clients[cc].mode = addmode('w', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-w"){
 			_clients[cc].mode = rmletter('i', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "r"){
 			_clients[cc].mode = addmode('r', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-r"){
 			_clients[cc].mode = rmletter('r', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "s")
 			_clients[cc].mode = addmode('s', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-s"){
 			_clients[cc].mode = rmletter('s', _clients[cc].mode);
-			return (RPL_UMODEIS_MSG);
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-	return (ERR_USERSDONTMATCH_MSG);
+	return (irc::ERR_USERSDONTMATCH());
 }
 
 void Server::user(std::vector<std::string> tokens, int cc, int i){
@@ -164,7 +164,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 			user = true;
 	}
 	if (tokens[1].empty() == true)
-	   	logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("USER"), true);
 	else if (tokens[1].size() < 1)
 	    logsend(_poll_fds[i].fd, "USER too short", true);
 	else if (tokens.size() > 1 && user == false){
@@ -190,7 +190,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 	else if (user == true)
 	   	logsend(_poll_fds[i].fd, "USER has already been taken", true);
 	else
-		logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+		logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("USER"), true);
 }
 
 void Server::nick(std::vector<std::string> tokens, int cc, int i){
@@ -199,7 +199,7 @@ void Server::nick(std::vector<std::string> tokens, int cc, int i){
 		if (_clients[i].nick == tokens[1])
 			nick = true;}
 	if (tokens[1].empty() == true)
-	   	logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("NICK"), true);
 	else if (tokens[1].size() < 1)
 	    logsend(_poll_fds[i].fd, "NICK too short", true);
 	else if (tokens.size() > 1 && nick == false){

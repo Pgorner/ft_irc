@@ -31,6 +31,7 @@ SRC = src/main.cpp \
       src/utils/utils.cpp \
       src/utils/replies.cpp \
       src/server/server.cpp \
+      src/server/startup.cpp \
       src/server/server_func.cpp \
 
 # Convert source files to object files

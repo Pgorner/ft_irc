@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
 /*   Updated: 2023/08/20 17:20:56 by pgorner          ###   ########.fr       */
@@ -65,7 +65,7 @@ void log(std::string log)
     LOG << log;
 }
 
-void Server::logsend(int fd, const char* msg, bool servname)
+void Server::logsend(int fd, const std::string& msg, bool servname)
 {
     LOG << msg;
     std::string serv;

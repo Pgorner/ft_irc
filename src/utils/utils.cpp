@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:39:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:34:30 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void    Server::goodbye(void)
         }
     }
     else if (DEBUG){
+        clear(100);
         clear(100);
         write_nice(YELLOW, GOODBYE, false);
     }
@@ -65,28 +66,17 @@ void log(std::string log)
     LOG << log;
 }
 
-void Server::logsend(int fd, const std::string& msg, bool servname)
+void Server::logsend(int fd, const std::string& msg)
 {
     LOG << msg;
-    std::string serv;
-    if (servname == true)
-    {
-        serv = SERVERNAME;
-        serv += ": ";
-    }
-    else
-        serv = "";
-    std::string fullmsg = serv + msg;
     bool hasNewline = false;
-    for (size_t i = 0; i < fullmsg.length(); ++i) {
-        if (fullmsg[i] == '\n') {
+    for (size_t i = 0; i < msg.length(); ++i) {
+        if (msg[i] == '\n') {
             hasNewline = true;
             break;
         }
     }
-    if (!hasNewline)
-        fullmsg += "\n";
-    send(fd, fullmsg.c_str(), fullmsg.size(), 0);
+    send(fd, msg.c_str(), msg.size(), 0);
 }
 
 bool Server::contains(const std::vector<std::string>& tokens, std::string search) {

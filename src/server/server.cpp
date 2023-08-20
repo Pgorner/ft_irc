@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:56:44 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:29:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,44 +50,31 @@ int Server::sig_handlerserv(void){
 
 
 void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
-    if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0)) {
-        const char* errorMessage = "Invalid password command.\r\n"; // Customize the error message
-        logsend(_poll_fds[i].fd, errorMessage, true);
-        return;
-    }
-
-    else if (tokens.size() < 2) {
-        const char* errorMessage = "Password not provided.\r\n"; // Customize the error message
-        logsend(_poll_fds[i].fd, errorMessage, true);
-        return;
-    }
-
+    if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0))
+        logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
     else if (tokens[1] == _pwd) 
 	{
         std::cout << "Password accepted" << std::endl;
         _clients[i - 1].passwordAccepted = TRUE;
 		if(_clients[cc].auth == false)
-        	logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
+        	logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
 		else
-			logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME), true);
+			logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
     } 
-	else 
-	{
-        const char* errorMessage = "Invalid password.\r\n"; // Customize the error message
-        logsend(_poll_fds[i].fd, errorMessage, true);
-    }
+	else
+        logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
 }
 
 void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
 	if (contains(tokens, "CAP") == true && contains(tokens, "LS") == true)
-		logsend(fd, "CAP * LS :\n", false);
+		logsend(fd, "CAP * LS :\n");
 	else if (contains(tokens, "CAP") == true && contains(tokens, "REQ") == true){
 		std::string req = "CAP * ACK :";
 		if (contains(tokens, "multi-prefix"))
 			req += "multi-prefix";
 		if (contains(tokens, "multiple-channel-joins"))
 			req += "multiple-channel-joins";
-		logsend(fd, req.c_str(), false);
+		logsend(fd, req.c_str());
 	}
 	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
 		cap = true;	
@@ -197,7 +184,7 @@ void Server::run() {
 							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i, cc);}
 							else if(_clients[cc].passwordAccepted == INDETERMINATE){
 								_clients[cc].passwordAccepted = FALSE;
-        						logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n", true);
+        						logsend(_poll_fds[i].fd, "IRCSERV: Enter the password:\r\nSyntax: PASS <password>\r\n");
 							}
 							if (!DEBUG)
 							{
@@ -233,30 +220,33 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
 	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
 	else if (tokens[0] == "USER") {user(tokens, cc, i);}
-	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0){
-		logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME), false);
+	else if (_clients[cc].auth == false)
+		logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
+	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
+	{
+		logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
 		_clients[cc].auth = true;
 	}
 	if (_clients[cc].auth == true){
 	if (tokens[0] == "OPER") {
 		if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"), true);
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"));
 		else if(oper(tokens) == 1){
 			_clients[cc].mode += "o";
-			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER(), true);
+			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER());
 		}
 		else if(oper(tokens) == 0)
-			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST(), true);
+			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST());
 		else if(oper(tokens) == 2)
-			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH(), true);
+			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
 	}
 	else if (tokens[0] == "MODE") {
 		if (tokens[1].empty() == true)
-			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
+			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str());
 		else if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"), true);
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"));
 		else
-			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
+			logsend(_poll_fds[i].fd, mode(cc, tokens));
 	}
 		else if (tokens[0] == "QUIT") {quit(tokens, i);
 		}
@@ -267,8 +257,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		
 		}
 	}
-	else
-		logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
 	// else if (tokens[0] == "PART") {}

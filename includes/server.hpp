@@ -21,7 +21,7 @@
 #define INDETERMINATE 2
 
 #define POLLTIME 500 
-#define SERVERNAME "IRCSERV: "
+#define SERVERNAME "IRCSERV"
 
 	struct Channel;
 	
@@ -54,7 +54,7 @@ class Server {
     int which_ipv(void);
     int start_sock(void);
 	int start_poll(void);
-    int sig_handler(void);
+    int sig_handlerserv(void);
     void proper_exit(void);
     void goodbye(void);
 	int err(std::string msg);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 18:07:15 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/11 18:06:50 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #define POLLTIME 500 
 #define SERVERNAME "IRCSERV"
 
+	struct Channel;
+	
     struct ClientData {
         int fd;               // File descriptor for the client
         int passwordAccepted; // Flag indicating if the password is accepted for this client
@@ -31,10 +33,17 @@
         std::string mode;       
         std::string nick;
         std::string user;       
-        std::string realname;       
+        std::string realname;   
+		std::vector<Channel> _channels;    
         ClientData(int client_socket, int pwdAccepted, bool cap, bool auth, std::string mode) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode) {}
     };
-
+	
+	struct Channel
+	{
+		std::string name;
+		std::vector<ClientData> members;
+		
+	};
 
 class Server {
  public:
@@ -52,7 +61,7 @@ class Server {
     void run(); 
     static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
-    void logsend(int fd, const char* msg, bool servname);
+    void logsend(int fd, const std::string& msg, bool servname);
     bool contains(const std::vector<std::string>& tokens, std::string search);
     void cap(int fd, const std::vector<std::string>& tokens, bool cap);
     void commands(int i, int cc, std::vector<std::string> tokens);
@@ -65,6 +74,7 @@ class Server {
     int oper(std::vector<std::string> tokens);
     const char* mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, int i);
+	int joinchannel(const std::string &channelname, int cc);
 
     static Server* server_ptr;
 
@@ -78,6 +88,7 @@ class Server {
 	struct pollfd _poll_fd;  // poll file descriptor
 	std::vector<struct pollfd> _poll_fds;  // to store poll descriptors
     std::vector<ClientData> _clients;
+	std::vector<Channel> _channels;
 
 };
 

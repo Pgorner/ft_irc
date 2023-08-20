@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:39:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/11 18:19:55 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,14 +172,17 @@ void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
         return;
     }
 
-    else if (tokens[1] == _pwd) {
+    else if (tokens[1] == _pwd) 
+	{
         std::cout << "Password accepted" << std::endl;
         _clients[i - 1].passwordAccepted = TRUE;
         const char* welcomeMessage = "Welcome to the IRC server!\r\n"; // Customize the welcome message
         logsend(_poll_fds[i].fd, welcomeMessage, true);
 		if(_clients[cc].auth == false)
         	logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
-    } else {
+    } 
+	else 
+	{
         const char* errorMessage = "Invalid password.\r\n"; // Customize the error message
         logsend(_poll_fds[i].fd, errorMessage, true);
     }
@@ -306,9 +309,24 @@ void Server::run() {
 								_clients[cc].passwordAccepted = FALSE;
         						logsend(_poll_fds[i].fd, "Enter the password:\nSyntax: PASS <password>\n", true);
 							}
-							if (!DEBUG){
+							if (!DEBUG)
+							{
 								for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+								{
 									write_nice(BLUE, it->c_str(), true );
+									for (size_t i = 0; i < _channels.size(); i++)
+									{
+										for (size_t j = 0; j < _clients[cc]._channels.size(); j++)
+										{
+				
+											if (_channels[i].name == _clients[cc]._channels[j].name)
+											{
+												for (size_t i = 0; i < _clients[cc]._channels[j].members.size(); i++)
+													send(_clients[cc]._channels[j].members[i].fd, it->c_str(), it->size(), 0);
+											}
+										}
+									}
+								}
 							}
     						tokens.clear();
 						}
@@ -324,38 +342,66 @@ void Server::run() {
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
-		_clients[cc].auth = true;
-	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
-	else if (tokens[0] == "USER") {user(tokens, cc, i);}
-	else if (_clients[cc].auth == true){
-	if (tokens[0] == "OPER") {
-		if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
-		else if(oper(tokens) == 1){
-			_clients[cc].mode += "o";
-			logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
+		_clients[cc].auth = true;			
+	if (tokens[0] == "NICK")
+	{
+		nick(tokens, cc, i);
+		if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
+		{
+			std::string resp;
+			const std::string SERNAME = "YourServerName";
+			resp = ":"+ SERNAME + " 001 "+ "Welcome to the Internet Relay Network\r\n"+ _clients[cc].nick +"!\r\n";
+			send(_poll_fds[i].fd, resp.c_str(), resp.size(), 0);
 		}
-		else if(oper(tokens) == 0)
-			logsend(_poll_fds[i].fd, ERR_NOOPERHOST_MSG, true);
-		else if(oper(tokens) == 2)
-			logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
+	} 
+	else if (tokens[0] == "USER")
+	{
+		user(tokens, cc, i);
+		if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0)
+		{
+			std::string resp;
+			const std::string SERNAME = "YourServerName";
+			resp = ":"+ SERNAME + " 001 "+ "Welcome to the Internet Relay Network\r\n"+ _clients[cc].nick +"!\r\n";
+			send(_poll_fds[i].fd, resp.c_str(), resp.size(), 0);	
+		}
 	}
-	else if (tokens[0] == "MODE") {
-		if (tokens[1].empty() == true)
-			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
-		else if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
-		else
-			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
-	}
-	else if (tokens[0] == "QUIT") {quit(tokens, i);}
-	
+	else if (_clients[cc].auth == true)
+	{
+		if (tokens[0] == "OPER") 
+		{
+			if (tokens[1].empty() || tokens[2].empty())
+				logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+			else if(oper(tokens) == 1){
+				_clients[cc].mode += "o";
+				logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
+			}
+			else if(oper(tokens) == 0) 
+				logsend(_poll_fds[i].fd, ERR_NOOPERHOST_MSG, true);
+			else if(oper(tokens) == 2)
+				logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
+		}
+		else if (tokens[0] == "MODE") 
+		{
+			if (tokens[1].empty() == true)
+				logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
+			else if (tokens[1].empty() || tokens[2].empty())
+				logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+			else
+				logsend(_poll_fds[i].fd, mode(cc, tokens), true);
+		}
+		else if (tokens[0] == "QUIT") {quit(tokens, i);
+		}
+		
+		else if (tokens[0] == "JOIN") 
+		{
+			joinchannel(tokens[1], cc);
+		
+		}
 	}
 	else
 		logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
-	// else if (tokens[0] == "JOIN") {}
 	// else if (tokens[0] == "PART") {}
 	// else if (tokens[0] == "TOPIC") {}
 	// else if (tokens[0] == "NAMES") {}

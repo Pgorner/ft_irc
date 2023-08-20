@@ -6,13 +6,14 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:37:28 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 17:08:03 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/irc.hpp"
 
 Server* Server::server_ptr = nullptr;
+
 void first_exit(int signal)
 {
 	(void)signal;

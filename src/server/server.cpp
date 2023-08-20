@@ -6,12 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:39:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 17:08:28 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "../../includes/server.hpp"
+#include "../../includes/irc.hpp"
 
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
@@ -330,21 +330,21 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	else if (_clients[cc].auth == true){
 	if (tokens[0] == "OPER") {
 		if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"), true);
 		else if(oper(tokens) == 1){
 			_clients[cc].mode += "o";
-			logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
+			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER(), true);
 		}
 		else if(oper(tokens) == 0)
-			logsend(_poll_fds[i].fd, ERR_NOOPERHOST_MSG, true);
+			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST(), true);
 		else if(oper(tokens) == 2)
-			logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
+			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH(), true);
 	}
 	else if (tokens[0] == "MODE") {
 		if (tokens[1].empty() == true)
 			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
 		else if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
+			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"), true);
 		else
 			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
 	}

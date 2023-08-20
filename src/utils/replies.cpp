@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:13:07 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:00:16 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -492,7 +492,7 @@ namespace irc
     const char* RPL_WELCOME(const std::string& nick, const std::string& user, const std::string& host)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 001 Welcome to the Internet Relay Network\r\n" + nick + "!" + user + "@" + host + "\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 001 " + nick + " !" + user + " @" + host +" Welcome to the Internet Relay Network\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;

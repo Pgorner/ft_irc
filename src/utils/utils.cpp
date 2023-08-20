@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:20:56 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 17:39:13 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,10 @@ void Server::logsend(int fd, const std::string& msg, bool servname)
     LOG << msg;
     std::string serv;
     if (servname == true)
+    {
         serv = SERVERNAME;
+        serv += ": ";
+    }
     else
         serv = "";
     std::string fullmsg = serv + msg;

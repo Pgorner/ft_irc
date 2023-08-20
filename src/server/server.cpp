@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:08:28 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/20 17:56:44 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,63 +40,6 @@ Server& Server::operator=(const Server& obj) {
 
 // --------------------------------------------------------------
 
-void Server::proper_exit(void)
-{
-    // Close all client sockets and remove them from the pollfd list.
-    for (size_t i = 0; i < _poll_fds.size(); i++) {
-        close(_poll_fds[i].fd);
-    }
-    _poll_fds.clear();
-    // Close the server socket and reset its value to -1.
-    if (_socket >= 0) {
-        close(_socket);
-        _socket = -1;
-    }
-    write_nice(RED, "\n	Server shutting down...", true);
-	if (DEBUG){
-    	std::this_thread::sleep_for(std::chrono::seconds(3));
-		goodbye();
-    	std::this_thread::sleep_for(std::chrono::seconds(3));
-	}
-	clear(100);
-}
-
-//creates support for both IPv4 and IPv6
-int Server::which_ipv(void) {
-    char input;
-    int option = 1;
-
-	if (!DEBUG)
-		return 4;
-    initscr();
-    cbreak();
-    noecho();
-    nodelay(stdscr, true); // Enable non-blocking input
-
-    printw("%s", IRC);
-    printw("%s", option == 1 ? OPTION1 : OPTION0);
-
-    while (true) {
-        input = getch();
-        if (input != ERR) {
-            if (input == '\n')
-                break;
-            if (input == ' ') {
-                option = 1 - option;
-            }
-            move(0, 0);
-            printw("%s", IRC);
-            printw("%s", option == 1 ? OPTION1 : OPTION0);
-        }
-        napms(100);
-        refresh();
-    }
-    endwin();
-    if (option == 1)
-        return log("IPv4 chosen"), 4;
-	else
-        return log("IPv6 chosen"), 6;
-}
 
 int Server::sig_handlerserv(void){
 	signal(SIGINT, Server::change_running);
@@ -105,59 +48,6 @@ int Server::sig_handlerserv(void){
 }
 
 
-int Server::start_poll(void){
-    _poll_fd = pollfd();  // Initialize the poll file descriptor
-
-    // Assuming that the socket creation and binding are already done in the start_sock() function.
-    // Add the socket to the list of file descriptors to monitor.
-    _poll_fd.fd = _socket;
-    _poll_fd.events = POLLIN;  // Monitoring for read events.
-    _poll_fds.push_back(_poll_fd);
-	return log("poll started successfully"), 0;
-}
-
-int Server::start_sock(void){
-	if (which_ipv() == 6)
-	{
-		write_nice(BLUE, "	creating an IPv6 socket...", true);
-		_socket = socket(AF_INET6, SOCK_STREAM, 0);
-		if (_socket < 0)
-			return err("	socket failed at IPv6"), -1;
-		if (fcntl(_socket, F_SETFL, O_NONBLOCK) < 0)
-			return err("	Unable to set the file descriptor to non-blocking mode"), -1;
-		struct sockaddr_in6 addr = {};
-		addr.sin6_family = AF_INET6;
-		addr.sin6_port = htons(_port);
-		addr.sin6_addr = in6addr_any;
-		if (bind(_socket, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-			return err("	binding failed at IPv6"), -1;
-		else
-			write_nice(GREEN, "	IPv6 socket created", true);
-		if (listen(_socket, addr.sin6_port) < 0)
-			err("	listening failed at IPv6");
-	}
-	else{
-		write_nice(BLUE, "	creating an IPv4 socket...", true);
-		_socket = socket(AF_INET, SOCK_STREAM, 0);
-		if (_socket < 0)
-			return err("	socket failed at IPv4"), -1;
-
-		struct sockaddr_in addr4 = {};
-		addr4.sin_family = AF_INET;
-		addr4.sin_port = htons(_port);
-		addr4.sin_addr.s_addr = htonl(INADDR_ANY);
-		int reuse = 1;
-    	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1)
-			return err("	Failed to set SO_REUSEADDR option."), -1;
-		if (bind(_socket, (struct sockaddr*)&addr4, sizeof(addr4)) < 0)
-			return err("	binding failed at IPv4"), -1;
-		else
-			write_nice(GREEN, "	IPv4 socket created", true);
-		if (listen(_socket, addr4.sin_port) < 0)
-			err("	listening failed at IPv4");
-	}
-	return 0;
-}
 
 void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0)) {
@@ -176,10 +66,10 @@ void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
 	{
         std::cout << "Password accepted" << std::endl;
         _clients[i - 1].passwordAccepted = TRUE;
-        const char* welcomeMessage = "Welcome to the IRC server!\r\n"; // Customize the welcome message
-        logsend(_poll_fds[i].fd, welcomeMessage, true);
 		if(_clients[cc].auth == false)
         	logsend(_poll_fds[i].fd, "Please authenticate with NICK and USER", true);
+		else
+			logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME), true);
     } 
 	else 
 	{
@@ -250,7 +140,7 @@ void Server::run() {
     				int client_socket = accept(_socket, (struct sockaddr*)&client_addr, &client_addr_len);
     				if (client_socket < 0) {
     				    // Handle the error, and optionally continue or exit.
-    				} else {
+   				} else {
 						write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
     				    // New client connected successfully, add it to the list of monitored file descriptors.	
     				    pollfd new_client_poll_fd;
@@ -341,16 +231,13 @@ void Server::run() {
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
-	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0){
-			std::string resp;
-			const std::string SERNAME = "YourServerName";
-			resp = ":"+ SERNAME + " 001 "+ "Welcome to the Internet Relay Network\r\n"+ _clients[cc].nick +"!\r\n";
-			send(_poll_fds[i].fd, resp.c_str(), resp.size(), 0);	
-  }
-		_clients[cc].auth = true;
 	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
 	else if (tokens[0] == "USER") {user(tokens, cc, i);}
-	else if (_clients[cc].auth == true){
+	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0){
+		logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME), false);
+		_clients[cc].auth = true;
+	}
+	if (_clients[cc].auth == true){
 	if (tokens[0] == "OPER") {
 		if (tokens[1].empty() || tokens[2].empty())
 			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"), true);
@@ -371,30 +258,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		else
 			logsend(_poll_fds[i].fd, mode(cc, tokens), true);
 	}
-	else if (_clients[cc].auth == true)
-	{
-		if (tokens[0] == "OPER") 
-		{
-			if (tokens[1].empty() || tokens[2].empty())
-				logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
-			else if(oper(tokens) == 1){
-				_clients[cc].mode += "o";
-				logsend(_poll_fds[i].fd, RPL_YOUREOPER_MSG, true);
-			}
-			else if(oper(tokens) == 0) 
-				logsend(_poll_fds[i].fd, ERR_NOOPERHOST_MSG, true);
-			else if(oper(tokens) == 2)
-				logsend(_poll_fds[i].fd, ERR_PASSWDMISMATCH_MSG, true);
-		}
-		else if (tokens[0] == "MODE") 
-		{
-			if (tokens[1].empty() == true)
-				logsend(_poll_fds[i].fd, _clients[cc].mode.c_str(), true);
-			else if (tokens[1].empty() || tokens[2].empty())
-				logsend(_poll_fds[i].fd, ERR_NEEDMOREPARAMS_MSG, true);
-			else
-				logsend(_poll_fds[i].fd, mode(cc, tokens), true);
-		}
 		else if (tokens[0] == "QUIT") {quit(tokens, i);
 		}
 		

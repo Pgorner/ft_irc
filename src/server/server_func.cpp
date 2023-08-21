@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:27:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 15:53:15 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,12 @@ bool validateUser(const std::string& filePath, const std::string& username, cons
     std::string line;
 
     while (std::getline(file, line)) {
-        std::string tokens[3]; // We need 3 tokens (0 for empty, 1 for username, 2 for password)
+        std::string tokens[3];
 
         std::istringstream iss(line);
         for (int i = 1; i <= 2 && std::getline(iss, tokens[i], ' '); ++i);
-
-        if (tokens[1] == username && tokens[2] == password) {
+        if (tokens[1] == username && tokens[2] == password)
             return true;
-        }
     }
 
     return false;
@@ -34,7 +32,8 @@ bool validateUser(const std::string& filePath, const std::string& username, cons
 
 bool fileExists(const std::string& fileName) {
     FILE* file = fopen(fileName.c_str(), "r");
-    if (file) {
+    if (file)
+	{
         fclose(file);
         return true;
     }
@@ -65,8 +64,10 @@ int Server::oper(std::vector<std::string> tokens){
 	DIR* directory;
     struct dirent* entry;
 	int keeptrack = 0;
-    if ((directory = opendir(folderPath.c_str())) != NULL) {
-		while ((entry = readdir(directory)) != NULL) {
+    if ((directory = opendir(folderPath.c_str())) != NULL)
+	{
+		while ((entry = readdir(directory)) != NULL)
+		{
             if (strcmp(entry->d_name, "admins.txt") == 0) 
 				{
                 	std::string filePath = folderPath + "/" + entry->d_name;
@@ -74,8 +75,9 @@ int Server::oper(std::vector<std::string> tokens){
 					{
 						std::ifstream file(filePath.c_str());
 						std::string line;
-    					while (std::getline(file, line)) {
-    					    std::string usertkn[3]; // We need 3 tokens (0 for empty, 1 for username, 2 for password)
+    					while (std::getline(file, line))
+						{
+    					    std::string usertkn[3];
     					    std::istringstream iss(line);
     					    for (int i = 1; i <= 2 && std::getline(iss, usertkn[i], ' '); ++i);
     					    if (usertkn[1] == tokens[1] &&  usertkn[2] == tokens[2])
@@ -88,9 +90,11 @@ int Server::oper(std::vector<std::string> tokens){
         }
         closedir(directory);
     } 
-	else{
+	else
+	{
         std::cerr << "Error opening directory!" << std::endl;
-        return 0;}
+        return 0;
+	}
 	if (keeptrack == 1)
 		return 2;
 	else
@@ -99,7 +103,8 @@ int Server::oper(std::vector<std::string> tokens){
 
 std::string Server::rmletter(char letter, std::string mode){
 	std::string result;
-    for (std::size_t i = 0; i < mode.length(); ++i) {
+    for (std::size_t i = 0; i < mode.length(); ++i)
+	{
         if (mode[i] != letter)
             result += mode[i];
     }
@@ -117,33 +122,40 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 	if (tokens[1] == _clients[cc].nick){
 		if (tokens[2] == "+o" || tokens[2] == "+o" || tokens[2] == "a")
 			return "no";
-		else if (tokens[2] == "-o" || tokens[2] == "-O"){
+		else if (tokens[2] == "-o" || tokens[2] == "-O")
+		{
 			_clients[cc].mode = rmletter('o', _clients[cc].mode);
 			_clients[cc].mode = rmletter('O', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "i"){
+		else if (tokens[2] == "i")
+		{
 			_clients[cc].mode = addmode('i', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "-i"){
+		else if (tokens[2] == "-i")
+		{
 			_clients[cc].mode = rmletter('i', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "w"){
+		else if (tokens[2] == "w")
+		{
 			_clients[cc].mode = addmode('w', _clients[cc].mode);
 			std::cout << _clients[cc].mode;
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "-w"){
+		else if (tokens[2] == "-w")
+		{
 			_clients[cc].mode = rmletter('i', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "r"){
+		else if (tokens[2] == "r")
+		{
 			_clients[cc].mode = addmode('r', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "-r"){
+		else if (tokens[2] == "-r")
+		{
 			_clients[cc].mode = rmletter('r', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
@@ -151,7 +163,8 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 			_clients[cc].mode = addmode('s', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "-s"){
+		else if (tokens[2] == "-s")
+		{
 			_clients[cc].mode = rmletter('s', _clients[cc].mode);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
@@ -160,7 +173,8 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 
 void Server::user(std::vector<std::string> tokens, int cc, int i){
 	bool user = false;
-	for(size_t i = 0; i < _clients.size(); i++){
+	for(size_t i = 0; i < _clients.size(); i++)
+	{
 		if (_clients[i].user == tokens[1])
 			user = true;
 	}
@@ -168,12 +182,14 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("USER"));
 	else if (tokens[1].size() < 1)
 	    logsend(_poll_fds[i].fd, "USER too short");
-	else if (tokens.size() > 1 && user == false){
+	else if (tokens.size() > 1 && user == false)
+	{
 		_clients[cc].user = tokens[1];
 	    logsend(_poll_fds[i].fd, "USER has been set to ");
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());
 		logsend(_poll_fds[i].fd, "\r\n");
-		if (tokens[2].empty() == false){
+		if (tokens[2].empty() == false)
+		{
 			if (tokens[2] == "8")
 				_clients[cc].mode = addmode('i', _clients[cc].mode);
 			else if (tokens[2] == "2")
@@ -182,13 +198,14 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 				logsend(_poll_fds[i].fd, irc::RPL_UMODEIS(_clients[cc].mode));
 			}
 		}
-		if (tokens[4].empty() == false){
+		if (tokens[4].empty() == false)
+		{
 			_clients[cc].realname = tokens[4];
 			logsend(_poll_fds[i].fd, "REALNAME has been set to ");
 			logsend(_poll_fds[i].fd, tokens[4].c_str());
 			logsend(_poll_fds[i].fd, "\r\n");
 		}
-		}
+	}
 	else if (user == true)
 	   	logsend(_poll_fds[i].fd, "USER has already been taken");
 	else
@@ -197,14 +214,17 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 
 void Server::nick(std::vector<std::string> tokens, int cc, int i){
 	bool nick = false;
-	for(size_t i = 0; i < _clients.size(); i++){
+	for(size_t i = 0; i < _clients.size(); i++)
+	{
 		if (_clients[i].nick == tokens[1])
-			nick = true;}
+			nick = true;
+	}
 	if (tokens[1].empty() == true)
 	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("NICK"));
 	else if (tokens[1].size() < 1)
 	    logsend(_poll_fds[i].fd, "NICK too short");
-	else if (tokens.size() > 1 && nick == false){
+	else if (tokens.size() > 1 && nick == false)
+	{
 	    _clients[cc].nick = tokens[1];
 	    logsend(_poll_fds[i].fd, "NICK has been set to ");
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 15:48:20 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/20 18:27:06 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,45 +41,23 @@ bool fileExists(const std::string& fileName) {
     return false;
 }
 
-int Server::joinchannel(const std::vector<std::string> tokens , int cc)
+int Server::joinchannel(const std::string &channelname , int cc)
 {
-	if (tokens.size() == 2)
+	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		if (tokens[1].length() < 2 || tokens[1][0] != '#')
+		if (_channels[i].name == channelname)
 		{
-			std::string resp = "IRCSERV: " + _clients[cc].nick + " Wrong channel name format" + "\r\n";
-			logsend(_clients[cc].fd, resp.c_str());
-			return (0); 
+			_channels[i].members.push_back(_clients[cc]);
+			_clients[cc]._channels.push_back(_channels[i]);
+			return 1;
 		}
-		std::string channelName = tokens[1].substr(1);
-		for (size_t i = 0; i < _channels.size(); i++)
-		{
-			if (_channels[i].name == channelName)
-			{
-				_channels[i].members.push_back(_clients[cc]);
-				_clients[cc]._channels.push_back(_channels[i]);
-				std::string resp;
-				resp = ":" + _clients[cc].nick + " JOIN :" + channelName + "\r\n";
-				logsend(_clients[cc].fd, resp.c_str());
-				return 1;
-			}
-		}
-		Channel newChannel;
-		newChannel.name = channelName;
-		newChannel.members.push_back(_clients[cc]);
-		_channels.push_back(newChannel);
-		_clients[cc]._channels.push_back(newChannel);
-		std::string resp;
-		resp = ":" + _clients[cc].nick + " JOIN :" + channelName + "\r\n";
-		logsend(_clients[cc].fd, resp.c_str());
-		return 1;
 	}
-	else
-	{
-		std::string resp = "IRCSERV: " + _clients[cc].nick + " Wrong parameters for JOIN command" + "\r\n";
-		logsend(_clients[cc].fd, resp.c_str());
-		return 0;
-	}
+	Channel newChannel;
+	newChannel.name = channelname;
+	newChannel.members.push_back(_clients[cc]);
+	_channels.push_back(newChannel);
+	_clients[cc]._channels.push_back(newChannel);
+	return 1;
 }
 
 int Server::oper(std::vector<std::string> tokens){

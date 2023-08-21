@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:29:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 15:31:25 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
 		logsend(fd, req.c_str());
 	}
 	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
-		cap = true;	
+		cap = true;
 }
 
 void Server::run() {
@@ -179,10 +179,14 @@ void Server::run() {
 								}
 							}
 							
-							if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-							if(_clients[cc].passwordAccepted == TRUE){commands(i, cc, tokens);}
-							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i, cc);}
-							else if(_clients[cc].passwordAccepted == INDETERMINATE){
+							if (_clients[cc].cap == false)
+								cap(_poll_fds[i].fd, tokens, _clients[cc].cap);
+							if(_clients[cc].passwordAccepted == TRUE)
+								commands(i, cc, tokens);
+							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS")
+								checkPwd(tokens, i, cc);
+							else if(_clients[cc].passwordAccepted == INDETERMINATE)
+							{
 								_clients[cc].passwordAccepted = FALSE;
         						logsend(_poll_fds[i].fd, "IRCSERV: Enter the password:\r\nSyntax: PASS <password>\r\n");
 							}
@@ -218,8 +222,10 @@ void Server::run() {
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
-	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
-	else if (tokens[0] == "USER") {user(tokens, cc, i);}
+	if (tokens[0] == "NICK")
+		nick(tokens, cc, i);
+	else if (tokens[0] == "USER")
+		{user(tokens, cc, i);
 	else if (_clients[cc].auth == false)
 		logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
@@ -227,35 +233,34 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
 		_clients[cc].auth = true;
 	}
-	if (_clients[cc].auth == true){
-	if (tokens[0] == "OPER") {
-		if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"));
-		else if(oper(tokens) == 1){
-			_clients[cc].mode += "o";
-			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER());
+	if (_clients[cc].auth == true)
+	{
+		if (tokens[0] == "OPER") {
+			if (tokens[1].empty() || tokens[2].empty())
+				logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"));
+			else if(oper(tokens) == 1)
+			{
+				_clients[cc].mode += "o";
+				logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER());
+			}
+			else if(oper(tokens) == 0)
+				logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST());
+			else if(oper(tokens) == 2)
+				logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
 		}
-		else if(oper(tokens) == 0)
-			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST());
-		else if(oper(tokens) == 2)
-			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
-	}
-	else if (tokens[0] == "MODE") {
-		if (tokens[1].empty() == true)
-			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str());
-		else if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"));
-		else
-			logsend(_poll_fds[i].fd, mode(cc, tokens));
-	}
-		else if (tokens[0] == "QUIT") {quit(tokens, i);
-		}
-		
-		else if (tokens[0] == "JOIN") 
+		else if (tokens[0] == "MODE")
 		{
-			joinchannel(tokens[1], cc);
-		
+			if (tokens[1].empty() == true)
+				logsend(_poll_fds[i].fd, irc::RPL_UMODEIS(_clients[cc].mode.c_str()));
+			else if (tokens[1].empty() || tokens[2].empty())
+				logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"));
+			else
+				logsend(_poll_fds[i].fd, mode(cc, tokens));
 		}
+		else if (tokens[0] == "QUIT")
+			quit(tokens, i);
+		else if (tokens[0] == "JOIN")
+			joinchannel(tokens[1], cc);
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}

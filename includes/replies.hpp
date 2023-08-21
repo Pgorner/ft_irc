@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:04:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:21:52 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:49:10 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ namespace irc
     const char* RPL_ENDOFSTATS(const std::string& stats_letter);
     const char* RPL_STATSUPTIME(int days, int hours, int minutes, int seconds);
     const char* RPL_STATSOLINE(const std::string& hostmask, const std::string& name);
-    const char* RPL_UMODEIS(const std::string& user_mode_string);
+    const char* RPL_UMODEIS(const std::string user_mode_string);
     const char* RPL_SERVLIST(const std::string& name, const std::string& server, const std::string& mask, const std::string& type, const std::string& hopcount, const std::string& info);
     const char* RPL_SERVLISTEND(const std::string& mask, const std::string& type);
     const char* RPL_LUSERCLIENT(const std::string& num_users, const std::string& num_services, const std::string& num_servers);

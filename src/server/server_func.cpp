@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 15:53:15 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:46:53 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,21 +101,21 @@ int Server::oper(std::vector<std::string> tokens){
 		return 0;
 }
 
-std::string Server::rmletter(char letter, std::string mode){
+void Server::rmletter(char letter, int cc){
 	std::string result;
-    for (std::size_t i = 0; i < mode.length(); ++i)
+    for (std::size_t i = 0; i < _clients[cc].mode.length(); ++i)
 	{
-        if (mode[i] != letter)
-            result += mode[i];
+        if (_clients[cc].mode[i] != letter)
+            result += _clients[cc].mode[i];
     }
-    return result;
+    _clients[cc].mode = result;
 }
 
-std::string Server::addmode(char letter, std::string mode){
-	if(mode.find(letter) != std::string::npos)
-		return (mode += letter);
-	else
-		return mode;
+void Server::addmode(char letter, int cc){
+	if(_clients[cc].mode.find(letter) == std::string::npos)
+	{
+		_clients[cc].mode += letter;
+	}
 }
 
 const char* Server::mode(int cc, std::vector<std::string> tokens){
@@ -124,50 +124,51 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 			return "no";
 		else if (tokens[2] == "-o" || tokens[2] == "-O")
 		{
-			_clients[cc].mode = rmletter('o', _clients[cc].mode);
-			_clients[cc].mode = rmletter('O', _clients[cc].mode);
+			rmletter('o', cc);
+			rmletter('O', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "i")
+		else if (tokens[2] == "+i")
 		{
-			_clients[cc].mode = addmode('i', _clients[cc].mode);
+			addmode('i', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-i")
 		{
-			_clients[cc].mode = rmletter('i', _clients[cc].mode);
+			rmletter('i', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "w")
+		else if (tokens[2] == "+w")
 		{
-			_clients[cc].mode = addmode('w', _clients[cc].mode);
-			std::cout << _clients[cc].mode;
+			addmode('w', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-w")
 		{
-			_clients[cc].mode = rmletter('i', _clients[cc].mode);
+			rmletter('i', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "r")
+		else if (tokens[2] == "+r")
 		{
-			_clients[cc].mode = addmode('r', _clients[cc].mode);
+			addmode('r', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-r")
 		{
-			_clients[cc].mode = rmletter('r', _clients[cc].mode);
+			rmletter('r', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "s")
-			_clients[cc].mode = addmode('s', _clients[cc].mode);
+		else if (tokens[2] == "+s")
+			addmode('s', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		else if (tokens[2] == "-s")
 		{
-			_clients[cc].mode = rmletter('s', _clients[cc].mode);
+			rmletter('s', cc);
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
+		else if (!tokens[1].size())
+			return (irc::RPL_UMODEIS(_clients[cc].mode));
 	return (irc::ERR_USERSDONTMATCH());
 }
 
@@ -191,9 +192,9 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 		if (tokens[2].empty() == false)
 		{
 			if (tokens[2] == "8")
-				_clients[cc].mode = addmode('i', _clients[cc].mode);
+				addmode('i', cc);
 			else if (tokens[2] == "2")
-				_clients[cc].mode = addmode('w', _clients[cc].mode);
+				addmode('w', cc);
 			if (tokens[2] == "8" || tokens[2] == "2"){
 				logsend(_poll_fds[i].fd, irc::RPL_UMODEIS(_clients[cc].mode));
 			}

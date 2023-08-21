@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 16:15:19 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:44:16 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,23 +49,20 @@ int Server::sig_handlerserv(void){
 
 
 
-void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
+void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc)
+{
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0))
-        logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
+        logsend(_poll_fds[i].fd, SERVERNAME" : WRONG PASSWORD\r\n");
     else if (tokens[1] == _pwd) 
 	{
-        std::cout << "Password accepted" << std::endl;
-        _clients[i - 1].passwordAccepted = TRUE;
-		if(_clients[cc].auth == false)
-        	logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
-		else
-			logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
+        _clients[cc].passwordAccepted = TRUE;
+		std::cout << "PASSWORD WAS ENTERED\n";
     } 
 	else
         logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
 }
 
-void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
+void Server::cap(int fd, const std::vector<std::string>& tokens, bool& cap) {
 	if (contains(tokens, "CAP") == true && contains(tokens, "LS") == true)
 		logsend(fd, "CAP * LS :\n");
 	else if (contains(tokens, "CAP") == true && contains(tokens, "REQ") == true){
@@ -76,8 +73,10 @@ void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
 			req += "multiple-channel-joins";
 		logsend(fd, req.c_str());
 	}
-	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
+	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true){
+		std::cout << "CAP SET TRUE\n";
 		cap = true;
+	}
 }
 
 void Server::run() {
@@ -133,22 +132,22 @@ void Server::run() {
     				    pollfd new_client_poll_fd;
     				    new_client_poll_fd.fd = client_socket;
     				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
+						logsend(new_client_poll_fd.fd, SERVERNAME" Enter the password, user and nickname\r\n"SERVERNAME" PASS <password>\r\n"SERVERNAME" USER <username>\r\n"SERVERNAME" NICK <nickname>\r\n");
     				    _poll_fds.push_back(new_client_poll_fd);
-						_clients.push_back(ClientData(client_socket, INDETERMINATE, false, false, ""));
+						_clients.push_back(ClientData(client_socket, false, false, false, ""));
 						hCC = true;
     				    // Optionally, you can store client information or perform other tasks here.
     			}
                 } else {
     				// Handle events on other file descriptors (clients).
 					size_t cc = 0;
-            		for (; cc < _clients.size(); cc++) {
-            		    if (_clients[cc].fd == _poll_fds[i].fd) {
+            		for (; cc < _clients.size(); cc++)
+					{
+            		    if (_clients[cc].fd == _poll_fds[i].fd)
             		        break;
-            		    }
             		}
     				char buffer[1024];
     				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
-					// std::cout << buffer << std::endl; 
     				if (bytes_received <= 0) {
     				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
@@ -165,6 +164,8 @@ void Server::run() {
 						std::stringstream iss(received_data);
 						std::string token;
 						std::string line;
+						
+						write_nice(WHITE, received_data, true);
 
     					while (std::getline(iss, line)) {
         					
@@ -173,41 +174,34 @@ void Server::run() {
 
         					while (lineStream >> token)
         					    tokens.push_back(token);
-							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-								if (!it->empty() && (*it)[0] == ':') {
+							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
+							{
+								if (!it->empty() && (*it)[0] == ':')
 									it->erase(0, 1);
-								}
 							}
-							
-							if (_clients[cc].cap == false)
-								cap(_poll_fds[i].fd, tokens, _clients[cc].cap);
-							if(_clients[cc].passwordAccepted == TRUE)
-								commands(i, cc, tokens);
-							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS")
-								checkPwd(tokens, i, cc);
-							else if(_clients[cc].passwordAccepted == INDETERMINATE)
+							if (tokens.size() != 0)
 							{
-								_clients[cc].passwordAccepted = FALSE;
-        						logsend(_poll_fds[i].fd, "IRCSERV: Enter the password:\r\nSyntax: PASS <password>\r\n");
-							}
-							if (!DEBUG)
-							{
-								for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+								if (!DEBUG)
 								{
-									write_nice(BLUE, it->c_str(), true );
-									for (size_t i = 0; i < _channels.size(); i++)
-									{
-										for (size_t j = 0; j < _clients[cc]._channels.size(); j++)
-										{
-				
-											if (_channels[i].name == _clients[cc]._channels[j].name)
-											{
-												for (size_t i = 0; i < _clients[cc]._channels[j].members.size(); i++)
-													send(_clients[cc]._channels[j].members[i].fd, it->c_str(), it->size(), 0);
-											}
-										}
-									}
+									for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+										write_nice(BLUE, it->c_str(), true );
+									std::cout << RED << "STATUS: " <<
+										"\nNICK: " << _clients[cc].nick <<
+										"\nUSER: " << _clients[cc].user <<
+										"\nREALNAME: " << _clients[cc].realname <<
+										"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
+										"\nMODE: " << _clients[cc].mode <<
+										"\nCHANNELS: \n";
+										// for (std::vector<Channel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it)
+										// 	write_nice(RED, it->getName().c_str(), true);
+										std::cout << RESET << std::endl;
 								}
+								if (_clients[cc].cap == false)
+									cap(_poll_fds[i].fd, tokens, _clients[cc].cap);
+								if(_clients[cc].passwordAccepted == true)
+									commands(i, cc, tokens);
+								else if (_clients[cc].passwordAccepted == false && tokens[0] == "PASS")
+									checkPwd(tokens, i, cc);
 							}
     						tokens.clear();
 						}
@@ -250,8 +244,9 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		}
 		else if (tokens[0] == "MODE")
 		{
-			if (tokens[1].empty() == true)
+			if (tokens[1].empty() == true){
 				logsend(_poll_fds[i].fd, irc::RPL_UMODEIS(_clients[cc].mode.c_str()));
+			}
 			else if (tokens[1].empty() || tokens[2].empty())
 				logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"));
 			else

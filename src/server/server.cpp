@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 15:31:25 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 16:15:19 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	if (tokens[0] == "NICK")
 		nick(tokens, cc, i);
 	else if (tokens[0] == "USER")
-		{user(tokens, cc, i);
+		user(tokens, cc, i);
 	else if (_clients[cc].auth == false)
 		logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)

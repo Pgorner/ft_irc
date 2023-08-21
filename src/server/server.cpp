@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 14:00:10 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/20 18:29:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		
 		else if (tokens[0] == "JOIN") 
 		{
-			joinchannel(tokens, cc);
+			joinchannel(tokens[1], cc);
 		
 		}
 	}

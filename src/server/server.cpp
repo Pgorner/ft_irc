@@ -49,23 +49,20 @@ int Server::sig_handlerserv(void){
 
 
 
-void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
+void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc)
+{
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0))
-        logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
+        logsend(_poll_fds[i].fd, SERVERNAME" : WRONG PASSWORD\r\n");
     else if (tokens[1] == _pwd) 
 	{
-        std::cout << "Password accepted" << std::endl;
-        _clients[i - 1].passwordAccepted = TRUE;
-		if(_clients[cc].auth == false)
-        	logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
-		else
-			logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
-    } 
+        _clients[cc].passwordAccepted = TRUE;
+		_clients[cc].send_to_user += SERVERNAME" Your PASSWORD is correct\r\n";
+	}
 	else
         logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
 }
 
-void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
+void Server::cap(int fd, const std::vector<std::string>& tokens, bool& cap) {
 	if (contains(tokens, "CAP") == true && contains(tokens, "LS") == true)
 		logsend(fd, "CAP * LS :\n");
 	else if (contains(tokens, "CAP") == true && contains(tokens, "REQ") == true){
@@ -77,7 +74,7 @@ void Server::cap(int fd, const std::vector<std::string>& tokens, bool cap) {
 		logsend(fd, req.c_str());
 	}
 	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
-		cap = true;	
+		cap = true;
 }
 
 void Server::run() {
@@ -113,51 +110,63 @@ void Server::run() {
                 exit(1);
             }
         }
-		else if (num_events){
+		else if (num_events )
+		{
 			write(1, "\n", 1);
 			write_nice(WHITE, LINE, true);
 		}
         for (size_t i = 0; i < _poll_fds.size(); i++) {
 
-            if (_poll_fds[i].revents & POLLIN) {
-			if (_poll_fds[i].fd == _socket) {
-    				// Handle incoming connection on the server socket.
-    				struct sockaddr_in client_addr;
-    				socklen_t client_addr_len = sizeof(client_addr);
-    				int client_socket = accept(_socket, (struct sockaddr*)&client_addr, &client_addr_len);
-    				if (client_socket < 0) {
-    				    // Handle the error, and optionally continue or exit.
-   				} else {
-						write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
-    				    // New client connected successfully, add it to the list of monitored file descriptors.	
-    				    pollfd new_client_poll_fd;
-    				    new_client_poll_fd.fd = client_socket;
-    				    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
-    				    _poll_fds.push_back(new_client_poll_fd);
-						_clients.push_back(ClientData(client_socket, INDETERMINATE, false, false, ""));
-						hCC = true;
-    				    // Optionally, you can store client information or perform other tasks here.
-    			}
-                } else {
+            if (_poll_fds[i].revents & POLLIN)
+			{
+				if (_poll_fds[i].fd == _socket)
+				{
+    					// Handle incoming connection on the server socket.
+    					struct sockaddr_in client_addr;
+    					socklen_t client_addr_len = sizeof(client_addr);
+    					int client_socket = accept(_socket, (struct sockaddr*)&client_addr, &client_addr_len);
+	
+						if (client_socket < 0)
+						{
+    					    // Handle the error, and optionally continue or exit.
+   						}
+						else
+						{
+							write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
+    					    // New client connected successfully, add it to the list of monitored file descriptors.	
+    					    pollfd new_client_poll_fd;
+    					    new_client_poll_fd.fd = client_socket;
+    					    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
+							logsend(new_client_poll_fd.fd, SERVERNAME" Enter the password, user and nickname\r\n"SERVERNAME" PASS <password>\r\n"SERVERNAME" USER <username>\r\n"SERVERNAME" NICK <nickname>\r\n");
+    					    _poll_fds.push_back(new_client_poll_fd);
+							_clients.push_back(ClientData(client_socket, false, false, false, "", ""));
+							hCC = true;
+    					    // Optionally, you can store client information or perform other tasks here.
+    					}
+            	}
+				else
+				{
     				// Handle events on other file descriptors (clients).
 					size_t cc = 0;
-            		for (; cc < _clients.size(); cc++) {
-            		    if (_clients[cc].fd == _poll_fds[i].fd) {
+					
+            		for (; cc < _clients.size(); cc++)
+					{
+            		    if (_clients[cc].fd == _poll_fds[i].fd)
             		        break;
-            		    }
             		}
     				char buffer[1024];
     				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
-					// std::cout << buffer << std::endl; 
-    				if (bytes_received <= 0) {
+					
+    				if (bytes_received <= 0)
+					{
     				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
     				    _poll_fds.erase(_poll_fds.begin() + i);
-						write_nice(RED, "Client: ", false);
-						write_nice(RED, _clients[cc].realname, false);
-						write_nice(RED, " disconnected", true);
+						write_nice(RED, "Client Error occured: ", false);
+						write_nice(RED, _clients[cc].nick, false);
 						_clients.erase(_clients.begin() + cc);
-    				} else 
+    				}
+					else 
 					{
     				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
@@ -165,35 +174,55 @@ void Server::run() {
 						std::stringstream iss(received_data);
 						std::string token;
 						std::string line;
+						
+						write_nice(WHITE, received_data, true);
 
-    					while (std::getline(iss, line)) {
-        					
+    					while (std::getline(iss, line))
+						{
 							std::string token;
         					std::istringstream lineStream(line);
 
         					while (lineStream >> token)
         					    tokens.push_back(token);
-							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-								if (!it->empty() && (*it)[0] == ':') {
-									it->erase(0, 1);
-								}
-							}
-							
-							if (_clients[cc].cap == false){cap(_poll_fds[i].fd, tokens, _clients[cc].cap);}
-							if(_clients[cc].passwordAccepted == TRUE){commands(i, cc, tokens);}
-							else if (_clients[cc].passwordAccepted == FALSE && tokens[0] == "PASS"){checkPwd(tokens, i, cc);}
-							else if(_clients[cc].passwordAccepted == INDETERMINATE){
-								_clients[cc].passwordAccepted = FALSE;
-        						logsend(_poll_fds[i].fd, "IRCSERV: Enter the password:\r\nSyntax: PASS <password>\r\n");
-							}
-							if (!DEBUG)
+							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
 							{
-								for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
-									write_nice(BLUE, it->c_str(), true );
+								if (!it->empty() && (*it)[0] == ':')
+									it->erase(0, 1);
+							}
+							if (tokens.size() != 0)
+							{
+								if (_clients[cc].cap == false)
+									cap(_poll_fds[i].fd, tokens, _clients[cc].cap);
+								if(_clients[cc].passwordAccepted == true)
+									commands(i, cc, tokens);
+								else if (_clients[cc].passwordAccepted == false && tokens[0] == "PASS")
+									checkPwd(tokens, i, cc);
 							}
     						tokens.clear();
 						}
+						if (!DEBUG)
+						{
+							for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+								write_nice(BLUE, it->c_str(), true );
+							std::cout << RED << "STATUS: " <<
+								"\nNICK: " << _clients[cc].nick <<
+								"\nUSER: " << _clients[cc].user <<
+								"\nREALNAME: " << _clients[cc].realname <<
+								"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
+								"\nMODE: " << _clients[cc].mode <<
+								"\nCHANNELS: \n";
+								// for (std::vector<Channel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it)
+								// 	write_nice(RED, it->getName().c_str(), true);
+								std::cout << RESET << std::endl;
+						}
+						if (_clients[cc].send_to_user.size() != 0)
+						{
+							logsend(_poll_fds[i].fd, _clients[cc].send_to_user);
+							_clients[cc].send_to_user = "";
+						}
 					}
+							// write(1, "\n", 1);
+							// write_nice(WHITE, LINE, true);
 				}
             }
 		if (_poll_fds.size() == 1)
@@ -204,47 +233,52 @@ void Server::run() {
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
-	if (tokens[0] == "NICK") {nick(tokens, cc, i);} 
-	else if (tokens[0] == "USER") {user(tokens, cc, i);}
+	if (tokens[0] == "NICK")
+		nick(tokens, cc, i);
+	else if (tokens[0] == "USER")
+		user(tokens, cc, i);
 	else if (_clients[cc].auth == false)
-		logsend(_poll_fds[i].fd, irc::ERR_NOTREGISTERED());
+		_clients[cc].send_to_user += irc::ERR_NOTREGISTERED();
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
 	{
-		logsend(_poll_fds[i].fd, irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
+		_clients[cc].send_to_user += irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME);
 		_clients[cc].auth = true;
 	}
-	if (_clients[cc].auth == true){
-	if (tokens[0] == "OPER") {
-		if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("OPER"));
-		else if(oper(tokens) == 1){
-			_clients[cc].mode += "o";
-			logsend(_poll_fds[i].fd, irc::RPL_YOUREOPER());
+	if (_clients[cc].auth == true)
+	{
+		if (tokens[0] == "OPER") {
+			if (tokens[1].empty() || tokens[2].empty())
+				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("OPER");
+			else if(oper(tokens) == 1)
+			{
+				_clients[cc].mode += "o";
+				_clients[cc].send_to_user += irc::RPL_YOUREOPER();
+			}
+			else if(oper(tokens) == 0)
+				_clients[cc].send_to_user += irc::ERR_NOOPERHOST();
+			else if(oper(tokens) == 2)
+				_clients[cc].send_to_user += irc::ERR_PASSWDMISMATCH();
 		}
-		else if(oper(tokens) == 0)
-			logsend(_poll_fds[i].fd, irc::ERR_NOOPERHOST());
-		else if(oper(tokens) == 2)
-			logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH());
-	}
-	else if (tokens[0] == "MODE") {
-		if (tokens[1].empty() == true)
-			logsend(_poll_fds[i].fd, _clients[cc].mode.c_str());
-		else if (tokens[1].empty() || tokens[2].empty())
-			logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("MODE"));
-		else
-			logsend(_poll_fds[i].fd, mode(cc, tokens));
-	}
-		else if (tokens[0] == "QUIT") {quit(tokens, i);
-		}
-		
-		else if (tokens[0] == "JOIN") 
-			joinchannel(tokens, cc);
 		else if (tokens[0] == "PRIVMSG") 
 		{
 			std::cout << cc << "in cc " << std::endl;
 			sendmsg(tokens);
-		
+		else if (tokens[0] == "MODE")
+		{
+			if (tokens[1].empty() == true){
+				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode.c_str());
+			}
+			else if (tokens[1].empty() || tokens[2].empty())
+				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE");
+			else
+				_clients[cc].send_to_user += mode(cc, tokens);
 		}
+		else if (tokens[0] == "QUIT")
+			quit(tokens, i, cc);
+		else if (tokens[0] == "JOIN")
+			joinchannel(tokens[1], cc);
+		else if (tokens[0] == "PING")
+			ping(tokens, cc);
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
@@ -271,7 +305,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	// else if (tokens[0] == "WHOIS") {}
 	// else if (tokens[0] == "WHOWAS") {}
 	// else if (tokens[0] == "KILL") {}
-	// else if (tokens[0] == "PING") {}
 	// else if (tokens[0] == "PONG") {}
 	// else if (tokens[0] == "ERROR") {}
 	// else if (tokens[0] == "AWAY") {}

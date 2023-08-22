@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 17:46:53 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/22 16:01:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "../../includes/irc.hpp"
 
 
-bool validateUser(const std::string& filePath, const std::string& username, const std::string& password) {
+bool validateUser(const std::string& filePath, const std::string& username, const std::string& password)
+{
     std::ifstream file(filePath.c_str());
     std::string line;
 
@@ -92,7 +93,7 @@ int Server::oper(std::vector<std::string> tokens){
     } 
 	else
 	{
-        std::cerr << "Error opening directory!" << std::endl;
+        std::cerr << SERVERNAME" Error opening directory!" << std::endl;
         return 0;
 	}
 	if (keeptrack == 1)
@@ -119,60 +120,36 @@ void Server::addmode(char letter, int cc){
 }
 
 const char* Server::mode(int cc, std::vector<std::string> tokens){
-	if (tokens[1] == _clients[cc].nick){
-		if (tokens[2] == "+o" || tokens[2] == "+o" || tokens[2] == "a")
-			return "no";
-		else if (tokens[2] == "-o" || tokens[2] == "-O")
+	if (tokens[1] == _clients[cc].nick)
+	{
+		if (tokens[2][0] == '-')
 		{
-			rmletter('o', cc);
-			rmletter('O', cc);
+			for (int i = 1; tokens[2][i]; i++)
+				rmletter(tokens[2][i], cc);	
 			return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "+i")
+		else if (tokens[2][0] == '+')
 		{
-			addmode('i', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
+			for (int i = 1; tokens[2][i]; i++)
+			{
+				if ((tokens[2][i] != 'o' || tokens[2][i] != 'O' || tokens[2][i] != 'a') &&
+					(tokens[2][i] == 'a'
+					|| tokens[2][i] == 'i'
+					|| tokens[2][i] == 'w'
+					|| tokens[2][i] == 'o'
+					|| tokens[2][i] == 'r'
+					|| tokens[2][i] == 's'))
+					addmode(tokens[2][i], cc);
+			}
+		return (irc::RPL_UMODEIS(_clients[cc].mode));
 		}
-		else if (tokens[2] == "-i")
-		{
-			rmletter('i', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "+w")
-		{
-			addmode('w', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "-w")
-		{
-			rmletter('i', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "+r")
-		{
-			addmode('r', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "-r")
-		{
-			rmletter('r', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "+s")
-			addmode('s', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2] == "-s")
-		{
-			rmletter('s', cc);
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (!tokens[1].size())
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
+	}
 	return (irc::ERR_USERSDONTMATCH());
 }
 
-void Server::user(std::vector<std::string> tokens, int cc, int i){
+void Server::user(std::vector<std::string> tokens, int cc, int i)
+{
+	(void)i;
 	bool user = false;
 	for(size_t i = 0; i < _clients.size(); i++)
 	{
@@ -180,15 +157,15 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 			user = true;
 	}
 	if (tokens[1].empty() == true)
-	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("USER"));
+	   	_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 	else if (tokens[1].size() < 1)
-	    logsend(_poll_fds[i].fd, "USER too short");
+	    _clients[cc].send_to_user += SERVERNAME" USER too short\r\n";
 	else if (tokens.size() > 1 && user == false)
 	{
 		_clients[cc].user = tokens[1];
-	    logsend(_poll_fds[i].fd, "USER has been set to ");
-	    logsend(_poll_fds[i].fd, tokens[1].c_str());
-		logsend(_poll_fds[i].fd, "\r\n");
+	    _clients[cc].send_to_user += SERVERNAME" USER has been set to ";
+	    _clients[cc].send_to_user += tokens[1].c_str();
+		_clients[cc].send_to_user += "\r\n";
 		if (tokens[2].empty() == false)
 		{
 			if (tokens[2] == "8")
@@ -196,24 +173,26 @@ void Server::user(std::vector<std::string> tokens, int cc, int i){
 			else if (tokens[2] == "2")
 				addmode('w', cc);
 			if (tokens[2] == "8" || tokens[2] == "2"){
-				logsend(_poll_fds[i].fd, irc::RPL_UMODEIS(_clients[cc].mode));
+				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
 			}
 		}
 		if (tokens[4].empty() == false)
 		{
 			_clients[cc].realname = tokens[4];
-			logsend(_poll_fds[i].fd, "REALNAME has been set to ");
-			logsend(_poll_fds[i].fd, tokens[4].c_str());
-			logsend(_poll_fds[i].fd, "\r\n");
+			_clients[cc].send_to_user += SERVERNAME" REALNAME has been set to ";
+			_clients[cc].send_to_user += tokens[4].c_str();
+			_clients[cc].send_to_user += "\r\n";
 		}
 	}
 	else if (user == true)
-	   	logsend(_poll_fds[i].fd, "USER has already been taken");
+	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n";
 	else
-		logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("USER"));
+		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 }
 
-void Server::nick(std::vector<std::string> tokens, int cc, int i){
+void Server::nick(std::vector<std::string> tokens, int cc, int i)
+{
+	(void)i;
 	bool nick = false;
 	for(size_t i = 0; i < _clients.size(); i++)
 	{
@@ -221,22 +200,34 @@ void Server::nick(std::vector<std::string> tokens, int cc, int i){
 			nick = true;
 	}
 	if (tokens[1].empty() == true)
-	   	logsend(_poll_fds[i].fd, irc::ERR_NEEDMOREPARAMS("NICK"));
+	   	_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("NICK");
 	else if (tokens[1].size() < 1)
-	    logsend(_poll_fds[i].fd, "NICK too short");
+	    _clients[cc].send_to_user += SERVERNAME" NICK too short\r\n";
 	else if (tokens.size() > 1 && nick == false)
 	{
 	    _clients[cc].nick = tokens[1];
-	    logsend(_poll_fds[i].fd, "NICK has been set to ");
-	    logsend(_poll_fds[i].fd, tokens[1].c_str());
-			logsend(_poll_fds[i].fd, "\r\n");
+	    _clients[cc].send_to_user += SERVERNAME" NICK has been set to ";
+	    _clients[cc].send_to_user += tokens[1].c_str();
+		_clients[cc].send_to_user += "\r\n";
 	}
 	else if (nick == false)
-	   	logsend(_poll_fds[i].fd, "NICK has already been taken");
+	   	_clients[cc].send_to_user += SERVERNAME" NICK has already been taken\r\n";
 }
 
-void Server::quit(std::vector<std::string> tokens, int i){
+void Server::quit(std::vector<std::string> tokens, int i, int cc)
+{
 	if (tokens[1].empty() == false)
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());
 	close(_poll_fds[i].fd);
+    _poll_fds.erase(_poll_fds.begin() + i);
+	write_nice(RED, "Client: ", false);
+	write_nice(RED, _clients[cc].realname, false);
+	write_nice(RED, " disconnected", true);
+	_clients.erase(_clients.begin() + cc);
+	close(_poll_fds[i].fd);
+}
+
+void Server::ping(std::vector<std::string> tokens,int cc)
+{
+	_clients[cc].send_to_user += "PONG " + _clients[cc].nick + " " + tokens[2];
 }

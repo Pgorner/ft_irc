@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:34:30 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/22 14:42:56 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void log(std::string log)
 void Server::logsend(int fd, const std::string& msg)
 {
     LOG << msg;
+    std::cout << YELLOW << "SERVER SENT:\n" << msg << std::endl;
     bool hasNewline = false;
     for (size_t i = 0; i < msg.length(); ++i) {
         if (msg[i] == '\n') {

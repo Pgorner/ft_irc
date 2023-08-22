@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 17:49:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/22 15:37:59 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1145,10 +1145,10 @@ namespace irc
         return cstr;
     }
 
-    const char* RPL_UMODEIS(const std::string user_mode_string)
+    const char* RPL_UMODEIS(const std::string& user_mode_string)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 221 " + user_mode_string + "\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 221 : +" + user_mode_string + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;

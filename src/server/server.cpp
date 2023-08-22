@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:29:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:23:14 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,21 +189,7 @@ void Server::run() {
 							if (!DEBUG)
 							{
 								for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
-								{
 									write_nice(BLUE, it->c_str(), true );
-									for (size_t i = 0; i < _channels.size(); i++)
-									{
-										for (size_t j = 0; j < _clients[cc]._channels.size(); j++)
-										{
-				
-											if (_channels[i].name == _clients[cc]._channels[j].name)
-											{
-												for (size_t i = 0; i < _clients[cc]._channels[j].members.size(); i++)
-													send(_clients[cc]._channels[j].members[i].fd, it->c_str(), it->size(), 0);
-											}
-										}
-									}
-								}
 							}
     						tokens.clear();
 						}
@@ -252,8 +238,11 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		}
 		
 		else if (tokens[0] == "JOIN") 
+			joinchannel(tokens, cc);
+		else if (tokens[0] == "PRIVMSG") 
 		{
-			joinchannel(tokens[1], cc);
+			std::cout << cc << "in cc " << std::endl;
+			sendmsg(tokens);
 		
 		}
 	}

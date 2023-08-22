@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:27:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:49:41 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "../../includes/irc.hpp"
 
 
-bool validateUser(const std::string& filePath, const std::string& username, const std::string& password) {
+bool validateUser(const std::string& filePath, const std::string& username, const std::string& password) 
+{
     std::ifstream file(filePath.c_str());
     std::string line;
 
@@ -32,7 +33,8 @@ bool validateUser(const std::string& filePath, const std::string& username, cons
     return false;
 }
 
-bool fileExists(const std::string& fileName) {
+bool fileExists(const std::string& fileName) 
+{
     FILE* file = fopen(fileName.c_str(), "r");
     if (file) {
         fclose(file);
@@ -41,23 +43,66 @@ bool fileExists(const std::string& fileName) {
     return false;
 }
 
-int Server::joinchannel(const std::string &channelname , int cc)
+void Server::sendmsg(std::vector<std::string> tokens) 
 {
-	for (size_t i = 0; i < _channels.size(); i++)
+    for (size_t i = 0; i < _channels.size(); i++) 
 	{
-		if (_channels[i].name == channelname)
+        if (_channels[i].name == tokens[1]) 
 		{
-			_channels[i].members.push_back(_clients[cc]);
-			_clients[cc]._channels.push_back(_channels[i]);
-			return 1;
+            for (size_t j = 0; j < _channels[i].members.size(); j++) 
+			{
+                std::cout << tokens[2] << " sent to " <<  (_channels[i].members)[j].nick << " with fd " << (_channels[i].members)[j].fd << std::endl;
+                logsend((_channels[i].members)[j].fd, tokens[2]);
+            }
+        }
+    }
+}
+
+int Server::joinchannel(std::vector<std::string> tokens , int cc)
+{
+	if (tokens.size() == 2)
+	{
+		std::string channelname;
+		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
+			channelname = tokens[1].substr(1);
+		else
+		{
+			std::cout << "Wrong channel name format" << std::endl;
+			return 0;
 		}
+		for (size_t i = 0; i < _channels.size(); i++)
+		{
+			if (_channels[i].name == channelname)
+			{
+				_channels[i].members.push_back(_clients[cc]);
+				// for (size_t j = 0; j < _channels[i].members.size(); j++) 
+				// {
+				// 	std::cout << "name is " << _channels[i].members.name << " fd is " << _channels[i].members.name << " cc is " << _clients[cc].fd << std::endl;
+				// }
+				_clients[cc]._channels.push_back(_channels[i].name);
+				std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
+				logsend(_clients[cc].fd, resp);		
+				return 1;
+			}
+		}
+		Channel newChannel;
+		newChannel.name = channelname;
+		newChannel.members.push_back(_clients[cc]);
+		// for (size_t j = 0; j < _channels[i].members.size(); j++) 
+		// 		{
+		// 			std::cout << "name is " << newChannel.members.name << " fd is " << newChannel.members.name << " cc is " << _clients[cc].fd << std::endl;
+		// 		}
+		_channels.push_back(newChannel);
+		_clients[cc]._channels.push_back(newChannel.name);
+		std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
+		logsend(_clients[cc].fd, resp);	
+		return 1;
 	}
-	Channel newChannel;
-	newChannel.name = channelname;
-	newChannel.members.push_back(_clients[cc]);
-	_channels.push_back(newChannel);
-	_clients[cc]._channels.push_back(newChannel);
-	return 1;
+	else
+	{
+		std::cout << "Wrong JOIN parameters" << std::endl;
+		return 0;
+	}
 }
 
 int Server::oper(std::vector<std::string> tokens){

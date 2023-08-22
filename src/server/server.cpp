@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/22 16:02:38 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/22 16:05:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,10 +110,11 @@ void Server::run() {
                 exit(1);
             }
         }
-		// else if (num_events && (_poll_fds.size() - 1) != 0){
-		// 	write(1, "\n", 1);
-		// 	write_nice(WHITE, LINE, true);
-		// }
+		else if (num_events )
+		{
+			write(1, "\n", 1);
+			write_nice(WHITE, LINE, true);
+		}
         for (size_t i = 0; i < _poll_fds.size(); i++) {
 
             if (_poll_fds[i].revents & POLLIN)
@@ -220,8 +221,8 @@ void Server::run() {
 							_clients[cc].send_to_user = "";
 						}
 					}
-							write(1, "\n", 1);
-							write_nice(WHITE, LINE, true);
+							// write(1, "\n", 1);
+							// write_nice(WHITE, LINE, true);
 				}
             }
 		if (_poll_fds.size() == 1)

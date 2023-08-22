@@ -3,11 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/22 16:01:22 by pgorner          ###   ########.fr       */
-/*                                                                            */
+/*   Updated: 2023/08/21 17:36:28 by ccompote         ###   ########.fr       */                                                                          */
 /* ************************************************************************** */
 
 
@@ -33,9 +32,9 @@
         std::string nick;
         std::string user;       
         std::string realname;   
+		std::vector<std::string> _channels;    
+        ClientData(int client_socket, int pwdAccepted, bool cap, bool auth, std::string mode) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode) {}
         std::string send_to_user;   
-		std::vector<Channel> _channels;    
-        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string send_to_user) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), send_to_user(send_to_user){}
     };
 	
 	struct Channel
@@ -75,8 +74,10 @@ class Server {
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens);
     const char* mode(int cc, std::vector<std::string> tokens);
-    void quit(std::vector<std::string> tokens, int i, int cc);
-	int joinchannel(const std::string &channelname, int cc);
+    void quit(std::vector<std::string> tokens, int i);
+	int joinchannel(std::vector<std::string> tokens , int cc);
+	void sendmsg(std::vector<std::string> tokens);
+
 
     static Server* server_ptr;
 

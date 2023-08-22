@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/22 16:05:32 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/21 17:23:14 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,10 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 			else if(oper(tokens) == 2)
 				_clients[cc].send_to_user += irc::ERR_PASSWDMISMATCH();
 		}
+		else if (tokens[0] == "PRIVMSG") 
+		{
+			std::cout << cc << "in cc " << std::endl;
+			sendmsg(tokens);
 		else if (tokens[0] == "MODE")
 		{
 			if (tokens[1].empty() == true){

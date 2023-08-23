@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/23 13:14:17 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/23 17:10:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,11 @@ void Server::run() {
                 exit(1);
             }
         }
-		else if (num_events )
-		{
-			write(1, "\n", 1);
-			write_nice(WHITE, LINE, true);
-		}
+		// else if (num_events )
+		// {
+		// 	write(1, "\n", 1);
+		// 	write_nice(WHITE, LINE, true);
+		// }
         for (size_t i = 0; i < _poll_fds.size(); i++) {
 
             if (_poll_fds[i].revents & POLLIN)
@@ -139,7 +139,7 @@ void Server::run() {
     					    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
 							logsend(new_client_poll_fd.fd, SERVERNAME" Enter the password, user and nickname\r\n"SERVERNAME" PASS <password>\r\n"SERVERNAME" USER <username>\r\n"SERVERNAME" NICK <nickname>\r\n");
     					    _poll_fds.push_back(new_client_poll_fd);
-							_clients.push_back(ClientData(client_socket, false, false, false, ""));
+							_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", ""));
 							hCC = true;
     					    // Optionally, you can store client information or perform other tasks here.
     					}
@@ -176,7 +176,7 @@ void Server::run() {
 						std::string line;
 						
 						write_nice(WHITE, received_data, true);
-
+						LOG << "CLIENT SENT: " + received_data;
     					while (std::getline(iss, line))
 						{
 							std::string token;
@@ -198,7 +198,7 @@ void Server::run() {
 								else if (_clients[cc].passwordAccepted == false && tokens[0] == "PASS")
 									checkPwd(tokens, i, cc);
 							}
-    						tokens.clear();
+							tokens.clear();
 						}
 						if (!DEBUG)
 						{
@@ -210,9 +210,25 @@ void Server::run() {
 								"\nREALNAME: " << _clients[cc].realname <<
 								"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
 								"\nMODE: " << _clients[cc].mode <<
-								"\nCHANNELS: \n";
+								"\nUSER IN CHANNELS: \n";
 								for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+								{
+									write_nice(RED, "	", false);
 									write_nice(RED, _clients[cc]._channels[i].c_str(), true);
+								}
+								write_nice(RED, "ALL CHANNELS:", true);
+								for (size_t i = 0; i < _channels.size(); i++)
+								{
+									write_nice(RED, "name:	", false);
+									write_nice(RED, _channels[i].name.c_str(), true);
+									write_nice(RED, "mode:	", false);
+									write_nice(RED, _channels[i].mode.c_str(), true);
+									write_nice(RED, "members:	", false);
+									for (size_t j = 0; j < _channels[i].members.size(); j++){
+										write_nice(RED, std::to_string(_channels[i].members[j]), false);
+										write_nice(RED, "/", false);
+									}
+								}
 								std::cout << RESET << std::endl;
 						}
 						if (_clients[cc].send_to_user.size() != 0)
@@ -221,8 +237,8 @@ void Server::run() {
 							_clients[cc].send_to_user = "";
 						}
 					}
-							// write(1, "\n", 1);
-							// write_nice(WHITE, LINE, true);
+					write(1, "\n", 1);
+					write_nice(WHITE, LINE, true);
 				}
             }
 		if (_poll_fds.size() == 1)
@@ -246,39 +262,29 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	}
 	if (_clients[cc].auth == true)
 	{
-		if (tokens[0] == "OPER") {
-			if (tokens[1].empty() || tokens[2].empty())
-				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("OPER");
-			else if(oper(tokens) == 1)
-			{
-				_clients[cc].mode += "o";
-				_clients[cc].send_to_user += irc::RPL_YOUREOPER();
-			}
-			else if(oper(tokens) == 0)
-				_clients[cc].send_to_user += irc::ERR_NOOPERHOST();
-			else if(oper(tokens) == 2)
-				_clients[cc].send_to_user += irc::ERR_PASSWDMISMATCH();
+		if (tokens[0] == "OPER")
+		{
+			changeoper(tokens, cc);
 		}
 		else if (tokens[0] == "MODE")
 		{
-			if (tokens[1].empty() == true){
+			if (tokens[1].empty() == true)
+			{
 				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode.c_str());
 			}
-			else if (tokens[1].empty() || tokens[2].empty())
+			else if (tokens[1].empty() && tokens[2].empty())
 				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE");
 			else
 				_clients[cc].send_to_user += mode(cc, tokens);
 		}
-		else if (tokens[0] == "QUIT")
-			quit(tokens, i, cc);
 		else if (tokens[0] == "JOIN")
 			joinchannel(tokens, cc);
 		else if (tokens[0] == "PRIVMSG") 
-		{
 			sendmsg(tokens, _clients[cc].nick);
-		}
 		else if (tokens[0] == "PING")
 			ping(tokens, cc);
+		else if (tokens[0] == "QUIT")
+			quit(tokens, i, cc);
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}

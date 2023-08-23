@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/22 14:42:56 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/23 15:12:17 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void    Server::goodbye(void)
 void    write_nice(const char color[6], std::string str, bool nl)
 {
     setlocale(LC_ALL, "");
-    log(str);
     if (nl == true)
         str += "\n";
     unsigned long k = 0;
@@ -68,6 +67,7 @@ void log(std::string log)
 
 void Server::logsend(int fd, const std::string& msg)
 {
+    LOG << "SERVER SENT: ";
     LOG << msg;
     std::cout << YELLOW << "SERVER SENT:\n" << msg << std::endl;
     bool hasNewline = false;

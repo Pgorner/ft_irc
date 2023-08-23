@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/23 13:08:55 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/23 17:20:17 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,29 +21,31 @@
 #define INDETERMINATE 2
 
 #define POLLTIME 500 
-
-	struct Channel;
 	
-    struct ClientData {
+	struct Channel
+	{
+		std::string name;
+		std::string mode;
+		std::string modeparams;
+		std::vector<int> members;
+        Channel(std::string channelname, std::string channelmode, std::string channelmodeparams) : name(channelname), mode(channelmode), modeparams(channelmodeparams) {}
+	};
+    
+    struct ClientData
+    {
         int fd;               // File descriptor for the client
         bool passwordAccepted; // Flag indicating if the password is accepted for this client
         bool cap; // Flag indicating if CAP has been handled
         bool auth; // Flag indicating successfull authenticated (NICK & USER)
         std::string mode;
+		std::vector<std::string> _channels;    
         std::string nick;
         std::string user;       
         std::string realname;   
-		std::vector<std::string> _channels;    
-        ClientData(int client_socket, int pwdAccepted, bool cap, bool auth, std::string mode) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode) {}
         std::string send_to_user;   
+        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname){}
     };
 	
-	struct Channel
-	{
-		std::string name;
-		std::vector<ClientData> members;
-		
-	};
 
 class Server {
  public:
@@ -68,12 +70,14 @@ class Server {
     void commands(int i, int cc, std::vector<std::string> tokens);
     void rmletter(char letter, int cc);
     void addmode(char letter, int cc);
+    void addchanmode(char letter, std::string& chanmodes);
     
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);
     void ping(std::vector<std::string> tokens, int cc);
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens);
+    void changeoper(std::vector<std::string> tokens, int cc);
     const char* mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);

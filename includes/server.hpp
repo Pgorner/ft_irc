@@ -5,8 +5,9 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 17:36:28 by ccompote         ###   ########.fr       */                                                                          */
+/*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
+/*   Updated: 2023/08/23 13:08:55 by ccompote         ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 
@@ -74,9 +75,9 @@ class Server {
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens);
     const char* mode(int cc, std::vector<std::string> tokens);
-    void quit(std::vector<std::string> tokens, int i);
+    void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
-	void sendmsg(std::vector<std::string> tokens);
+	void sendmsg(std::vector<std::string> tokens, std::string nick);
 
 
     static Server* server_ptr;

@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/22 20:01:36 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/23 13:14:17 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,8 +211,8 @@ void Server::run() {
 								"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
 								"\nMODE: " << _clients[cc].mode <<
 								"\nCHANNELS: \n";
-								// for (std::vector<Channel>::const_iterator it = _channels.begin(); it != _channels.end(); ++it)
-								// 	write_nice(RED, it->getName().c_str(), true);
+								for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+									write_nice(RED, _clients[cc]._channels[i].c_str(), true);
 								std::cout << RESET << std::endl;
 						}
 						if (_clients[cc].send_to_user.size() != 0)
@@ -275,8 +275,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 			joinchannel(tokens, cc);
 		else if (tokens[0] == "PRIVMSG") 
 		{
-			std::cout << cc << "in cc " << std::endl;
-			sendmsg(tokens);
+			sendmsg(tokens, _clients[cc].nick);
 		}
 		else if (tokens[0] == "PING")
 			ping(tokens, cc);

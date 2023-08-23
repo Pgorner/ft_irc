@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/22 20:01:13 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/23 13:08:55 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ class Server {
     const char* mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
-	void sendmsg(std::vector<std::string> tokens);
+	void sendmsg(std::vector<std::string> tokens, std::string nick);
 
 
     static Server* server_ptr;

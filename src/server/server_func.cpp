@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/21 17:49:41 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/23 13:48:52 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,25 @@ bool fileExists(const std::string& fileName)
     return false;
 }
 
-void Server::sendmsg(std::vector<std::string> tokens) 
+void Server::sendmsg(std::vector<std::string> tokens, std::string nick) 
 {
     for (size_t i = 0; i < _channels.size(); i++) 
 	{
         if (_channels[i].name == tokens[1]) 
 		{
+			std::cout << ":" + nick + " PRIVMSG " + tokens[1] + " "+ tokens[2] + "\r\n";
+			std::string resp = ":" + nick + " PRIVMSG " + tokens[1] + " " + tokens[2] + "\r\n";	
             for (size_t j = 0; j < _channels[i].members.size(); j++) 
-			{
-                std::cout << tokens[2] << " sent to " <<  (_channels[i].members)[j].nick << " with fd " << (_channels[i].members)[j].fd << std::endl;
-                logsend((_channels[i].members)[j].fd, tokens[2]);
-            }
+				_channels[i].members[j].send_to_user +=  resp;
+			return ;
         }
     }
+	std::string resp = ":" + nick + " PRIVMSG " + tokens[1] + " " + tokens[2] + "\r\n";
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].nick == tokens[1])
+			_clients[i].send_to_user += resp;
+	}
 }
 
 int Server::joinchannel(std::vector<std::string> tokens , int cc)
@@ -74,27 +80,19 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 			if (_channels[i].name == channelname)
 			{
 				_channels[i].members.push_back(_clients[cc]);
-				// for (size_t j = 0; j < _channels[i].members.size(); j++) 
-				// {
-				// 	std::cout << "name is " << _channels[i].members.name << " fd is " << _channels[i].members.name << " cc is " << _clients[cc].fd << std::endl;
-				// }
 				_clients[cc]._channels.push_back(_channels[i].name);
-				std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
-				logsend(_clients[cc].fd, resp);		
+				std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";		
+				_clients[cc].send_to_user += resp;
 				return 1;
 			}
 		}
 		Channel newChannel;
 		newChannel.name = channelname;
 		newChannel.members.push_back(_clients[cc]);
-		// for (size_t j = 0; j < _channels[i].members.size(); j++) 
-		// 		{
-		// 			std::cout << "name is " << newChannel.members.name << " fd is " << newChannel.members.name << " cc is " << _clients[cc].fd << std::endl;
-		// 		}
 		_channels.push_back(newChannel);
 		_clients[cc]._channels.push_back(newChannel.name);
-		std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
-		logsend(_clients[cc].fd, resp);	
+		std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";	
+		_clients[cc].send_to_user += resp;
 		return 1;
 	}
 	else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/23 17:10:02 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/24 09:25:36 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,10 +231,13 @@ void Server::run() {
 								}
 								std::cout << RESET << std::endl;
 						}
-						if (_clients[cc].send_to_user.size() != 0)
+					}
+					for(size_t k = 0; k < _clients.size(); k++)
+					{
+						if (_clients[k].send_to_user.size() != 0)
 						{
 							logsend(_poll_fds[i].fd, _clients[cc].send_to_user);
-							_clients[cc].send_to_user = "";
+							_clients[k].send_to_user = "";
 						}
 					}
 					write(1, "\n", 1);

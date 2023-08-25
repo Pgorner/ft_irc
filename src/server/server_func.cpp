@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 19:56:25 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 20:00:03 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,9 +146,62 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	}
 	else
 	{
-		std::cout << "Wrong JOIN parameters" << std::endl;
+		_clients[cc].send_to_user += SERVERNAME"Wrong JOIN parameters\r\n";
 		return 0;
 	}
+}
+
+void Server::removefromchannel(std::string channelname, int cc)
+{
+	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+	{
+		std::cout << "HERE" << std::endl;
+		if (_clients[cc]._channels[i] == channelname)
+		{
+			//remove channel from user
+			_clients[cc]._channels.erase(_clients[cc]._channels.begin() + i);
+			//remove user from channel
+			for (size_t j = 0; j < _channels.size(); j++)
+			{
+				if (_channels[j].name == channelname)
+				{
+					for (size_t k = 0; k < _channels[j].members.size(); k++)
+					{
+						if (_channels[j].members[k] == cc)
+						{
+							_channels[j].members.erase(_channels[j].members.begin() + k);
+							break;
+						}
+					}
+					break ;
+				}
+			}
+			std::string resp = ":" + _clients[cc].nick + " PART :" + channelname + "\r\n";	
+			_clients[cc].send_to_user += resp;
+			return ;
+		}
+	}
+}
+
+void Server::leavechannel(std::vector<std::string> tokens, int cc)
+{
+	if (tokens.size() == 2)
+	{
+		std::string channelname;
+		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
+			channelname = tokens[1].substr(1);
+		else if (tokens[1].length() >= 1 && tokens[1][0] != '#')
+			channelname = tokens[1];
+		else
+		{
+			_clients[cc].send_to_user += SERVERNAME"Wrong channel name format\r\n";
+			return ;
+		}
+		_clients[cc].send_to_user += SERVERNAME" You are not in the channel\r\n";
+		removefromchannel(channelname, cc);
+	}
+	else
+		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("PART");
 }
 
 int Server::oper(std::vector<std::string> tokens){
@@ -432,7 +485,8 @@ void Server::quit(std::vector<std::string> tokens, int i, int cc)
 		}
 		resp += "\r\n";
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());
-	}
+	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+		removefromchannel(_clients[cc]._channels[i], cc);
 	close(_poll_fds[i].fd);
     _poll_fds.erase(_poll_fds.begin() + i);
 	write_nice(RED, "Client: ", false);

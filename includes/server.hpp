@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/25 19:18:43 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 20:00:16 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,10 @@ class Server {
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
+	void leavechannel(std::vector<std::string> tokens, int cc);
+	void removefromchannel(std::string channelname, int cc);
+	void sendmsg(std::vector<std::string> tokens, std::string nick);
+
 
     static Server* server_ptr;
 

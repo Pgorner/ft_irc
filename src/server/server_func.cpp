@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/24 09:18:15 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/25 19:56:25 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,22 +42,30 @@ bool fileExists(const std::string& fileName)
     return false;
 }
 
-void Server::sendmsg(std::vector<std::string> tokens, std::string nick) 
+void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
+	std::stringstream resp;
     for (size_t i = 0; i < _channels.size(); i++) 
 	{
         if (_channels[i].name == tokens[1])
 		{
-			std::cout << ":" + nick + " PRIVMSG " + tokens[1] + " :"+ tokens[2] + "\r\n";
-			std::string resp =  ":" + nick + " PRIVMSG " + tokens[1] + " :" + tokens[2] + "\r\n";	
+			resp <<  ":" << _clients[cc].nick << "!" << _clients[cc].nick << "@localhost" << " PRIVMSG " << tokens[1] << " :";
+			for (int i = 2; tokens[i].size() != 0; i++)
+			{
+				resp << tokens[i];
+				if (!tokens[i + 1].empty())
+					resp << " ";
+			}
+			resp << "\r\n";
             for (size_t j = 0; j < _channels[i].members.size(); j++)
 			{
 				for (size_t k = 0; k < _poll_fds.size(); k++)
 				{
             	    if (_poll_fds[k].fd == _clients[_channels[i].members[j]].fd
-						&& _clients[_channels[i].members[j]].nick != nick)
+						&& _clients[_channels[i].members[j]].nick != _clients[cc].nick)
 					{
-						_clients[_channels[i].members[j]].send_to_user +=  resp;
+						std::string response = resp.str();
+						_clients[_channels[i].members[j]].send_to_user +=  response;
 						logsend(_poll_fds[k].fd, _clients[_channels[i].members[j]].send_to_user);
 						_clients[_channels[i].members[j]].send_to_user = "";
 					}
@@ -66,14 +74,33 @@ void Server::sendmsg(std::vector<std::string> tokens, std::string nick)
 			return ;
         }
     }
-	std::string resp = ":" + nick + " PRIVMSG " + tokens[1] + " :";
-	for (int i = 2; tokens[i].size() != 0; i++)
-		resp += " " + tokens[i];
-	resp += "\r\n";
-	for (size_t i = 0; i < _clients.size(); i++)
+	if (tokens[1] != _clients[cc].nick)
 	{
-		if (_clients[i].nick == tokens[1])
-			_clients[i].send_to_user += resp;
+		resp << ":" << _clients[cc].nick << " PRIVMSG " << tokens[1] << " :";
+		for (int i = 2; tokens[i].size() != 0; i++)
+		{
+			resp << tokens[i];
+			if (!tokens[i + 1].empty())
+				resp << " ";
+		}
+		resp << "\r\n";
+		for (size_t i = 0; i < _clients.size(); i++)
+		{
+			if (_clients[i].nick == tokens[1])
+			{
+				std::string response = resp.str();
+				_clients[i].send_to_user += response;
+				for (size_t k = 0; k < _poll_fds.size(); k++)
+				{
+    	            if (_poll_fds[k].fd == _clients[i].fd
+						&& _clients[i].nick != _clients[cc].nick)
+					{
+						logsend(_poll_fds[k].fd, _clients[i].send_to_user);
+						_clients[i].send_to_user = "";
+					}
+    	        }	
+			}
+		}
 	}
 }
 
@@ -83,11 +110,7 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	{
 		std::string channelname;
 		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
-			channelname = tokens[1].substr(1);
-		else if (tokens[1].length() >= 1 && tokens[1][0] != '#')
-		{
 			channelname = tokens[1];
-		}
 		else
 		{
 			std::cout << "Wrong channel name format" << std::endl;
@@ -101,7 +124,8 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 				{
 					if (_clients[cc]._channels[k] == channelname)
 					{
-						_clients[cc].send_to_user += SERVERNAME" You are already in this channel\r\n";
+						std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
+						_clients[cc].send_to_user += resp;
 						return 1;
 					}
 				}
@@ -299,13 +323,8 @@ const char* Server::mode(int cc, std::vector<std::string> tokens){
 				{
 					if (_clients[cc]._channels[i] == _channels[j].name)
 					{
-						std::cout << "HERE\n";
 						if (!tokens[2].size())
-						{
-
 							return(irc::RPL_CHANNELMODEIS(_channels[j].name, _channels[j].mode, _channels[j].modeparams));
-						}
-						std::cout << "HERE2\n";
 						if(_clients[cc].mode.find("o") != std::string::npos
 						|| _clients[cc].mode.find("O") != std::string::npos)
 						{
@@ -403,7 +422,17 @@ void Server::nick(std::vector<std::string> tokens, int cc, int i)
 void Server::quit(std::vector<std::string> tokens, int i, int cc)
 {
 	if (tokens[1].empty() == false)
+	{
+		std::string resp = tokens[1];
+		for (int i = 2; tokens[i].size() != 0; i++)
+		{
+			resp += tokens[i];
+			if (!tokens[i + 1].empty())
+				resp += " ";
+		}
+		resp += "\r\n";
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());
+	}
 	close(_poll_fds[i].fd);
     _poll_fds.erase(_poll_fds.begin() + i);
 	write_nice(RED, "Client: ", false);
@@ -416,4 +445,23 @@ void Server::quit(std::vector<std::string> tokens, int i, int cc)
 void Server::ping(std::vector<std::string> tokens,int cc)
 {
 	_clients[cc].send_to_user += "PONG " + _clients[cc].nick + " " + tokens[2] + "\r\n";
+}
+
+void Server::names(std::vector<std::string> tokens, int cc)
+{
+	std::string nicklist = "";
+	for(int i = 0; _channels[i].name.size() != 0; i++)
+	{
+		if (_channels[i].name == tokens[1])
+		{
+			for(size_t j = 0; j < _channels[i].members.size(); j++)
+			{
+				nicklist += _clients[_channels[i].members[j]].nick;
+				if (_channels[i].members[j + 1])
+					nicklist += " ";
+			}
+		}
+	}
+	_clients[cc].send_to_user += irc::RPL_NAMREPLY(tokens[1], nicklist);
+	_clients[cc].send_to_user += irc::RPL_ENDOFNAMES(tokens[1]);
 }

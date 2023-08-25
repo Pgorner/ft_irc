@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/23 16:22:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 19:25:31 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -824,7 +824,7 @@ namespace irc
     const char* RPL_ENDOFNAMES(const std::string& channel)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 366 " + channel + " :End of NAMES list\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 366 " + channel + " :" + channel + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;

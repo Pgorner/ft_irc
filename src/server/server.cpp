@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/24 09:25:36 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/25 19:36:34 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,9 +225,10 @@ void Server::run() {
 									write_nice(RED, _channels[i].mode.c_str(), true);
 									write_nice(RED, "members:	", false);
 									for (size_t j = 0; j < _channels[i].members.size(); j++){
-										write_nice(RED, std::to_string(_channels[i].members[j]), false);
+										write_nice(RED, _clients[_channels[i].members[j]].nick, false);
 										write_nice(RED, "/", false);
 									}
+									write_nice(RED, "", true);
 								}
 								std::cout << RESET << std::endl;
 						}
@@ -282,18 +283,24 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		}
 		else if (tokens[0] == "JOIN")
 			joinchannel(tokens, cc);
-		else if (tokens[0] == "PRIVMSG") 
-			sendmsg(tokens, _clients[cc].nick);
+		else if (tokens[0] == "PRIVMSG")
+		{
+			if (tokens[1].empty())
+				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("PRIVMSG");
+			else
+				sendmsg(tokens, cc);
+		}
 		else if (tokens[0] == "PING")
 			ping(tokens, cc);
 		else if (tokens[0] == "QUIT")
 			quit(tokens, i, cc);
+		else if (tokens[0] == "NAMES")
+			names(tokens, cc);
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
 	// else if (tokens[0] == "PART") {}
 	// else if (tokens[0] == "TOPIC") {}
-	// else if (tokens[0] == "NAMES") {}
 	// else if (tokens[0] == "LIST") {}
 	// else if (tokens[0] == "INVITE") {}
 	// else if (tokens[0] == "KICK") {}

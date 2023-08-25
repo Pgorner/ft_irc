@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/23 17:20:17 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 19:18:43 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
         std::string nick;
         std::string user;       
         std::string realname;   
-        std::string send_to_user;   
+        std::string send_to_user;
         ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname){}
     };
 	
@@ -81,8 +81,8 @@ class Server {
     const char* mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
-	void sendmsg(std::vector<std::string> tokens, std::string nick);
-
+	void sendmsg(std::vector<std::string> tokens, int cc);
+    void names(std::vector<std::string> tokens , int cc);
 
     static Server* server_ptr;
 

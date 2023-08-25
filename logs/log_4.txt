@@ -1,0 +1,237 @@
+[2023-08-25 19:36:39] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-25 19:36:39] first exit started
+[2023-08-25 19:36:39] port validated
+[2023-08-25 19:36:39] welcome successfully done
+[2023-08-25 19:36:39] sig_handler started
+[2023-08-25 19:36:39] poll started successfully
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-25 19:36:41] CLIENT SENT: CAP LS
+PING :localhost
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] CAP * LS :
+
+[2023-08-25 19:36:41] CLIENT SENT: CAP LS
+PING :localhost
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] CAP * LS :
+
+[2023-08-25 19:36:41] CLIENT SENT: CAP END
+PASS :1234
+NICK nick
+USER goose 0 localhost :11,11pgorner
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to nick
+IRCSERV USER has been set to goose
+IRCSERV REALNAME has been set to 11,11pgorner
+:IRCSERV 001 nick !goose @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-25 19:36:41] CLIENT SENT: CAP END
+PASS :1234
+NICK nick
+USER goose 0 localhost :11,11pgorner
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-25 19:36:41] CLIENT SENT: MODE nick +i
+
+[2023-08-25 19:36:41] SERVER SENT: 
+[2023-08-25 19:36:41] :IRCSERV 221 +i
+
+[2023-08-25 19:36:46] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:36:46] SERVER SENT: 
+[2023-08-25 19:36:46] PONG nick localhost
+
+[2023-08-25 19:36:48] SERVER SENT: 
+[2023-08-25 19:36:48] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-25 19:36:48] CLIENT SENT: CAP LS
+PING :localhost
+
+[2023-08-25 19:36:48] SERVER SENT: 
+[2023-08-25 19:36:48] CAP * LS :
+
+[2023-08-25 19:36:48] CLIENT SENT: CAP END
+PASS :1234
+NICK nick
+USER goose 0 localhost :11,11pgorner
+
+[2023-08-25 19:36:48] SERVER SENT: 
+[2023-08-25 19:36:48] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-25 19:36:50] CLIENT SENT: USER diff
+
+[2023-08-25 19:36:50] SERVER SENT: 
+[2023-08-25 19:36:50] IRCSERV USER has been set to diff
+
+[2023-08-25 19:36:51] CLIENT SENT: NICK diff
+
+[2023-08-25 19:36:51] SERVER SENT: 
+[2023-08-25 19:36:51] IRCSERV NICK has been set to diff
+:IRCSERV 001 diff !diff @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-25 19:36:51] CLIENT SENT: MODE diff +i
+
+[2023-08-25 19:36:51] SERVER SENT: 
+[2023-08-25 19:36:51] :IRCSERV 221 +i
+
+[2023-08-25 19:36:56] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:36:56] SERVER SENT: 
+[2023-08-25 19:36:56] PONG diff localhost
+
+[2023-08-25 19:36:57] CLIENT SENT: JOIN #test
+
+[2023-08-25 19:36:57] SERVER SENT: 
+[2023-08-25 19:36:57] :diff JOIN :test
+
+[2023-08-25 19:36:58] CLIENT SENT: MODE test
+
+[2023-08-25 19:36:58] SERVER SENT: 
+[2023-08-25 19:36:58] :IRCSERV 324 test  itkol
+
+[2023-08-25 19:36:59] CLIENT SENT: WHO test
+
+[2023-08-25 19:37:00] CLIENT SENT: MODE test b
+
+[2023-08-25 19:37:00] SERVER SENT: 
+[2023-08-25 19:37:00] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-25 19:37:02] CLIENT SENT: JOIN #test
+
+[2023-08-25 19:37:02] SERVER SENT: 
+[2023-08-25 19:37:02] :nick JOIN :test
+
+[2023-08-25 19:37:03] CLIENT SENT: MODE test
+
+[2023-08-25 19:37:03] SERVER SENT: 
+[2023-08-25 19:37:03] :IRCSERV 324 test  itkol
+
+[2023-08-25 19:37:04] CLIENT SENT: WHO test
+
+[2023-08-25 19:37:05] CLIENT SENT: MODE test b
+
+[2023-08-25 19:37:05] SERVER SENT: 
+[2023-08-25 19:37:05] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-25 19:37:13] CLIENT SENT: PRIVMSG #test :hello
+
+[2023-08-25 19:37:22] CLIENT SENT: :nick PRIVMSG #test :hello
+
+[2023-08-25 19:37:33] CLIENT SENT: PRIVMSG test :hello
+
+[2023-08-25 19:37:33] SERVER SENT: 
+[2023-08-25 19:37:33] :nick!nick@localhost PRIVMSG test :hello
+
+[2023-08-25 19:37:46] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:37:46] SERVER SENT: 
+[2023-08-25 19:37:46] PONG nick localhost
+
+[2023-08-25 19:37:56] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:37:56] SERVER SENT: 
+[2023-08-25 19:37:56] PONG diff localhost
+
+[2023-08-25 19:38:11] CLIENT SENT: PRIVMSG test :hello
+
+[2023-08-25 19:38:11] SERVER SENT: 
+[2023-08-25 19:38:11] :nick!nick@localhost PRIVMSG test :hello
+
+[2023-08-25 19:38:23] CLIENT SENT: PRIVMSG test hello
+
+[2023-08-25 19:38:23] SERVER SENT: 
+[2023-08-25 19:38:23] :nick!nick@localhost PRIVMSG test :hello
+
+[2023-08-25 19:38:32] CLIENT SENT: PRIVMSG test hello
+
+[2023-08-25 19:38:32] SERVER SENT: 
+[2023-08-25 19:38:32] :diff!diff@localhost PRIVMSG test :hello
+
+[2023-08-25 19:38:46] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:38:46] SERVER SENT: 
+[2023-08-25 19:38:46] PONG nick localhost
+
+[2023-08-25 19:38:47] CLIENT SENT: PRIVMSG diff :PRIVMSG diff hello
+
+[2023-08-25 19:38:47] SERVER SENT: 
+[2023-08-25 19:38:47] :nick PRIVMSG diff :PRIVMSG diff hello
+
+[2023-08-25 19:38:56] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:38:56] SERVER SENT: 
+[2023-08-25 19:38:56] PONG diff localhost
+
+[2023-08-25 19:39:00] CLIENT SENT: PRIVMSG diff hello
+
+[2023-08-25 19:39:00] SERVER SENT: 
+[2023-08-25 19:39:00] :nick PRIVMSG diff :hello
+
+[2023-08-25 19:39:15] CLIENT SENT: PRIVMSG test hello
+
+[2023-08-25 19:39:15] SERVER SENT: 
+[2023-08-25 19:39:15] :nick!nick@localhost PRIVMSG test :hello
+
+[2023-08-25 19:39:46] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:39:46] SERVER SENT: 
+[2023-08-25 19:39:46] PONG nick localhost
+
+[2023-08-25 19:39:56] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:39:56] SERVER SENT: 
+[2023-08-25 19:39:56] PONG diff localhost
+
+[2023-08-25 19:40:51] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:40:51] SERVER SENT: 
+[2023-08-25 19:40:51] PONG nick localhost
+
+[2023-08-25 19:41:02] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:41:02] SERVER SENT: 
+[2023-08-25 19:41:02] PONG diff localhost
+
+[2023-08-25 19:41:47] CLIENT SENT: PING nick localhost
+
+[2023-08-25 19:41:47] SERVER SENT: 
+[2023-08-25 19:41:47] PONG nick localhost
+
+[2023-08-25 19:42:01] CLIENT SENT: PING diff localhost
+
+[2023-08-25 19:42:01] SERVER SENT: 
+[2023-08-25 19:42:01] PONG diff localhost
+

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/23 17:25:46 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/24 09:18:15 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ void Server::sendmsg(std::vector<std::string> tokens, std::string nick)
 	{
         if (_channels[i].name == tokens[1])
 		{
-			std::cout << ":" + nick + " PRIVMSG #" + tokens[1] + " :"+ tokens[2] + "\r\n";
-			std::string resp =  ":" + nick + " PRIVMSG #" + tokens[1] + " :" + tokens[2] + "\r\n";	
+			std::cout << ":" + nick + " PRIVMSG " + tokens[1] + " :"+ tokens[2] + "\r\n";
+			std::string resp =  ":" + nick + " PRIVMSG " + tokens[1] + " :" + tokens[2] + "\r\n";	
             for (size_t j = 0; j < _channels[i].members.size(); j++)
 			{
 				for (size_t k = 0; k < _poll_fds.size(); k++)
@@ -66,7 +66,10 @@ void Server::sendmsg(std::vector<std::string> tokens, std::string nick)
 			return ;
         }
     }
-	std::string resp = ":" + nick + " PRIVMSG #" + tokens[1] + " :" + tokens[2] + "\r\n";
+	std::string resp = ":" + nick + " PRIVMSG " + tokens[1] + " :";
+	for (int i = 2; tokens[i].size() != 0; i++)
+		resp += " " + tokens[i];
+	resp += "\r\n";
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i].nick == tokens[1])

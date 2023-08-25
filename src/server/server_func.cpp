@@ -368,7 +368,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 			_clients[cc].realname = "";
 	}
 	else if (user == true)
-	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n"SERVERNAME"Please chooes a different one\r\n";
+	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n"SERVERNAME" Please chooes a different one\r\n";
 	else
 		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 }
@@ -394,7 +394,7 @@ void Server::nick(std::vector<std::string> tokens, int cc, int i)
 		_clients[cc].send_to_user += "\r\n";
 	}
 	else if (nickinuse == true)
-	   	_clients[cc].send_to_user += SERVERNAME" NICK has already been taken\r\n"SERVERNAME"Please chooes a different one\r\n";
+	   	_clients[cc].send_to_user += SERVERNAME" NICK has already been taken\r\n"SERVERNAME" Please chooes a different one\r\n";
 }
 
 void Server::quit(std::vector<std::string> tokens, int i, int cc)

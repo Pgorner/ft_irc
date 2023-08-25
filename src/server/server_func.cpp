@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/24 09:18:15 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/25 18:47:27 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,55 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	{
 		std::cout << "Wrong JOIN parameters" << std::endl;
 		return 0;
+	}
+}
+
+void Server::leavechannel(std::vector<std::string> tokens, int cc)
+{
+	if (tokens.size() == 2)
+	{
+		std::string channelname;
+		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
+			channelname = tokens[1].substr(1);
+		else if (tokens[1].length() >= 1 && tokens[1][0] != '#')
+			channelname = tokens[1];
+		else
+		{
+			std::cout << "Wrong channel name format" << std::endl;
+			return ;
+		}
+		for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+		{
+			if (_clients[cc]._channels[i] == channelname)
+			{
+				//remove channel from user
+				_clients[cc]._channels.erase(_clients[cc]._channels.begin() + i);
+				//remove user from channel
+				for (size_t j = 0; j < _channels.size(); j++)
+				{
+					if (_channels[j].name == channelname)
+					{
+						for (size_t k = 0; k < _channels[j].members.size(); k++)
+						{
+							if (_channels[j].members[k] == cc)
+							{
+								_channels[j].members.erase(_channels[j].members.begin() + k);
+								break;
+							}
+						}
+						break ;
+					}
+				}
+				std::string resp = ":" + _clients[cc].nick + " PART :" + channelname + "\r\n";	
+				_clients[cc].send_to_user += resp;
+				return ;
+			}
+		}
+		std::cout << "User is not in the channel" << std::endl;
+	}
+	else
+	{
+		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("PART");
 	}
 }
 

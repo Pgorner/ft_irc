@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/24 09:25:36 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/25 18:01:11 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,10 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		}
 		else if (tokens[0] == "JOIN")
 			joinchannel(tokens, cc);
+		else if (tokens[0] == "PART")
+		{
+			leavechannel(tokens, cc);
+		}
 		else if (tokens[0] == "PRIVMSG") 
 			sendmsg(tokens, _clients[cc].nick);
 		else if (tokens[0] == "PING")
@@ -291,7 +295,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
-	// else if (tokens[0] == "PART") {}
 	// else if (tokens[0] == "TOPIC") {}
 	// else if (tokens[0] == "NAMES") {}
 	// else if (tokens[0] == "LIST") {}

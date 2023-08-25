@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/23 17:20:17 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 18:07:43 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ class Server {
     const char* mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
+	void leavechannel(std::vector<std::string> tokens, int cc);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
 
 

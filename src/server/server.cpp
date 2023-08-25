@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 20:00:53 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 20:05:29 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,9 +291,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 				sendmsg(tokens, cc);
 		}
 		else if (tokens[0] == "PART")
-		{
 			leavechannel(tokens, cc);
-		}
 		else if (tokens[0] == "PING")
 			ping(tokens, cc);
 		else if (tokens[0] == "QUIT")

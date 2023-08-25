@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 20:00:03 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/25 20:09:01 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,23 +181,22 @@ void Server::removefromchannel(std::string channelname, int cc)
 			return ;
 		}
 	}
+	_clients[cc].send_to_user += SERVERNAME" You are not in the channel\r\n";
+	return;
 }
 
 void Server::leavechannel(std::vector<std::string> tokens, int cc)
 {
-	if (tokens.size() == 2)
+	if (tokens.size() >= 2)
 	{
 		std::string channelname;
-		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
-			channelname = tokens[1].substr(1);
-		else if (tokens[1].length() >= 1 && tokens[1][0] != '#')
+		if (tokens[1].length() >= 1 && tokens[1][0] == '#')
 			channelname = tokens[1];
 		else
 		{
 			_clients[cc].send_to_user += SERVERNAME"Wrong channel name format\r\n";
 			return ;
 		}
-		_clients[cc].send_to_user += SERVERNAME" You are not in the channel\r\n";
 		removefromchannel(channelname, cc);
 	}
 	else
@@ -485,6 +484,7 @@ void Server::quit(std::vector<std::string> tokens, int i, int cc)
 		}
 		resp += "\r\n";
 	    logsend(_poll_fds[i].fd, tokens[1].c_str());
+	}
 	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
 		removefromchannel(_clients[cc]._channels[i], cc);
 	close(_poll_fds[i].fd);

@@ -1,0 +1,109 @@
+[2023-08-25 20:04:19] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-25 20:04:19] first exit started
+[2023-08-25 20:04:19] port validated
+[2023-08-25 20:04:19] welcome successfully done
+[2023-08-25 20:04:19] sig_handler started
+[2023-08-25 20:04:19] poll started successfully
+[2023-08-25 20:04:29] SERVER SENT: 
+[2023-08-25 20:04:29] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-25 20:04:29] CLIENT SENT: CAP LS
+PING :localhost
+
+[2023-08-25 20:04:29] SERVER SENT: 
+[2023-08-25 20:04:29] CAP * LS :
+
+[2023-08-25 20:04:29] CLIENT SENT: CAP END
+PASS :1234
+NICK nick
+USER goose 0 localhost :11,11pgorner
+
+[2023-08-25 20:04:29] SERVER SENT: 
+[2023-08-25 20:04:29] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to nick
+IRCSERV USER has been set to goose
+IRCSERV REALNAME has been set to 11,11pgorner
+:IRCSERV 001 nick !goose @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-25 20:04:29] CLIENT SENT: MODE nick +i
+
+[2023-08-25 20:04:29] SERVER SENT: 
+[2023-08-25 20:04:29] :IRCSERV 221 +i
+
+[2023-08-25 20:04:34] CLIENT SENT: JOIN #test
+
+[2023-08-25 20:04:34] SERVER SENT: 
+[2023-08-25 20:04:34] :nick JOIN :#test
+
+[2023-08-25 20:04:34] CLIENT SENT: PING nick localhost
+
+[2023-08-25 20:04:34] SERVER SENT: 
+[2023-08-25 20:04:34] PONG nick localhost
+
+[2023-08-25 20:04:35] CLIENT SENT: MODE #test
+
+[2023-08-25 20:04:35] SERVER SENT: 
+[2023-08-25 20:04:35] :IRCSERV 324 #test  itkol
+
+[2023-08-25 20:04:36] CLIENT SENT: WHO #test
+
+[2023-08-25 20:04:37] CLIENT SENT: MODE #test b
+
+[2023-08-25 20:04:37] SERVER SENT: 
+[2023-08-25 20:04:37] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-25 20:04:38] CLIENT SENT: PART #test :No boundaries on the net!
+
+[2023-08-25 20:04:38] SERVER SENT: 
+[2023-08-25 20:04:38] :IRCSERV 461 PART :Not enough parameters
+
+[2023-08-25 20:05:14] CLIENT SENT: PART #test
+
+[2023-08-25 20:05:14] SERVER SENT: 
+[2023-08-25 20:05:15] IRCSERV You are not in the channel
+
+[2023-08-25 20:05:34] CLIENT SENT: PING nick localhost
+
+[2023-08-25 20:05:34] SERVER SENT: 
+[2023-08-25 20:05:34] PONG nick localhost
+
+[2023-08-25 20:05:36] CLIENT SENT: PART test
+
+[2023-08-25 20:05:36] SERVER SENT: 
+[2023-08-25 20:05:36] IRCSERV You are not in the channel
+
+[2023-08-25 20:05:47] CLIENT SENT: JOIN #test
+
+[2023-08-25 20:05:47] SERVER SENT: 
+[2023-08-25 20:05:47] :nick JOIN :#test
+
+[2023-08-25 20:05:48] CLIENT SENT: MODE #test
+
+[2023-08-25 20:05:48] SERVER SENT: 
+[2023-08-25 20:05:48] :IRCSERV 324 #test  itkol
+
+[2023-08-25 20:05:49] CLIENT SENT: WHO #test
+
+[2023-08-25 20:05:50] CLIENT SENT: MODE #test b
+
+[2023-08-25 20:05:50] SERVER SENT: 
+[2023-08-25 20:05:50] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-25 20:05:53] CLIENT SENT: PART #test
+
+[2023-08-25 20:05:53] SERVER SENT: 
+[2023-08-25 20:05:53] IRCSERV You are not in the channel
+
+[2023-08-25 20:05:57] CLIENT SENT: PART test
+
+[2023-08-25 20:05:57] SERVER SENT: 
+[2023-08-25 20:05:57] IRCSERV You are not in the channel
+

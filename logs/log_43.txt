@@ -1,0 +1,136 @@
+[2023-08-26 19:12:14] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 19:12:14] first exit started
+[2023-08-26 19:12:14] port validated
+[2023-08-26 19:12:14] welcome successfully done
+[2023-08-26 19:12:14] sig_handler started
+[2023-08-26 19:12:14] poll started successfully
+[2023-08-26 19:12:16] SERVER SENT: 
+[2023-08-26 19:12:16] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 19:12:16] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 19:12:16] SERVER SENT: 
+[2023-08-26 19:12:16] CAP * LS :
+
+[2023-08-26 19:12:16] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 19:12:16] SERVER SENT: 
+[2023-08-26 19:12:16] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 19:12:21] CLIENT SENT: JOIN #test
+
+[2023-08-26 19:12:21] SERVER SENT: 
+[2023-08-26 19:12:21] :god JOIN :#test
+
+[2023-08-26 19:12:21] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 19:12:21] SERVER SENT: 
+[2023-08-26 19:12:21] PONG god 127.0.0.1
+
+[2023-08-26 19:12:22] CLIENT SENT: MODE #test
+
+[2023-08-26 19:12:22] SERVER SENT: 
+[2023-08-26 19:12:22] :IRCSERV 324 #test  itkol
+
+[2023-08-26 19:12:23] CLIENT SENT: WHO #test
+
+[2023-08-26 19:12:24] CLIENT SENT: MODE #test b
+
+[2023-08-26 19:12:24] SERVER SENT: 
+[2023-08-26 19:12:24] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-26 19:12:27] CLIENT SENT: OPER god 1234
+
+[2023-08-26 19:12:27] SERVER SENT: 
+[2023-08-26 19:12:27] :IRCSERV 381 :You are now an IRC operator
+
+[2023-08-26 19:12:36] SERVER SENT: 
+[2023-08-26 19:12:36] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 19:12:36] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 19:12:36] SERVER SENT: 
+[2023-08-26 19:12:36] CAP * LS :
+
+[2023-08-26 19:12:36] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 19:12:36] SERVER SENT: 
+[2023-08-26 19:12:36] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-26 19:12:38] CLIENT SENT: USER ko
+
+[2023-08-26 19:12:38] SERVER SENT: 
+[2023-08-26 19:12:38] IRCSERV USER has been set to ko
+
+[2023-08-26 19:12:39] CLIENT SENT: NICK ko
+
+[2023-08-26 19:12:39] SERVER SENT: 
+[2023-08-26 19:12:39] IRCSERV NICK has been set to ko
+:IRCSERV 001 ko !ko @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 19:12:43] CLIENT SENT: JION #test
+
+[2023-08-26 19:12:45] CLIENT SENT: PING ko 127.0.0.1
+
+[2023-08-26 19:12:45] SERVER SENT: 
+[2023-08-26 19:12:45] PONG ko 127.0.0.1
+
+[2023-08-26 19:12:48] CLIENT SENT: JOIN #test
+
+[2023-08-26 19:12:48] SERVER SENT: 
+[2023-08-26 19:12:48] :ko JOIN :#test
+
+[2023-08-26 19:12:49] CLIENT SENT: MODE #test
+
+[2023-08-26 19:12:49] SERVER SENT: 
+[2023-08-26 19:12:49] :IRCSERV 324 #test  itkol
+
+[2023-08-26 19:12:50] CLIENT SENT: WHO #test
+
+[2023-08-26 19:12:51] CLIENT SENT: MODE #test b
+
+[2023-08-26 19:12:51] SERVER SENT: 
+[2023-08-26 19:12:51] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-26 19:12:59] CLIENT SENT: KICK #test ko
+
+[2023-08-26 19:12:59] SERVER SENT: 
+[2023-08-26 19:12:59] IRCSERV User kicked
+
+[2023-08-26 19:13:17] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 19:13:17] SERVER SENT: 
+[2023-08-26 19:13:17] PONG god 127.0.0.1
+
+[2023-08-26 19:13:45] CLIENT SENT: PING ko 127.0.0.1
+
+[2023-08-26 19:13:45] SERVER SENT: 
+[2023-08-26 19:13:45] PONG ko 127.0.0.1
+

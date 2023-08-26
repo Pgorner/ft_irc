@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 20:00:53 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/26 18:40:48 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,6 +294,10 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		{
 			leavechannel(tokens, cc);
 		}
+		else if (tokens[0] == "KICK")
+		{
+			kick(tokens, cc);
+		} 
 		else if (tokens[0] == "PING")
 			ping(tokens, cc);
 		else if (tokens[0] == "QUIT")
@@ -303,10 +307,9 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	}
 	// else if (tokens[0] == "SERVICE") {}
 	// else if (tokens[0] == "SQUIT") {}
-	// else if (tokens[0] == "TOPIC") {}
+	// else if (tokens[0] == "TOPIC") {} ..
 	// else if (tokens[0] == "LIST") {}
-	// else if (tokens[0] == "INVITE") {}
-	// else if (tokens[0] == "KICK") {}
+	// else if (tokens[0] == "INVITE") {} ..
 	// else if (tokens[0] == "NOTICE") {}
 	// else if (tokens[0] == "MOTD") {}
 	// else if (tokens[0] == "LUSERS") {}

@@ -1,0 +1,44 @@
+[2023-08-26 18:41:01] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 18:41:01] first exit started
+[2023-08-26 18:41:01] port validated
+[2023-08-26 18:41:01] welcome successfully done
+[2023-08-26 18:41:01] sig_handler started
+[2023-08-26 18:41:01] poll started successfully
+[2023-08-26 18:41:03] SERVER SENT: 
+[2023-08-26 18:41:03] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:41:03] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:41:03] SERVER SENT: 
+[2023-08-26 18:41:03] CAP * LS :
+
+[2023-08-26 18:41:03] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:41:03] SERVER SENT: 
+[2023-08-26 18:41:03] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 18:41:04] CLIENT SENT: KICK #test ko
+
+[2023-08-26 18:41:07] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:41:07] SERVER SENT: 
+[2023-08-26 18:41:07] PONG god 127.0.0.1
+
+[2023-08-26 18:41:18] CLIENT SENT: KICK #test ko
+

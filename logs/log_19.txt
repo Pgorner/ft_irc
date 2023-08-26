@@ -1,0 +1,85 @@
+[2023-08-26 18:28:18] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 18:28:18] first exit started
+[2023-08-26 18:28:18] port validated
+[2023-08-26 18:28:18] welcome successfully done
+[2023-08-26 18:28:18] sig_handler started
+[2023-08-26 18:28:18] poll started successfully
+[2023-08-26 18:28:21] SERVER SENT: 
+[2023-08-26 18:28:21] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:28:21] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:28:21] SERVER SENT: 
+[2023-08-26 18:28:21] CAP * LS :
+
+[2023-08-26 18:28:21] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:28:21] SERVER SENT: 
+[2023-08-26 18:28:21] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 18:28:26] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:28:26] SERVER SENT: 
+[2023-08-26 18:28:26] PONG god 127.0.0.1
+
+[2023-08-26 18:28:37] CLIENT SENT: JOIN #test
+
+[2023-08-26 18:28:37] SERVER SENT: 
+[2023-08-26 18:28:37] :god JOIN :#test
+
+[2023-08-26 18:28:39] CLIENT SENT: MODE #test
+
+[2023-08-26 18:28:39] SERVER SENT: 
+[2023-08-26 18:28:39] :IRCSERV 324 #test  itkol
+
+[2023-08-26 18:28:39] CLIENT SENT: WHO #test
+
+[2023-08-26 18:28:40] CLIENT SENT: MODE #test b
+
+[2023-08-26 18:28:40] SERVER SENT: 
+[2023-08-26 18:28:40] :IRCSERV 481 :Permission Denied- You're not an IRC operator
+
+[2023-08-26 18:28:53] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:28:59] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:29:26] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:29:26] SERVER SENT: 
+[2023-08-26 18:29:26] PONG god 127.0.0.1
+
+[2023-08-26 18:29:41] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:30:00] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:30:08] CLIENT SENT: PART #test
+
+[2023-08-26 18:30:08] SERVER SENT: 
+[2023-08-26 18:30:08] IRCSERV You are not in the channel
+:god PART :#test
+
+[2023-08-26 18:30:10] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:30:26] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:30:26] SERVER SENT: 
+[2023-08-26 18:30:26] PONG god 127.0.0.1
+
+[2023-08-26 18:30:33] CLIENT SENT: OPER god 1234
+

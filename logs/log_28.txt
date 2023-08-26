@@ -1,0 +1,66 @@
+[2023-08-26 18:43:52] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 18:43:52] first exit started
+[2023-08-26 18:43:52] port validated
+[2023-08-26 18:43:52] welcome successfully done
+[2023-08-26 18:43:52] sig_handler started
+[2023-08-26 18:43:52] poll started successfully
+[2023-08-26 18:43:54] SERVER SENT: 
+[2023-08-26 18:43:54] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:43:54] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:43:54] SERVER SENT: 
+[2023-08-26 18:43:54] CAP * LS :
+
+[2023-08-26 18:43:54] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:43:54] SERVER SENT: 
+[2023-08-26 18:43:54] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 18:43:55] CLIENT SENT: KICK #test ko
+
+[2023-08-26 18:43:57] SERVER SENT: 
+[2023-08-26 18:43:57] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:43:57] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:43:57] SERVER SENT: 
+[2023-08-26 18:43:57] CAP * LS :
+
+[2023-08-26 18:43:57] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:43:57] SERVER SENT: 
+[2023-08-26 18:43:57] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-26 18:43:58] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:43:58] SERVER SENT: 
+[2023-08-26 18:43:58] PONG god 127.0.0.1
+

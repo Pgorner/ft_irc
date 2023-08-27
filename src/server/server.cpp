@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/26 18:40:48 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/27 15:41:21 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,10 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 				_clients[cc].send_to_user += mode(cc, tokens);
 		}
 		else if (tokens[0] == "JOIN")
+		{
 			joinchannel(tokens, cc);
+			// std::cout << _client[cc].fd << std::endl;
+		}
 		else if (tokens[0] == "PRIVMSG")
 		{
 			if (tokens[1].empty())

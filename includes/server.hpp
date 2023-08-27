@@ -6,7 +6,7 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/26 18:22:07 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/27 15:54:05 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ class Server {
 	void kick(std::vector<std::string> tokens , int cc);
 	void removefromchannel(std::string channelname, int cc);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
-	int find_user_fd(std::string username);
+	int find_user(std::string username);
 
 
     static Server* server_ptr;

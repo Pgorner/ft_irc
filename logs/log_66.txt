@@ -1,0 +1,66 @@
+[2023-08-27 16:28:04] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-27 16:28:04] first exit started
+[2023-08-27 16:28:04] port validated
+[2023-08-27 16:28:04] welcome successfully done
+[2023-08-27 16:28:04] sig_handler started
+[2023-08-27 16:28:04] poll started successfully
+[2023-08-27 16:28:48] SERVER SENT: 
+[2023-08-27 16:28:48] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-27 16:28:48] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-27 16:28:48] SERVER SENT: 
+[2023-08-27 16:28:48] CAP * LS :
+
+[2023-08-27 16:28:48] CLIENT SENT: CAP END
+
+[2023-08-27 16:28:48] CLIENT SENT: PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-27 16:28:48] SERVER SENT: 
+[2023-08-27 16:28:48] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-27 16:28:58] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-27 16:28:59] SERVER SENT: 
+[2023-08-27 16:28:59] PONG god 127.0.0.1
+
+[2023-08-27 16:28:59] SERVER SENT: 
+[2023-08-27 16:28:59] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-27 16:28:59] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-27 16:28:59] SERVER SENT: 
+[2023-08-27 16:28:59] CAP * LS :
+
+[2023-08-27 16:28:59] CLIENT SENT: CAP END
+
+[2023-08-27 16:28:59] CLIENT SENT: PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-27 16:28:59] SERVER SENT: 
+[2023-08-27 16:28:59] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+

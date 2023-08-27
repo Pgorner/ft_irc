@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/27 20:44:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 21:19:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ class Server {
     ~Server();
     Server& operator=(const Server& obj);
 
+    int main(int argc, char **argv);
     int which_ipv(void);
     int start_sock(void);
 	int start_poll(void);
@@ -68,7 +69,7 @@ class Server {
     void proper_exit(void);
     void goodbye(void);
 	int err(std::string msg);
-    void run(); 
+    void run();
     static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
     void logsend(int fd, const std::string& msg, int cc);
@@ -80,6 +81,7 @@ class Server {
     void addmode(char letter, int cc);
     int addchanmode(char letter, int cc, int channel);
     bool isAllDigits(const std::string& str);
+    bool fileExists(const std::string& fileName);
     
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);

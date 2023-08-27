@@ -6,13 +6,39 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:08:03 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 21:17:01 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/irc.hpp"
 
 Server* Server::server_ptr = nullptr;
+
+Server::Server(const int &port, const std::string &pwd)
+    : _port(port),
+      _pwd(pwd),
+	  _socket(-1),
+	  running(false),
+      _start_time(std::time(NULL)),
+      _last_ping(std::time(NULL))
+{
+    sig_handlerserv();
+}
+
+Server::~Server()
+{
+    running = false;
+    if (_socket >= 0) {
+        close(_socket);
+        _socket = -1;
+	}
+}
+
+Server& Server::operator=(const Server& obj) {
+  (void)obj;
+  return *this;
+}
+
 
 void first_exit(int signal)
 {

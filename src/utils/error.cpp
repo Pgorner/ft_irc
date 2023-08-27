@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 18:14:39 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/02 18:37:43 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 20:51:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,24 @@ void Server::proper_exit(void)
     	std::this_thread::sleep_for(std::chrono::seconds(3));
 	}
 	clear(100);
+}
+
+void    Server::goodbye(void)
+{
+    if (PIGEON){
+        clear(100);
+        for (int i = 0; i <= 10; i++){
+            if (i % 2 == 0)
+                std::cout << PIGEON1 << std::flush;
+            else
+                std::cout << PIGEON2 << std::flush;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            clear(21);
+        }
+    }
+    else if (DEBUG){
+        clear(100);
+        clear(100);
+        write_nice(YELLOW, GOODBYE, false);
+    }
 }

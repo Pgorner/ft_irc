@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/08/27 18:27:50 by pgorner          ###   ########.fr        #
+#    Updated: 2023/08/27 21:17:39 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,14 +25,31 @@ CFLAGS = -Wall -Werror -Wextra -std=c++98
 LDFLAGS = -lncurses
 
 # List of source files
-SRC = src/main.cpp \
+SRC =		\
       src/utils/check.cpp \
       src/utils/error.cpp \
-      src/utils/utils.cpp \
+      src/utils/file_utils.cpp \
+      src/utils/find_utils.cpp \
       src/utils/replies.cpp \
+      src/utils/server_utils.cpp \
+      src/utils/utils.cpp \
+		\
       src/server/server.cpp \
+      src/server/invite.cpp \
+      src/server/join.cpp \
+      src/server/kick.cpp \
+      src/server/mode.cpp \
+      src/server/names.cpp \
+      src/server/nick.cpp \
+      src/server/oper.cpp \
+      src/server/part.cpp \
+      src/server/privmsg.cpp \
+      src/server/quit.cpp \
       src/server/startup.cpp \
-      src/server/server_func.cpp \
+      src/server/topic.cpp \
+      src/server/user.cpp \
+	  \
+	  src/main.cpp 
 
 # Convert source files to object files
 OBJS = $(SRC:%.cpp=$(OBJ_DIR)/%.o)

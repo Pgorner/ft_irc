@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/27 20:44:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 21:32:42 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,5 +119,8 @@ class Server {
 	std::vector<Channel> _channels;
 
 };
+
+bool fileExists(const std::string& fileName);
+bool validateUser(const std::string& filePath, const std::string& username, const std::string& password);
 
 #endif  // SERVER_HPP_

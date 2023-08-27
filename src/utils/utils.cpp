@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 16:27:13 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/27 20:46:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,13 @@ void log(std::string log)
     LOG << log;
 }
 
-void Server::logsend(int fd, const std::string& msg)
+void Server::logsend(int fd, const std::string& msg, int cc)
 {
     LOG << "SERVER SENT: ";
     LOG << msg;
     std::cout << YELLOW << "SERVER SENT:\n" << msg << std::endl;
+    if (cc != -1)
+        std::cout << YELLOW << "TO:\n" << _clients[cc].nick << std::endl;
     bool hasNewline = false;
     for (size_t i = 0; i < msg.length(); ++i) {
         if (msg[i] == '\n') {
@@ -130,4 +132,12 @@ void log_creation(void){
     if (isOpen)
         logFile.close();
     LOG << LOGFILE;
+}
+
+bool Server::isAllDigits(const std::string& str)
+{
+    for (std::size_t i = 0; i < str.length(); ++i)
+        if (!isdigit(str[i]))
+            return false;
+    return true;
 }

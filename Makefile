@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/08/25 19:31:13 by pgorner          ###   ########.fr        #
+#    Updated: 2023/08/27 18:27:50 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,7 +62,7 @@ clean:
 
 # Clean up object files, logs directory, and the executable
 fclean: clean
-	@$(RM) $(NAME)
+	@$(RM) $(NAME) $(LOG_DIR)
 
 # Target for installing irssi
 irssi: brew install irssi

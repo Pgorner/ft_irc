@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/25 20:00:16 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 15:54:05 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,15 @@
 
 #define POLLTIME 500 
 	
+	struct ClientData;
+	
 	struct Channel
 	{
 		std::string name;
 		std::string mode;
 		std::string modeparams;
 		std::vector<int> members;
+		// std::vector<int> opers;
         Channel(std::string channelname, std::string channelmode, std::string channelmodeparams) : name(channelname), mode(channelmode), modeparams(channelmodeparams) {}
 	};
     
@@ -84,8 +87,10 @@ class Server {
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
 	void leavechannel(std::vector<std::string> tokens, int cc);
+	void kick(std::vector<std::string> tokens , int cc);
 	void removefromchannel(std::string channelname, int cc);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
+	int find_user(std::string username);
 
 
     static Server* server_ptr;

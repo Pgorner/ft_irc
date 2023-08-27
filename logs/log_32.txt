@@ -1,0 +1,97 @@
+[2023-08-26 18:47:53] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 18:47:53] first exit started
+[2023-08-26 18:47:53] port validated
+[2023-08-26 18:47:53] welcome successfully done
+[2023-08-26 18:47:53] sig_handler started
+[2023-08-26 18:47:53] poll started successfully
+[2023-08-26 18:47:55] SERVER SENT: 
+[2023-08-26 18:47:55] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:47:55] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:47:55] SERVER SENT: 
+[2023-08-26 18:47:55] CAP * LS :
+
+[2023-08-26 18:47:56] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:47:56] SERVER SENT: 
+[2023-08-26 18:47:56] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 18:47:57] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:47:57] SERVER SENT: 
+[2023-08-26 18:47:57] :IRCSERV 381 :You are now an IRC operator
+
+[2023-08-26 18:47:58] SERVER SENT: 
+[2023-08-26 18:47:58] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:47:58] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:47:58] SERVER SENT: 
+[2023-08-26 18:47:58] CAP * LS :
+
+[2023-08-26 18:47:58] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:47:58] SERVER SENT: 
+[2023-08-26 18:47:58] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-26 18:47:59] CLIENT SENT: KICK #test ko
+
+[2023-08-26 18:47:59] SERVER SENT: 
+[2023-08-26 18:47:59] IRCSERV Channel doesn't exist
+
+[2023-08-26 18:48:00] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:48:00] SERVER SENT: 
+[2023-08-26 18:48:00] PONG god 127.0.0.1
+
+[2023-08-26 18:48:03] CLIENT SENT: JOIN #test
+
+[2023-08-26 18:48:03] SERVER SENT: 
+[2023-08-26 18:48:03] :god JOIN :#test
+
+[2023-08-26 18:48:04] CLIENT SENT: MODE #test
+
+[2023-08-26 18:48:04] SERVER SENT: 
+[2023-08-26 18:48:04] Added mode to channel
+
+[2023-08-26 18:48:05] CLIENT SENT: WHO #test
+
+[2023-08-26 18:48:06] CLIENT SENT: MODE #test b
+
+[2023-08-26 18:48:06] SERVER SENT: 
+[2023-08-26 18:48:06] :IRCSERV 502 :Cannot change mode for other users
+
+[2023-08-26 18:48:06] CLIENT SENT: KICK #test ko
+
+[2023-08-26 18:48:06] SERVER SENT: 
+[2023-08-26 18:48:06] IRCSERV User not found
+IRCSERV Channel doesn't exist
+

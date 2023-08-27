@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_func.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 20:09:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 16:27:34 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,16 +146,68 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	}
 	else
 	{
-		_clients[cc].send_to_user += SERVERNAME"Wrong JOIN parameters\r\n";
+		_clients[cc].send_to_user += SERVERNAME" Wrong JOIN parameters\r\n";
 		return 0;
 	}
+}
+
+int Server::find_user(std::string username)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].user == username)
+			return (i);
+	}
+	return (-1);
+}
+
+//if the channel exists but user still not there
+
+void Server::kick(std::vector<std::string> tokens , int cc)
+{
+	std::string channelname;
+	if (tokens[1].length() >= 2 && tokens[1][0] == '#')
+		channelname = tokens[1];
+	else
+	{
+		std::cout << "Wrong channel name format" << std::endl;
+		return ;
+	}
+
+	if (_clients[cc].mode.find('O') != std::string::npos)
+	{
+		///KICK[0] #channel[1] username[2] :reason[3]
+		for (size_t i = 0; i < _channels.size(); i++)
+		{
+			if (_channels[i].name == channelname)
+			{
+				int target = find_user(tokens[2]);
+				if (target != -1)
+				{
+					removefromchannel(channelname, target);
+					std::string resp;
+					resp = ":" + _clients[cc].nick + " KICK :" + tokens[1] + " " + tokens[2] + " :" +"\r\n";
+					_clients[cc].send_to_user += resp;
+					_clients[cc].send_to_user += SERVERNAME" User kicked\r\n";
+					return ;
+				}
+				else
+				{
+					_clients[cc].send_to_user += SERVERNAME" User not found\r\n";
+					return ;
+				}
+			}
+		}
+		_clients[cc].send_to_user += SERVERNAME" Channel doesn't exist\r\n";
+	}
+	else
+		_clients[cc].send_to_user += SERVERNAME" User not eligible to kick\r\n";
 }
 
 void Server::removefromchannel(std::string channelname, int cc)
 {
 	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
 	{
-		std::cout << "HERE" << std::endl;
 		if (_clients[cc]._channels[i] == channelname)
 		{
 			//remove channel from user
@@ -178,11 +230,12 @@ void Server::removefromchannel(std::string channelname, int cc)
 			}
 			std::string resp = ":" + _clients[cc].nick + " PART :" + channelname + "\r\n";	
 			_clients[cc].send_to_user += resp;
+			std::cout << "HERE4" << std::endl;
 			return ;
 		}
 	}
-	_clients[cc].send_to_user += SERVERNAME" You are not in the channel\r\n";
-	return;
+	std::cout << "HERE3" << std::endl;
+	_clients[cc].send_to_user += SERVERNAME" User is not found in the channel\r\n";
 }
 
 void Server::leavechannel(std::vector<std::string> tokens, int cc)
@@ -190,11 +243,11 @@ void Server::leavechannel(std::vector<std::string> tokens, int cc)
 	if (tokens.size() >= 2)
 	{
 		std::string channelname;
-		if (tokens[1].length() >= 1 && tokens[1][0] == '#')
+		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
 			channelname = tokens[1];
 		else
 		{
-			_clients[cc].send_to_user += SERVERNAME"Wrong channel name format\r\n";
+			_clients[cc].send_to_user += SERVERNAME" Wrong channel name format";
 			return ;
 		}
 		removefromchannel(channelname, cc);

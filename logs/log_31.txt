@@ -1,0 +1,76 @@
+[2023-08-26 18:46:18] 
+    _/          _/_/      _/_/_/  _/_/_/_/  _/_/_/  _/        _/_/_/_/   
+   _/        _/    _/  _/        _/          _/    _/        _/          
+  _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       
+ _/        _/    _/  _/    _/  _/          _/    _/        _/            
+_/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       
+[2023-08-26 18:46:18] first exit started
+[2023-08-26 18:46:18] port validated
+[2023-08-26 18:46:18] welcome successfully done
+[2023-08-26 18:46:18] sig_handler started
+[2023-08-26 18:46:18] poll started successfully
+[2023-08-26 18:46:22] SERVER SENT: 
+[2023-08-26 18:46:22] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:46:22] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:46:22] SERVER SENT: 
+[2023-08-26 18:46:22] CAP * LS :
+
+[2023-08-26 18:46:22] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:46:22] SERVER SENT: 
+[2023-08-26 18:46:22] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has been set to god
+IRCSERV USER has been set to god
+IRCSERV REALNAME has been set to 1,11KVIrc
+:IRCSERV 001 god !god @IRCSERV Welcome to the Internet Relay Network
+
+[2023-08-26 18:46:23] SERVER SENT: 
+[2023-08-26 18:46:23] IRCSERV Enter the password, user and nickname
+IRCSERV PASS <password>
+IRCSERV USER <username>
+IRCSERV NICK <nickname>
+
+[2023-08-26 18:46:23] CLIENT SENT: CAP LS
+PING :127.0.0.1
+
+[2023-08-26 18:46:23] SERVER SENT: 
+[2023-08-26 18:46:23] CAP * LS :
+
+[2023-08-26 18:46:23] CLIENT SENT: CAP END
+PASS :1234
+NICK god
+USER god 0 127.0.0.1 :1,11KVIrc 5.0.0 Aria http://kvirc.net/
+
+[2023-08-26 18:46:23] SERVER SENT: 
+[2023-08-26 18:46:23] IRCSERV Your PASSWORD is correct
+IRCSERV NICK has already been taken
+IRCSERV Please chooes a different one
+IRCSERV USER has already been taken
+IRCSERV Please chooes a different one
+
+[2023-08-26 18:46:24] CLIENT SENT: OPER god 1234
+
+[2023-08-26 18:46:24] SERVER SENT: 
+[2023-08-26 18:46:24] :IRCSERV 381 :You are now an IRC operator
+
+[2023-08-26 18:46:26] CLIENT SENT: KICK #test ko
+
+[2023-08-26 18:46:27] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:46:27] SERVER SENT: 
+[2023-08-26 18:46:27] PONG god 127.0.0.1
+
+[2023-08-26 18:47:27] CLIENT SENT: PING god 127.0.0.1
+
+[2023-08-26 18:47:27] SERVER SENT: 
+[2023-08-26 18:47:27] PONG god 127.0.0.1
+

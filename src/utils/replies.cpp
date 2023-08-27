@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 20:06:52 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 18:56:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -716,29 +716,30 @@ namespace irc
     const char* RPL_NOTOPIC(const std::string& channel)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 331 " + channel + " :No topic is set\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 331 " + channel + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;
     }
 
-    const char* RPL_TOPIC(const std::string& channel, const std::string& topic)
+    const char* RPL_TOPIC(const std::string& nick, const std::string& channel, const std::string& topic)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 332 " + channel + " :" + topic + "\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 332 " + nick+ " " + channel + " :" + topic + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;
     }
 
-    const char* RPL_INVITING(const std::string& channel, const std::string& nick)
+    const char* RPL_INVITING(const std::string& yourNickname, const std::string& inviteeNickname, const std::string& channelName)
     {
-        std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 341 " + channel + " " + nick + "\r\n";
+        std::string outcome; 
+        outcome += ":" + std::string(SERVERNAME) + " 341 " + yourNickname + " " + inviteeNickname + " " + channelName + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;
     }
+
 
     const char* RPL_SUMMONING(const std::string& user)
     {

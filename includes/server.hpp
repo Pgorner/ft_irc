@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/27 15:54:05 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/08/27 20:44:35 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,15 @@
 	struct Channel
 	{
 		std::string name;
+		std::string topic;
 		std::string mode;
+		std::string pwd;
 		std::string modeparams;
+		int ulimit;
 		std::vector<int> members;
+		std::vector<int> invited;
 		// std::vector<int> opers;
-        Channel(std::string channelname, std::string channelmode, std::string channelmodeparams) : name(channelname), mode(channelmode), modeparams(channelmodeparams) {}
+        Channel(std::string channelname, std::string channeltopic, std::string channelmode, std::string channelpassword, std::string channelmodeparams) : name(channelname), topic(channeltopic), mode(channelmode), pwd(channelpassword), modeparams(channelmodeparams) {}
 	};
     
     struct ClientData
@@ -67,13 +71,15 @@ class Server {
     void run(); 
     static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
-    void logsend(int fd, const std::string& msg);
+    void logsend(int fd, const std::string& msg, int cc);
     bool contains(const std::vector<std::string>& tokens, std::string search);
-    void cap(int fd, const std::vector<std::string>& tokens, bool& cap);
+    void cap(int fd, const std::vector<std::string>& tokens, bool& cap, int cc);
     void commands(int i, int cc, std::vector<std::string> tokens);
     void rmletter(char letter, int cc);
+    int rmchanletter(char letter, int cc, int channel);
     void addmode(char letter, int cc);
-    void addchanmode(char letter, std::string& chanmodes);
+    int addchanmode(char letter, int cc, int channel);
+    bool isAllDigits(const std::string& str);
     
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);
@@ -91,6 +97,11 @@ class Server {
 	void removefromchannel(std::string channelname, int cc);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
 	int find_user(std::string username);
+	int find_nick(std::string nickname);
+    int find_chan(std::string channelname);
+    int find_ulimit(int i);
+    void invite(std::vector<std::string> tokens, int cc);
+    void topic(std::vector<std::string> tokens, int cc);
 
 
     static Server* server_ptr;

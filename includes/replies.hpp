@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:04:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/25 18:06:18 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 18:56:08 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,8 @@ namespace irc
     const char* RPL_UNIQOPIS(const std::string& channel, const std::string& nickname);
     const char* RPL_CHANNELMODEIS(const std::string& channel, const std::string& mode, const std::string& mode_params);
     const char* RPL_NOTOPIC(const std::string& channel);
-    const char* RPL_TOPIC(const std::string& channel, const std::string& topic);
-    const char* RPL_INVITING(const std::string& channel, const std::string& nick);
+    const char* RPL_TOPIC(const std::string& nick, const std::string& channel, const std::string& topic);
+    const char* RPL_INVITING(const std::string& yourNickname, const std::string& inviteeNickname, const std::string& channelName);
     const char* RPL_SUMMONING(const std::string& user);
     const char* RPL_INVITELIST(const std::string& channel, const std::string& invitemask);
     const char* RPL_ENDOFINVITELIST(const std::string& channel);

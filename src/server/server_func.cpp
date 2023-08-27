@@ -240,7 +240,7 @@ void Server::removefromchannel(std::string channelname, int cc)
 
 void Server::leavechannel(std::vector<std::string> tokens, int cc)
 {
-	if (tokens.size() == 2)
+	if (tokens.size() >= 2)
 	{
 		std::string channelname;
 		if (tokens[1].length() >= 2 && tokens[1][0] == '#')

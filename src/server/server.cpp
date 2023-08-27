@@ -294,7 +294,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 				sendmsg(tokens, cc);
 		}
 		else if (tokens[0] == "PART")
-		{
 			leavechannel(tokens, cc);
 		}
 		else if (tokens[0] == "KICK")

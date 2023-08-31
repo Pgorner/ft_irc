@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/27 21:32:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:14:23 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,11 +91,11 @@ class Server {
     void quit(std::vector<std::string> tokens, int i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
+	void sendnotice(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
 	void leavechannel(std::vector<std::string> tokens, int cc);
 	void kick(std::vector<std::string> tokens , int cc);
 	void removefromchannel(std::string channelname, int cc);
-	void sendmsg(std::vector<std::string> tokens, std::string nick);
 	int find_user(std::string username);
 	int find_nick(std::string nickname);
     int find_chan(std::string channelname);

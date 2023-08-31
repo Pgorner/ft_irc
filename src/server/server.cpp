@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:43:39 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/31 14:12:30 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,6 +262,13 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 			else
 				sendmsg(tokens, cc);
 		}
+		else if (tokens[0] == "NOTICE")
+		{
+			if (tokens[1].empty())
+				_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("NOTICE");
+			else
+				sendnotice(tokens, cc);
+		}
 		else if (tokens[0] == "PART")
 			leavechannel(tokens, cc);
 		else if (tokens[0] == "KICK")
@@ -280,7 +287,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 }
 	// else if (tokens[0] == "SQUIT") {}
 	// else if (tokens[0] == "LIST") {}
-	// else if (tokens[0] == "NOTICE") {}
 	// else if (tokens[0] == "MOTD") {}
 	// else if (tokens[0] == "LUSERS") {}
 	// else if (tokens[0] == "VERSION") {}

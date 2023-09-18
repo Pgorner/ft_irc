@@ -6,25 +6,25 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:39:33 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 18:01:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
 
-void Server::quit(std::vector<std::string> tokens, int i, int cc)
+void Server::quit(std::vector<std::string> tokens, size_t i, int cc)
 {
-	if (tokens[1].empty() == false)
-	{
-		std::string resp = tokens[1];
-		for (int i = 2; tokens[i].size() != 0; i++)
-		{
-			resp += tokens[i];
-			if (!tokens[i + 1].empty())
-				resp += " ";
-		}
-		resp += "\r\n";
-	    logsend(_poll_fds[i].fd, tokens[1].c_str(), cc);
+	if (tokens.size() > 1 && !tokens[1].empty()) {
+	    std::string resp = tokens[1];
+	
+	    for (size_t i = 2; i < tokens.size(); i++) {
+	        if (!tokens[i].empty()) {
+	            resp += " " + tokens[i];
+	        }
+	    }
+	    resp += "\r\n";
+	    if (i < _poll_fds.size())
+	        logsend(_poll_fds[i].fd, resp.c_str(), resp.size());
 	}
 	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
 		removefromchannel(_clients[cc]._channels[i], cc);

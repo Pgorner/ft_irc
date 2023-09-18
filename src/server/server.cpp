@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:43:39 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 18:07:15 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,17 +53,19 @@ void Server::run() {
 			write_nice(YELLOW, "	waiting to connect ", false);
 		if (i++ < 3 && connection < 3 && hCC == false)
 			write_nice(YELLOW, ".", false);
-		else if (hCC == false){
-		i = 0;
-		connection++;
-    	str = std::to_string(connection);
-		if (connection == 4 && hCC == false){
-			write(1, "\n", 1);
-			clear(0);
-			connection = 0;
-		}
 		else if (hCC == false)
-			write_nice(YELLOW, str, false);
+		{
+			i = 0;
+			connection++;
+    		str = std::to_string(connection);
+			if (connection == 4 && hCC == false)
+			{
+				write(1, "\n", 1);
+				clear(0);
+				connection = 0;
+			}
+			else if (hCC == false)
+				write_nice(YELLOW, str, false);
 		}
         if (num_events == -1) {
             if (errno == EINTR) {
@@ -79,17 +81,15 @@ void Server::run() {
 		// 	write(1, "\n", 1);
 		// 	write_nice(WHITE, LINE, true);
 		// }
-        for (size_t i = 0; i < _poll_fds.size(); i++) {
-
+        for (size_t i = 0; i < _poll_fds.size(); i++)
+		{
             if (_poll_fds[i].revents & POLLIN)
 			{
 				if (_poll_fds[i].fd == _socket)
 				{
-    					// Handle incoming connection on the server socket.
     					struct sockaddr_in client_addr;
     					socklen_t client_addr_len = sizeof(client_addr);
     					int client_socket = accept(_socket, (struct sockaddr*)&client_addr, &client_addr_len);
-	
 						if (client_socket < 0)
 						{
     					    // Handle the error, and optionally continue or exit.
@@ -97,7 +97,6 @@ void Server::run() {
 						else
 						{
 							write_nice(GREEN, "\n	NEW CLIENT SUCESSFULLY ADDED", true);
-    					    // New client connected successfully, add it to the list of monitored file descriptors.	
     					    pollfd new_client_poll_fd;
     					    new_client_poll_fd.fd = client_socket;
     					    new_client_poll_fd.events = POLLIN; // Monitoring for read events.
@@ -105,12 +104,10 @@ void Server::run() {
     					    _poll_fds.push_back(new_client_poll_fd);
 							_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", ""));
 							hCC = true;
-    					    // Optionally, you can store client information or perform other tasks here.
     					}
             	}
 				else
 				{
-    				// Handle events on other file descriptors (clients).
 					size_t cc = 0;
 					
             		for (; cc < _clients.size(); cc++)
@@ -120,10 +117,9 @@ void Server::run() {
             		}
     				char buffer[1024];
     				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
-					
+
     				if (bytes_received <= 0)
 					{
-    				    // Client disconnected or an error occurred, remove it from the monitored file descriptors.
     				    close(_poll_fds[i].fd);
     				    _poll_fds.erase(_poll_fds.begin() + i);
 						write_nice(RED, "Client Error occured: ", false);
@@ -132,7 +128,6 @@ void Server::run() {
     				}
 					else 
 					{
-    				    // Process the received data from the client.
     				    std::string received_data(buffer, bytes_received);
 						std::vector<std::string> tokens;
 						std::stringstream iss(received_data);
@@ -140,7 +135,6 @@ void Server::run() {
 						std::string line;
 						
 						write_nice(WHITE, received_data, true);
-						LOG << "CLIENT SENT: " + received_data;
     					while (std::getline(iss, line))
 						{
 							std::string token;
@@ -164,40 +158,40 @@ void Server::run() {
 							}
 							tokens.clear();
 						}
-						if (!DEBUG)
-						{
-							for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
-								write_nice(BLUE, it->c_str(), true );
-							std::cout << RED << "STATUS: " <<
-								"\nNICK: " << _clients[cc].nick <<
-								"\nUSER: " << _clients[cc].user <<
-								"\nREALNAME: " << _clients[cc].realname <<
-								"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
-								"\nMODE: " << _clients[cc].mode <<
-								"\nUSER IN CHANNELS: \n";
-								for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
-								{
-									write_nice(RED, "	", false);
-									write_nice(RED, _clients[cc]._channels[i].c_str(), true);
-								}
-								write_nice(RED, "ALL CHANNELS:", true);
-								for (size_t i = 0; i < _channels.size(); i++)
-								{
-									write_nice(RED, "name:	", false);
-									write_nice(RED, _channels[i].name.c_str(), true);
-									write_nice(RED, "pwd:	", false);
-									write_nice(RED, _channels[i].pwd.c_str(), true);
-									write_nice(RED, "mode:	", false);
-									write_nice(RED, _channels[i].mode.c_str(), true);
-									write_nice(RED, "members:	", false);
-									for (size_t j = 0; j < _channels[i].members.size(); j++){
-										write_nice(RED, _clients[_channels[i].members[j]].nick, false);
-										write_nice(RED, "/", false);
-									}
-									write_nice(RED, "", true);
-								}
-								std::cout << RESET << std::endl;
-						}
+					// 	if (!DEBUG)
+					// 	{
+					// 		for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
+					// 			write_nice(BLUE, it->c_str(), true );
+					// 			std::cout << RED << "STATUS: " <<
+					// 			"\nNICK: " << _clients[cc].nick <<
+					// 			"\nUSER: " << _clients[cc].user <<
+					// 			"\nREALNAME: " << _clients[cc].realname <<
+					// 			"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
+					// 			"\nMODE: " << _clients[cc].mode <<
+					// 			"\nUSER IN CHANNELS: \n";
+					// 			for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+					// 			{
+					// 				write_nice(RED, "	", false);
+					// 				write_nice(RED, _clients[cc]._channels[i].c_str(), true);
+					// 			}
+					// 			write_nice(RED, "ALL CHANNELS:", true);
+					// 			for (size_t i = 0; i < _channels.size(); i++)
+					// 			{
+					// 				write_nice(RED, "name:	", false);
+					// 				write_nice(RED, _channels[i].name.c_str(), true);
+					// 				write_nice(RED, "pwd:	", false);
+					// 				write_nice(RED, _channels[i].pwd.c_str(), true);
+					// 				write_nice(RED, "mode:	", false);
+					// 				write_nice(RED, _channels[i].mode.c_str(), true);
+					// 				write_nice(RED, "members:	", false);
+					// 				for (size_t j = 0; j < _channels[i].members.size(); j++){
+					// 					write_nice(RED, _clients[_channels[i].members[j]].nick, false);
+					// 					write_nice(RED, "/", false);
+					// 				}
+					// 				write_nice(RED, "", true);
+					// 			}
+					// 			std::cout << RESET << std::endl;
+					// 	}
 					}
 					for (size_t h = 0; h < _poll_fds.size(); h++)
 					{
@@ -223,9 +217,13 @@ void Server::run() {
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
 	if (tokens[0] == "NICK")
+	{
 		nick(tokens, cc, i);
+	}
 	else if (tokens[0] == "USER")
+	{
 		user(tokens, cc, i);
+	}
 	else if (_clients[cc].auth == false)
 		_clients[cc].send_to_user += irc::ERR_NOTREGISTERED();
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
@@ -253,7 +251,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		else if (tokens[0] == "JOIN")
 		{
 			joinchannel(tokens, cc);
-			// std::cout << _client[cc].fd << std::endl;
 		}
 		else if (tokens[0] == "PRIVMSG")
 		{
@@ -263,19 +260,33 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 				sendmsg(tokens, cc);
 		}
 		else if (tokens[0] == "PART")
+		{
 			leavechannel(tokens, cc);
+		}
 		else if (tokens[0] == "KICK")
+		{
 			kick(tokens, cc);
+		}
 		else if (tokens[0] == "PING")
+		{
 			ping(tokens, cc);
+		}
 		else if (tokens[0] == "QUIT")
+		{
 			quit(tokens, i, cc);
+		}
 		else if (tokens[0] == "NAMES")
+		{
 			names(tokens, cc);
+		}
 		else if (tokens[0] == "INVITE")
+		{
 			invite(tokens, cc);
+		}
 		else if (tokens[0] == "TOPIC")
+		{
 			topic(tokens, cc);
+		}
 	}
 }
 	// else if (tokens[0] == "SQUIT") {}

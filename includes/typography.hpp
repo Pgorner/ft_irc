@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 15:38:45 by pgorner           #+#    #+#             */
-/*   Updated: 2023/07/24 16:52:32 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 17:11:16 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #define MAGENTA "\033[35m"
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
+#define PURPLE "\033[35m"
 
 // ----- Texts -----------
 #define IRC "\

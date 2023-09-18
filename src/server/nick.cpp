@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:39:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 16:57:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,5 @@ void Server::nick(std::vector<std::string> tokens, int cc, int i)
 		_clients[cc].send_to_user += "\r\n";
 	}
 	else if (nickinuse == true)
-	   	_clients[cc].send_to_user += SERVERNAME" NICK has already been taken\r\n"SERVERNAME" Please chooes a different one\r\n";
+	   	_clients[cc].send_to_user += SERVERNAME" NICK has already been taken\r\n"SERVERNAME" Please choose a different one\r\n";
 }

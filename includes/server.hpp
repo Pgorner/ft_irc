@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/08/27 21:32:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 18:02:13 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,20 @@
 #define FALSE 0
 #define TRUE 1
 #define INDETERMINATE 2
+#define BOT 1
 
 #define POLLTIME 500 
-	
+
+
 	struct ClientData;
 	
+    struct Bot
+    {
+        std::vector<std::string> en;
+        std::vector<std::string> de;
+        Bot(std::vector<std::string> en, std::vector<std::string> de) : en(en), de(de) {}
+    };
+
 	struct Channel
 	{
 		std::string name;
@@ -45,11 +54,12 @@
         bool cap; // Flag indicating if CAP has been handled
         bool auth; // Flag indicating successfull authenticated (NICK & USER)
         std::string mode;
-		std::vector<std::string> _channels;    
+		std::vector<std::string> _channels;
         std::string nick;
         std::string user;       
         std::string realname;   
         std::string send_to_user;
+        std::string num_offense;
         ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname){}
     };
 	
@@ -88,7 +98,7 @@ class Server {
     int oper(std::vector<std::string> tokens);
     void changeoper(std::vector<std::string> tokens, int cc);
     const char* mode(int cc, std::vector<std::string> tokens);
-    void quit(std::vector<std::string> tokens, int i, int cc);
+    void quit(std::vector<std::string> tokens, size_t i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
@@ -102,7 +112,6 @@ class Server {
     int find_ulimit(int i);
     void invite(std::vector<std::string> tokens, int cc);
     void topic(std::vector<std::string> tokens, int cc);
-
 
     static Server* server_ptr;
 
@@ -120,6 +129,9 @@ class Server {
 
 };
 
+    bool censorship(const std::vector<std::string>& tokens);
+    void warn_ban(int cc, int channel);
+std::vector<std::string> load_words(const std::string& filename);
 bool fileExists(const std::string& fileName);
 bool validateUser(const std::string& filePath, const std::string& username, const std::string& password);
 

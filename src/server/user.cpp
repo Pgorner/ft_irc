@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:15 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:38:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 16:58:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
 			}
 		}
-		if (tokens[3].empty() == false && tokens[4].empty() == false)
+		if (tokens.size() > 2 && tokens[3].empty() == false && tokens[4].empty() == false)
 		{
 			_clients[cc].realname = tokens[4];
 			_clients[cc].send_to_user += SERVERNAME" REALNAME has been set to ";
@@ -52,7 +52,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 			_clients[cc].realname = "";
 	}
 	else if (user == true)
-	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n"SERVERNAME" Please chooes a different one\r\n";
+	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n"SERVERNAME" Please choose a different one\r\n";
 	else
 		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 }

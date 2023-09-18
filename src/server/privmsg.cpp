@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:33:30 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 17:03:41 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
-	std::cout << CYAN << "SENDMSG TRIGGERED\n";
 	std::stringstream resp;
     for (size_t i = 0; i < _channels.size(); i++) 
 	{

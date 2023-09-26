@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/09/16 18:02:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/26 15:28:13 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@
         std::string realname;   
         std::string send_to_user;
         std::string num_offense;
+        std::string data_buffer;
         ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname){}
     };
 	
@@ -90,7 +91,10 @@ class Server {
     void addmode(char letter, int cc);
     int addchanmode(char letter, int cc, int channel);
     bool isAllDigits(const std::string& str);
-    
+    void handleNewClient();
+    void handleClientData(size_t clientIndex);
+    void processClientCommands(size_t clientIndex);
+
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);
     void ping(std::vector<std::string> tokens, int cc);
@@ -112,6 +116,7 @@ class Server {
     int find_ulimit(int i);
     void invite(std::vector<std::string> tokens, int cc);
     void topic(std::vector<std::string> tokens, int cc);
+    void notice(std::vector<std::string> tokens, int cc);
 
     static Server* server_ptr;
 

@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/08/27 21:41:12 by pgorner          ###   ########.fr        #
+#    Updated: 2023/09/26 15:27:46 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,7 @@ SRC = src/main.cpp \
       src/server/privmsg.cpp \
       src/server/startup.cpp \
       src/server/ping.cpp \
+      src/server/notice.cpp \
 
 # Convert source files to object files
 OBJS = $(SRC:%.cpp=$(OBJ_DIR)/%.o)

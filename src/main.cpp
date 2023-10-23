@@ -6,13 +6,15 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 17:08:03 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 17:04:10 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/irc.hpp"
 
 Server* Server::server_ptr = nullptr;
+
+// Bot censor_bot(load_words("../src/documentation/words - EN.txt"), load_words("../src/documentation/words - DE.txt"));
 
 void first_exit(int signal)
 {

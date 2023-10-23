@@ -6,7 +6,11 @@
 /*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2023/08/31 14:13:01 by ccompote         ###   ########.fr       */
+=======
+/*   Updated: 2023/09/16 17:03:41 by pgorner          ###   ########.fr       */
+>>>>>>> 848df7c46a5c4a8fd0299206cd4fb171fe5df797
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +18,6 @@
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
-	std::cout << CYAN << "SENDMSG TRIGGERED\n";
 	std::stringstream resp;
     for (size_t i = 0; i < _channels.size(); i++) 
 	{

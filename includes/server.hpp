@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/09/26 15:28:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 10:52:28 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@
 		int ulimit;
 		std::vector<int> members;
 		std::vector<int> invited;
-		// std::vector<int> opers;
         Channel(std::string channelname, std::string channeltopic, std::string channelmode, std::string channelpassword, std::string channelmodeparams) : name(channelname), topic(channeltopic), mode(channelmode), pwd(channelpassword), modeparams(channelmodeparams) {}
 	};
     
@@ -71,9 +70,9 @@ class Server {
     ~Server();
     Server& operator=(const Server& obj);
 
-    int which_ipv(void);
     int start_sock(void);
 	int start_poll(void);
+    void addNewClient(bool& hCC);
     int sig_handlerserv(void);
     int sig_handler(void);
     void proper_exit(void);

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:36:20 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/23 16:56:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,32 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 				int target = find_user(tokens[2]);
 				if (target != -1)
 				{
-
 					std::vector<std::string> resp(4);
 					resp[0] = "KICK";
 					resp[1] = tokens[1];
 					resp[2] = "KICK " + tokens[1] + " :" + tokens[2] + "\r\n";
 					sendmsg(resp, cc);
 					_clients[cc].send_to_user += SERVERNAME" User kicked\r\n";
+					std::vector<int>& members = _channels[i].members;
+					std::vector<int>::iterator it = members.begin();
+					while (it != members.end()) {
+					    if (*it == target) {
+					        it = members.erase(it);
+							std::cout << "channel erased user\n" << std::endl;
+					    } else {
+					        ++it;
+					    }
+					}
+					std::vector<std::string>& channels= _clients[target]._channels;
+					std::vector<std::string>::iterator here = channels.begin();
+					while (here != channels.end()) {
+					    if (*here == channelname) {
+					        here = channels.erase(here);
+							std::cout << "user erased channel\n" << std::endl;
+					    } else {
+					        ++here;
+					    }
+					}
 					return ;
 				}
 				else
@@ -84,4 +103,4 @@ void Server::removefromchannel(std::string channelname, int cc)
 		}
 	}
 	_clients[cc].send_to_user += SERVERNAME" User is not found in the channel\r\n";
-}
+}	

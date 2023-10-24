@@ -6,15 +6,15 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/20 18:34:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/23 17:50:30 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_HPP_
 #define IRC_HPP_
 
+#define SERVERNAME "IRCSERV"
 #define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
-#define PIGEON 0 //set to 1 for pigeon (SET DEBUG TO 1)
 
 static int running = true;
 
@@ -41,7 +41,6 @@ static int running = true;
 
 // ------ own libs -------
 #include "server.hpp"
-#include "errcode.hpp"
 #include "replies.hpp"
 #include "typography.hpp"
 #include "log.hpp"

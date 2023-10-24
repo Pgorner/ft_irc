@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 15:48:03 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 16:10:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,51 +65,52 @@ void Server::addNewClient(bool& hCC)
 
 void Server::handleClient(int i)
 {
-					{
-					size_t cc = 0;
-            		for (; cc < _clients.size(); cc++)
-					{
-            		    if (_clients[cc].fd == _poll_fds[i].fd)
-            		        break;
-            		}
-    				char buffer[1024];
-    				int bytes_received = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
+	int bytes_received = 10000;
+	size_t cc = 0;
 					
-    				if (bytes_received <= 0)
-					{
-						write_nice(RED, "Client Error occured: ", false);
-						write_nice(RED, _clients[cc].nick, false);
-    				    close(_poll_fds[i].fd);
-    				    _poll_fds.erase(_poll_fds.begin() + i);
-						_clients.erase(_clients.begin() + cc);
-    				}
-					else 
-					{
-    				    std::string received_data(buffer, bytes_received);
-						std::vector<std::string> tokens;
-						std::stringstream iss(received_data);
-						std::string token;
-						std::string line;
-						
-						write_nice(WHITE, received_data, true);
-						LOG << "CLIENT SENT: " + received_data;
-    					while (std::getline(iss, line))
-						{
-        					std::istringstream lineStream(line);
-
-        					while (lineStream >> token)
-        					    tokens.push_back(token);
-							for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
-								if (!it->empty() && (*it)[0] == ':')
-									it->erase(0, 1);
-							if (tokens.size() != 0)
-								commands(i, cc, tokens);
-							tokens.clear();
-						}
-						debugprint(tokens, cc);
-					}
-					sendmsgstoclients();
-				}
+    for (; cc < _clients.size(); cc++)
+	{
+        if (_clients[cc].fd == _poll_fds[i].fd)
+            break;
+    }
+	
+	char* buffer = nullptr; // Initialize buffer pointer to nullptr
+    buffer = new char[1024]; // Allocate memory for buffer
+    bytes_received = recv(_poll_fds[i].fd, buffer, 1024, 0); // Receive data into buffer
+    if (bytes_received <= 0)
+	{
+		write_nice(RED, "Client Error occured: ", false);
+		write_nice(RED, _clients[cc].nick, false);
+        close(_poll_fds[i].fd);
+        _poll_fds.erase(_poll_fds.begin() + i);
+		_clients.erase(_clients.begin() + cc);
+    }
+	else 
+	{
+        std::string received_data(buffer, bytes_received);
+		std::vector<std::string> tokens;
+		std::stringstream iss(received_data);
+		std::string token;
+		std::string line;
+		
+		write_nice(WHITE, received_data, true);
+		LOG << "CLIENT SENT: " + received_data;
+    	while (std::getline(iss, line))
+		{
+    		std::istringstream lineStream(line);
+    		while (lineStream >> token)
+    		    tokens.push_back(token);
+			for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
+				if (!it->empty() && (*it)[0] == ':')
+					it->erase(0, 1);
+			if (tokens.size() != 0)
+				commands(i, cc, tokens);
+			tokens.clear();
+		}
+		debugprint(tokens, cc);
+	}
+	sendmsgstoclients();
+	delete[] buffer;
 }
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)

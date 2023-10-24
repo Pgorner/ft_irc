@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 15:45:52 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 16:00:06 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,16 @@ void Server::handleOpermode(int cc, std::vector<std::string> tokens)
 				for (int i = 1; tokens[2][i]; i++)
 				{
 					if ((tokens[2][i] == 'o' 
-						|| tokens[2][i] == 'O'
 						|| tokens[2][i] == 'a'
 						|| tokens[2][i] == 'i'
 						|| tokens[2][i] == 'w'
 						|| tokens[2][i] == 'r'
 						|| tokens[2][i] == 's'))
 						addmode(tokens[2][i], user);
+					if (tokens[2][i] == 'O' && _clients[cc].mode.find("O"))
+						addmode(tokens[2][i], user);
+					else
+						_clients[cc].send_to_user += SERVERNAME" Use OPER cmd to gain priviledges\r\n";
 				}
 			_clients[user].send_to_user += irc::RPL_UMODEIS(_clients[user].mode);
 			}
@@ -209,7 +212,7 @@ int Server::mode(int cc, std::vector<std::string> tokens)
 		return(_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode), 0);
 	else if (tokens[1].empty() && tokens[2].empty())
 		return(_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
-	if (tokens[1] == _clients[cc].nick || (userexists(tokens[1]) && _clients[cc].mode.find("O")))
+	if (tokens[1] == _clients[cc].nick || (userexists(tokens[1]) && (_clients[cc].mode.find("O") || _clients[cc].mode.find("o"))))
 		return(userMode(cc, tokens), 0);
 	else
 		return(channelMode(cc, tokens), 0);

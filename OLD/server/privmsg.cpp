@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:23:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 17:03:41 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
-	if (tokens[1].empty())
-	{
-		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("PRIVMSG");
-		return;
-	}
 	std::stringstream resp;
     for (size_t i = 0; i < _channels.size(); i++) 
 	{

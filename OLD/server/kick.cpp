@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 11:51:19 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/23 16:56:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 					std::vector<std::string> resp(4);
 					resp[0] = "KICK";
 					resp[1] = tokens[1];
-					resp[2] = "KICK " + tokens[1] + "\r\n";
+					resp[2] = "KICK " + tokens[1] + " :" + tokens[2] + "\r\n";
 					sendmsg(resp, cc);
 					_clients[cc].send_to_user += SERVERNAME" User kicked\r\n";
 					std::vector<int>& members = _channels[i].members;
@@ -43,6 +43,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 					while (it != members.end()) {
 					    if (*it == target) {
 					        it = members.erase(it);
+							std::cout << "channel erased user\n" << std::endl;
 					    } else {
 					        ++it;
 					    }
@@ -52,6 +53,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 					while (here != channels.end()) {
 					    if (*here == channelname) {
 					        here = channels.erase(here);
+							std::cout << "user erased channel\n" << std::endl;
 					    } else {
 					        ++here;
 					    }

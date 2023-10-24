@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:15 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:37:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/09/16 16:58:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,9 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 				addmode('i', cc);
 			else if (tokens[2] == "2")
 				addmode('w', cc);
-			if (tokens[2] == "8" || tokens[2] == "2")
+			if (tokens[2] == "8" || tokens[2] == "2"){
 				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
+			}
 		}
 		if (tokens.size() > 2 && tokens[3].empty() == false && tokens[4].empty() == false)
 		{

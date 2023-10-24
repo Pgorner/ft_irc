@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:37:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 11:00:51 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,17 @@
 
 void Server::quit(std::vector<std::string> tokens, size_t i, int cc)
 {
-	(void)tokens;
-	std::string resp = ":"SERVERNAME" 302 " + _clients[cc].nick + " :You have quit the server\r\n";
-	logsend(_clients[cc].fd, resp.c_str(), cc);
+	if (tokens.size() > 1 && !tokens[1].empty()) {
+	    std::string resp = ":"SERVERNAME" 301 " + _clients[cc].nick + " :";
+	
+	    for (size_t i = 2; i < tokens.size(); i++) {
+	        if (!tokens[i].empty()) {
+	            resp += tokens[i];
+	        }
+	    }
+	    resp += "\r\n";
+	    logsend(_clients[cc].fd, resp.c_str(), cc);
+	}
 	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
 		removefromchannel(_clients[cc]._channels[i], cc);
     _poll_fds.erase(_poll_fds.begin() + i);

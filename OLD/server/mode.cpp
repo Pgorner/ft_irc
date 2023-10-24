@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:30:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/27 21:37:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,7 @@ int Server::addchanmode(char letter, int cc, int channel)
 	return 1;
 }
 
-const char* Server::mode(int cc, std::vector<std::string> tokens)
-{
-	if (tokens[1].empty() == true)
-		return(irc::RPL_UMODEIS(_clients[cc].mode.c_str()));
-	else if (tokens[1].empty() && tokens[2].empty())
-		return(irc::ERR_NEEDMOREPARAMS("MODE"));
+const char* Server::mode(int cc, std::vector<std::string> tokens){
 	if (tokens[1] == _clients[cc].nick)
 	{
 		if (tokens[2][0] == '-')

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/24 10:52:28 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 12:18:24 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,6 @@
 
 
 	struct ClientData;
-	
-    struct Bot
-    {
-        std::vector<std::string> en;
-        std::vector<std::string> de;
-        Bot(std::vector<std::string> en, std::vector<std::string> de) : en(en), de(de) {}
-    };
 
 	struct Channel
 	{
@@ -69,10 +62,14 @@ class Server {
     Server(const int &port, const std::string &pwd);
     ~Server();
     Server& operator=(const Server& obj);
+    void sendmsgstoclients(int i, int cc);
 
+    void debugprint(std::vector<std::string> tokens, int cc);
     int start_sock(void);
 	int start_poll(void);
     void addNewClient(bool& hCC);
+    void printconnect(int& connection, int& i, bool& hCC, std::string& str);
+    void handleClient(int i);
     int sig_handlerserv(void);
     int sig_handler(void);
     void proper_exit(void);
@@ -90,9 +87,6 @@ class Server {
     void addmode(char letter, int cc);
     int addchanmode(char letter, int cc, int channel);
     bool isAllDigits(const std::string& str);
-    void handleNewClient();
-    void handleClientData(size_t clientIndex);
-    void processClientCommands(size_t clientIndex);
 
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);

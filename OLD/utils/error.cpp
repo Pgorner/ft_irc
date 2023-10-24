@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 18:14:39 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 11:42:58 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/08/02 18:37:43 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,6 @@ void Server::proper_exit(void)
         close(_socket);
         _socket = -1;
     }
-    _channels.clear();
-    // Clear client data
-    _clients.clear();
     write_nice(RED, "\n	Server shutting down...", true);
 	if (DEBUG){
     	std::this_thread::sleep_for(std::chrono::seconds(3));

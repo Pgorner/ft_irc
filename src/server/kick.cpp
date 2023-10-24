@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 14:09:29 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 18:04:03 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 		std::cout << "Wrong channel name format // Missing params" << std::endl;
 		return ;
 	}
-	if (_clients[cc].mode.find('O') != std::string::npos)
+	if (_clients[cc].mode.find('O') != std::string::npos || _clients[cc].mode.find('o') != std::string::npos)
 	{
 		for (size_t i = 0; i < _channels.size(); i++)
 		{

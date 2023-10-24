@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 16:13:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 19:29:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Server::addNewClient(bool& hCC)
    	}
 	else
 	{
-		write_nice(GREEN, "	NEW CLIENT SUCESSFULLY ADDED", true);
+		write_nice(GREEN, "\n	NEW CLIENT SUCESSFULLY ADDED", true);
         // New client connected successfully, add it to the list of monitored file descriptors.	
         pollfd new_client_poll_fd;
         new_client_poll_fd.fd = client_socket;
@@ -63,7 +63,7 @@ void Server::addNewClient(bool& hCC)
     }
 }
 
-void Server::handleClient(int i)
+int Server::handleClient(int i)
 {
 	int bytes_received = 10000;
 	size_t cc = 0;
@@ -88,13 +88,17 @@ void Server::handleClient(int i)
 	else 
 	{
         std::string received_data(buffer, bytes_received);
+		_clients[cc].msg += received_data;
+		if (_clients[cc].msg[_clients[cc].msg.length() - 1] != '\n') 
+			return true;
 		std::vector<std::string> tokens;
-		std::stringstream iss(received_data);
+		std::stringstream iss(_clients[cc].msg);
 		std::string token;
 		std::string line;
 		
-		write_nice(WHITE, received_data, true);
-		LOG << "CLIENT SENT: " + received_data;
+		write_nice(WHITE, _clients[cc].msg, true);
+		LOG << "CLIENT SENT: " + _clients[cc].msg;
+		_clients[cc].msg = "";
     	while (std::getline(iss, line))
 		{
     		std::istringstream lineStream(line);
@@ -111,6 +115,7 @@ void Server::handleClient(int i)
 	}
 	sendmsgstoclients();
 	delete[] buffer;
+	return 0;
 }
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
@@ -187,13 +192,13 @@ void Server::printconnect(int& connection, int& numcount, bool& hCC, std::string
 			numcount = 0;
 			connection++;
     		str = std::to_string(connection);
-			if (connection == 4 && hCC == false)
+			if (connection == 4)
 			{
 				write(1, "\n", 1);
 				clear(0);
 				connection = 0;
 			}
-			else if (hCC == false)
+			else
 				write_nice(YELLOW, str, false);
 		}
 }
@@ -240,7 +245,7 @@ void Server::run()
 	std::string str;
 	bool handleClientConnect = false;
     int connection = 0;
-
+	
     while (true) {
         int num_events = poll(_poll_fds.data(), static_cast<nfds_t>(_poll_fds.size()), POLLTIME);
 		

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/24 15:48:43 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 19:23:12 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@
         std::string send_to_user;
         std::string num_offense;
         std::string data_buffer;
+        std::string msg;
         ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname, std::string send_to_user) \
                     : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname),send_to_user(send_to_user){}
     };
@@ -71,7 +72,7 @@ class Server {
 	int start_poll(void);
     void addNewClient(bool& hCC);
     void printconnect(int& connection, int& i, bool& hCC, std::string& str);
-    void handleClient(int i);
+    int handleClient(int i);
     int sig_handlerserv(void);
     int sig_handler(void);
     void proper_exit(void);

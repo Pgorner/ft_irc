@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/09/26 15:27:46 by pgorner          ###   ########.fr        #
+#    Updated: 2023/10/24 18:04:58 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,14 +79,14 @@ clean:
 fclean: clean
 	@$(RM) $(NAME) $(LOG_DIR)
 
-# Target for installing irssi
-irssi: brew install irssi
-
 # Rule for testing
-test: re
+testr: re
+	@./$(NAME) 666 1234
+
+test:
 	@./$(NAME) 666 1234
 
 # Target for recompiling everything
 re: fclean all
 
-.PHONY: all clean fclean irssi re
+.PHONY: all clean fclean re

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:30:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/23 18:57:35 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,7 @@ void    clear(int i)
 
 void    Server::goodbye(void)
 {
-    if (PIGEON){
-        clear(100);
-        for (int i = 0; i <= 10; i++){
-            if (i % 2 == 0)
-                std::cout << PIGEON1 << std::flush;
-            else
-                std::cout << PIGEON2 << std::flush;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            clear(21);
-        }
-    }
-    else if (DEBUG){
+    if (DEBUG){
         clear(100);
         clear(100);
         write_nice(YELLOW, GOODBYE, false);
@@ -72,14 +61,6 @@ void Server::logsend(int fd, const std::string& msg, int cc)
     std::cout << YELLOW << "SERVER SENT:\n" << msg << std::endl;
     if (cc != -1)
         std::cout << YELLOW << "TO:\n" << _clients[cc].nick << std::endl;
-    bool hasNewline = false;
-    for (size_t i = 0; i < msg.length(); ++i) {
-        if (msg[i] == '\n') {
-            hasNewline = true;
-            break;
-        }
-    }
-    (void)hasNewline;
     send(fd, msg.c_str(), msg.size(), 0);
 }
 

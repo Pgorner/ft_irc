@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/09/26 15:28:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 15:48:43 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,6 @@
 
 
 	struct ClientData;
-	
-    struct Bot
-    {
-        std::vector<std::string> en;
-        std::vector<std::string> de;
-        Bot(std::vector<std::string> en, std::vector<std::string> de) : en(en), de(de) {}
-    };
 
 	struct Channel
 	{
@@ -43,7 +36,6 @@
 		int ulimit;
 		std::vector<int> members;
 		std::vector<int> invited;
-		// std::vector<int> opers;
         Channel(std::string channelname, std::string channeltopic, std::string channelmode, std::string channelpassword, std::string channelmodeparams) : name(channelname), topic(channeltopic), mode(channelmode), pwd(channelpassword), modeparams(channelmodeparams) {}
 	};
     
@@ -61,7 +53,8 @@
         std::string send_to_user;
         std::string num_offense;
         std::string data_buffer;
-        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname) : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname){}
+        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname, std::string send_to_user) \
+                    : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname),send_to_user(send_to_user){}
     };
 	
 
@@ -70,10 +63,15 @@ class Server {
     Server(const int &port, const std::string &pwd);
     ~Server();
     Server& operator=(const Server& obj);
+    void sendmsgstoclients();
+    void broadcastinchannel(std::string channelname, std::string msg);
 
-    int which_ipv(void);
+    void debugprint(std::vector<std::string> tokens, int cc);
     int start_sock(void);
 	int start_poll(void);
+    void addNewClient(bool& hCC);
+    void printconnect(int& connection, int& i, bool& hCC, std::string& str);
+    void handleClient(int i);
     int sig_handlerserv(void);
     int sig_handler(void);
     void proper_exit(void);
@@ -91,9 +89,6 @@ class Server {
     void addmode(char letter, int cc);
     int addchanmode(char letter, int cc, int channel);
     bool isAllDigits(const std::string& str);
-    void handleNewClient();
-    void handleClientData(size_t clientIndex);
-    void processClientCommands(size_t clientIndex);
 
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);
@@ -101,14 +96,18 @@ class Server {
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens);
     void changeoper(std::vector<std::string> tokens, int cc);
-    const char* mode(int cc, std::vector<std::string> tokens);
+    void handleOpermode(int cc, std::vector<std::string> tokens);
+    int mode(int cc, std::vector<std::string> tokens);
     void quit(std::vector<std::string> tokens, size_t i, int cc);
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
+    int userexists(std::string username);
 	void leavechannel(std::vector<std::string> tokens, int cc);
 	void kick(std::vector<std::string> tokens , int cc);
-	void removefromchannel(std::string channelname, int cc);
+	void removefromchannel(std::string channelname, int cc, std::string msg);
+    void userMode(int cc, std::vector<std::string> tokens);
+    int channelMode(int cc, std::vector<std::string> tokens);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
 	int find_user(std::string username);
 	int find_nick(std::string nickname);

@@ -3,15 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:33:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 15:25:59 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
 
+
+void Server::broadcastinchannel(std::string channelname, std::string msg)
+{
+	for(size_t k = 0; k < _clients.size(); k++)
+	{
+		if (_clients[k]._channels.size() != 0)
+		{
+			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
+			{
+				if (_clients[k]._channels[j] == channelname)
+					_clients[k].send_to_user += msg;
+			}
+		}
+	}
+	write(1, "\n", 1);
+	write_nice(WHITE, LINE, true);
+}
 
 int Server::joinchannel(std::vector<std::string> tokens , int cc)
 {
@@ -31,10 +48,10 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 			{
 				for (size_t k = 0; k < _clients[cc]._channels.size(); k++)
 				{
+					std::cout << _clients[cc]._channels[k] << std::endl;
 					if (_clients[cc]._channels[k] == channelname)
 					{
-						std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";
-						_clients[cc].send_to_user += resp;
+						_clients[cc].send_to_user += SERVERNAME" You are already in this channel\r\n";
 						return 1;
 					}
 				}
@@ -62,17 +79,16 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 					return (_clients[cc].send_to_user += SERVERNAME" You have to be invited to join this channel\r\n", 1);
 				_channels[i].members.push_back(cc);
 				_clients[cc]._channels.push_back(_channels[i].name);
-				std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";		
-				_clients[cc].send_to_user += resp;
+				broadcastinchannel(channelname, ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n");
 				return 1;
 			}
 		}
 		Channel newChannel(channelname, "", "", "", "itkol");
 		newChannel.members.push_back(cc);
 		_channels.push_back(newChannel);
+		addmode('o', cc);
 		_clients[cc]._channels.push_back(newChannel.name);
-		std::string resp = ":" + _clients[cc].nick + " JOIN :" + channelname + "\r\n";	
-		_clients[cc].send_to_user += resp;
+		_clients[cc].send_to_user += ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n";
 		return 1;
 	}
 	else

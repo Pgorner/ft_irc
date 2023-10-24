@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:04:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 18:56:08 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/23 17:51:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 namespace irc
 {
-        /***********************************************
+    /***********************************************
     ERROR REPLIES
     ***********************************************/
     const char* ERR_NOSUCHNICK(const std::string& nickname, const std::string& channel);

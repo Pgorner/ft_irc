@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 11:51:19 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 14:09:29 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,30 +32,29 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 				int target = find_user(tokens[2]);
 				if (target != -1)
 				{
-					std::vector<std::string> resp(4);
-					resp[0] = "KICK";
-					resp[1] = tokens[1];
-					resp[2] = "KICK " + tokens[1] + "\r\n";
-					sendmsg(resp, cc);
+					std::string msg = " :";
+					if (tokens[3].size() != 0)
+						msg += tokens[3];
+					removefromchannel(channelname, cc, "KICK " + channelname + " " + tokens[2] + msg + "\r\n");
 					_clients[cc].send_to_user += SERVERNAME" User kicked\r\n";
-					std::vector<int>& members = _channels[i].members;
-					std::vector<int>::iterator it = members.begin();
-					while (it != members.end()) {
-					    if (*it == target) {
-					        it = members.erase(it);
-					    } else {
-					        ++it;
-					    }
-					}
-					std::vector<std::string>& channels= _clients[target]._channels;
-					std::vector<std::string>::iterator here = channels.begin();
-					while (here != channels.end()) {
-					    if (*here == channelname) {
-					        here = channels.erase(here);
-					    } else {
-					        ++here;
-					    }
-					}
+					// std::vector<int>& members = _channels[i].members;
+					// std::vector<int>::iterator it = members.begin();
+					// while (it != members.end()) {
+					//     if (*it == target) {
+					//         it = members.erase(it);
+					//     } else {
+					//         ++it;
+					//     }
+					// }
+					// std::vector<std::string>& channels= _clients[target]._channels;
+					// std::vector<std::string>::iterator here = channels.begin();
+					// while (here != channels.end()) {
+					//     if (*here == channelname) {
+					//         here = channels.erase(here);
+					//     } else {
+					//         ++here;
+					//     }
+					// }
 					return ;
 				}
 				else
@@ -71,8 +70,10 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 		_clients[cc].send_to_user += irc::ERR_CHANOPRIVSNEEDED(tokens[1]);
 }
 
-void Server::removefromchannel(std::string channelname, int cc)
+void Server::removefromchannel(std::string channelname, int cc, std::string msg)
 {
+	if (msg.size() != 0)
+		broadcastinchannel(channelname, msg);
 	for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
 	{
 		if (_clients[cc]._channels[i] == channelname)
@@ -95,8 +96,6 @@ void Server::removefromchannel(std::string channelname, int cc)
 					break ;
 				}
 			}
-			std::string resp = ":" + _clients[cc].nick + " PART :" + channelname + "\r\n";	
-			_clients[cc].send_to_user += resp;
 			return ;
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:34:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 15:48:03 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void Server::addNewClient(bool& hCC)
         new_client_poll_fd.events = POLLIN; // Monitoring for read events.
 		logsend(new_client_poll_fd.fd, SERVERNAME" Enter the password, user and nickname\r\n"SERVERNAME" PASS <password>\r\n"SERVERNAME" USER <username>\r\n"SERVERNAME" NICK <nickname>\r\n", -1);
         _poll_fds.push_back(new_client_poll_fd);
-		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", ""));
+		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", "", ""));
 		hCC = true;
     }
 }
@@ -108,7 +108,7 @@ void Server::handleClient(int i)
 						}
 						debugprint(tokens, cc);
 					}
-					sendmsgstoclients(i, cc);
+					sendmsgstoclients();
 				}
 }
 
@@ -142,7 +142,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	}
 	// individual commands
 	if (tokens[0] == "MODE")
-		_clients[cc].send_to_user += mode(cc, tokens);
+		mode(cc, tokens);
 	else if (tokens[0] == "OPER")
 		changeoper(tokens, cc);
 	else if (tokens[0] == "JOIN")
@@ -161,13 +161,13 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		names(tokens, cc);
 }
 
-void Server::sendmsgstoclients(int i, int cc)
+void Server::sendmsgstoclients()
 {
 	for(size_t k = 0; k < _clients.size(); k++)
 	{
 		if (_clients[k].send_to_user.size() != 0)
 		{
-			logsend(_poll_fds[i].fd, _clients[cc].send_to_user, cc);
+			logsend(_clients[k].fd, _clients[k].send_to_user, k);
 			_clients[k].send_to_user = "";
 		}
 	}

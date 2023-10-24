@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:30:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 15:45:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,134 +33,185 @@ int Server::addchanmode(char letter, int cc, int channel)
 	return 1;
 }
 
-const char* Server::mode(int cc, std::vector<std::string> tokens)
+void Server::handleOpermode(int cc, std::vector<std::string> tokens)
 {
-	if (tokens[1].empty() == true)
-		return(irc::RPL_UMODEIS(_clients[cc].mode.c_str()));
-	else if (tokens[1].empty() && tokens[2].empty())
-		return(irc::ERR_NEEDMOREPARAMS("MODE"));
-	if (tokens[1] == _clients[cc].nick)
+	for (size_t user = 0; user < _clients.size(); user++)
 	{
-		if (tokens[2][0] == '-')
+		if (_clients[user].nick == tokens[1])
 		{
-			for (int i = 1; tokens[2][i]; i++)
-				rmletter(tokens[2][i], cc);	
-			return (irc::RPL_UMODEIS(_clients[cc].mode));
-		}
-		else if (tokens[2][0] == '+')
-		{
-			for (int i = 1; tokens[2][i]; i++)
+			if (tokens[2][0] == '-')
 			{
-				if ((tokens[2][i] != 'o' || tokens[2][i] != 'O' || tokens[2][i] != 'a') &&
-					(tokens[2][i] == 'a'
-					|| tokens[2][i] == 'i'
-					|| tokens[2][i] == 'w'
-					|| tokens[2][i] == 'r'
-					|| tokens[2][i] == 's'))
-					addmode(tokens[2][i], cc);
-				if (tokens[2][i] == 'o' || tokens[2][i] == 'O')
-					_clients[cc].send_to_user += SERVERNAME" Use OPER cmd to gain priviledges\r\n";
+				for (int i = 1; tokens[2][i]; i++)
+					rmletter(tokens[2][i], user);	
+				_clients[user].send_to_user += irc::RPL_UMODEIS(_clients[user].mode);
+				return;
 			}
-		return (irc::RPL_UMODEIS(_clients[cc].mode));
+			else if (tokens[2][0] == '+')
+			{
+				for (int i = 1; tokens[2][i]; i++)
+				{
+					if ((tokens[2][i] == 'o' 
+						|| tokens[2][i] == 'O'
+						|| tokens[2][i] == 'a'
+						|| tokens[2][i] == 'i'
+						|| tokens[2][i] == 'w'
+						|| tokens[2][i] == 'r'
+						|| tokens[2][i] == 's'))
+						addmode(tokens[2][i], user);
+				}
+			_clients[user].send_to_user += irc::RPL_UMODEIS(_clients[user].mode);
+			}
+		_clients[cc].send_to_user += "You have changed " + _clients[user].nick + "\'s Mode\r\n";
 		}
 	}
-	else
+}
+void Server::userMode(int cc, std::vector<std::string> tokens)
+{
+	if (tokens[1] != _clients[cc].nick)
+		handleOpermode(cc, tokens);
+	if (tokens[2][0] == '-')
 	{
-		for(std::vector<std::string>::size_type i = 0; i < _clients[cc]._channels.size(); i++)
+		for (int i = 1; tokens[2][i]; i++)
+			rmletter(tokens[2][i], cc);	
+		_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
+		return;
+	}
+	else if (tokens[2][0] == '+')
+	{
+		for (int i = 1; tokens[2][i]; i++)
 		{
-			if (_clients[cc]._channels[i] == tokens[1])
+			if ((tokens[2][i] != 'o' 
+				&& tokens[2][i] != 'O'
+				&& tokens[2][i] != 'a') 
+				&& (tokens[2][i] == 'a'
+				|| tokens[2][i] == 'i'
+				|| tokens[2][i] == 'w'
+				|| tokens[2][i] == 'r'
+				|| tokens[2][i] == 's'))
+				addmode(tokens[2][i], cc);
+			if (tokens[2][i] == 'O' || tokens[2][i] == 'o')
+				_clients[cc].send_to_user += SERVERNAME" Use OPER cmd to gain priviledges\r\n";
+		}
+	_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
+	}
+}
+
+int Server::channelMode(int cc, std::vector<std::string> tokens)
+{
+	for(std::vector<std::string>::size_type i = 0; i < _clients[cc]._channels.size(); i++)
+	{
+		if (_clients[cc]._channels[i] == tokens[1])
+		{
+			for(std::vector<std::string>::size_type j = 0; j < _channels.size(); j++)
 			{
-				for(std::vector<std::string>::size_type j = 0; j < _channels.size(); j++)
+				if (_clients[cc]._channels[i] == _channels[j].name)
 				{
-					if (_clients[cc]._channels[i] == _channels[j].name)
+					bool addrm = false;
+					std::string resp = "";
+					if (tokens.size() == 2)
+						return(_clients[cc].send_to_user += irc::RPL_CHANNELMODEIS(_channels[j].name, _channels[j].mode, _channels[j].modeparams), 0);
+					if (tokens[2].find('-') == std::string::npos
+						&&  tokens[2].find('+') == std::string::npos)
+						return (_clients[cc].send_to_user += SERVERNAME" Adding or removing MODES requires +/-\r\n", 0);
+					if(_clients[cc].mode.find("o") != std::string::npos
+					|| _clients[cc].mode.find("O") != std::string::npos)
 					{
-						bool addrm = false;
-						std::string resp = "";
-						if (tokens.size() == 2)
-							return(irc::RPL_CHANNELMODEIS(_channels[j].name, _channels[j].mode, _channels[j].modeparams));
-						if (tokens[2].find('-') == std::string::npos
-							&&  tokens[2].find('+') == std::string::npos)
-							return (SERVERNAME" Adding or removing MODES requires +/-\r\n");
-						if(_clients[cc].mode.find("o") != std::string::npos
-						|| _clients[cc].mode.find("O") != std::string::npos)
+						for (size_t k = 1; k < tokens[2].size() && isalpha(tokens[2][k]); k++)
 						{
-							for (size_t k = 1; k < tokens[2].size() && isalpha(tokens[2][k]); k++)
+							std::string modes = "it";
+							if(tokens[2][1] == 'k')
 							{
-								std::string modes = "it";
-								if(tokens[2][1] == 'k')
+								if (tokens[2][0] == '+' && tokens[3].empty())
+									return (_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
+								else if (tokens[2][0] == '+')
 								{
-									if (tokens[2][0] == '+' && tokens[3].empty())
-										return (irc::ERR_NEEDMOREPARAMS("MODE"));
-									else if (tokens[2][0] == '+')
+									if (addchanmode('k', cc, j) > 0)
+										return (_channels[j].pwd = tokens[3], _clients[cc].send_to_user += SERVERNAME" Password has been added to channel\r\n", 0);
+									else
+										return (_channels[j].pwd = tokens[3], _clients[cc].send_to_user += SERVERNAME" Password has been changed\r\n", 0);
+								}
+								else if (tokens[2][0] == '-')
+								{
+									rmchanletter('k', cc, j);
+									_channels[j].pwd = "";
+									return (_clients[cc].send_to_user += SERVERNAME" Password has been removed from channel\r\n", 0);
+								}
+							}
+							if(tokens[2][1] == 'l')
+							{
+								if ((tokens[2][0] == '+' && tokens[3].empty()) || isAllDigits(tokens[3]) == false)
+									return (_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
+								else if (tokens[2][0] == '+')
+								{
+									if (addchanmode('l', cc, j) > 0)
+										return (_channels[j].ulimit = std::atoi(tokens[3].c_str()), _clients[cc].send_to_user += SERVERNAME" Userlimit has been added to channel\r\n", 0);
+									else
+										return (_channels[j].ulimit = std::atoi(tokens[3].c_str()), _clients[cc].send_to_user += SERVERNAME" Userlimit has been changed\r\n", 0);
+								}
+								else if (tokens[2][0] == '-')
+								{
+									rmchanletter('l', cc, j);
+									_channels[j].ulimit = -1;
+									return (_clients[cc].send_to_user += SERVERNAME" Userlimit has been removed from channel\r\n", 0);
+								}
+							}
+							else if (modes.find(tokens[2][k]) != std::string::npos)
+								{
+									addrm = true;
+									if (tokens[2][0] == '+')
 									{
-										if (addchanmode('k', cc, j) > 0)
-											return (_channels[j].pwd = tokens[3], SERVERNAME" Password has been added to channel\r\n");
-										else
-											return (_channels[j].pwd = tokens[3], SERVERNAME" Password has been changed\r\n");
+										if(addchanmode(tokens[2][k], cc, j) > 0)
+										{
+											resp += SERVERNAME" Added mode ";
+											resp += tokens[2][k];
+											resp += " to channel\r\n";
+										}
 									}
 									else if (tokens[2][0] == '-')
 									{
-										rmchanletter('k', cc, j);
-										_channels[j].pwd = "";
-										return (SERVERNAME" Password has been removed from channel\r\n");
-									}
-								}
-								if(tokens[2][1] == 'l')
-								{
-									if ((tokens[2][0] == '+' && tokens[3].empty()) || isAllDigits(tokens[3]) == false)
-										return (irc::ERR_NEEDMOREPARAMS("MODE"));
-									else if (tokens[2][0] == '+')
-									{
-										if (addchanmode('l', cc, j) > 0)
-											return (_channels[j].ulimit = std::atoi(tokens[3].c_str()), SERVERNAME" Userlimit has been added to channel\r\n");
-										else
-											return (_channels[j].ulimit = std::atoi(tokens[3].c_str()), SERVERNAME" Userlimit has been changed\r\n");
-									}
-									else if (tokens[2][0] == '-')
-									{
-										rmchanletter('l', cc, j);
-										_channels[j].ulimit = -1;
-										return (SERVERNAME" Userlimit has been removed from channel\r\n");
-									}
-								}
-								else if (modes.find(tokens[2][k]) != std::string::npos)
-									{
-										addrm = true;
-										if (tokens[2][0] == '+')
+										if (rmchanletter(tokens[2][k], cc, j) > 0)
 										{
-											if(addchanmode(tokens[2][k], cc, j) > 0)
-											{
-												resp += SERVERNAME" Added mode ";
-												resp += tokens[2][k];
-												resp += " to channel\r\n";
-											}
-										}
-										else if (tokens[2][0] == '-')
-										{
-											if (rmchanletter(tokens[2][k], cc, j) > 0)
-											{
-												resp += SERVERNAME" Removed mode ";
-												resp += tokens[2][k];
-												resp += " from channel\r\n";
-											}
+											resp += SERVERNAME" Removed mode ";
+											resp += tokens[2][k];
+											resp += " from channel\r\n";
 										}
 									}
-							}
-							if (addrm += true)
-							{
-								std::cout << resp;
-								const char* ret = resp.c_str();
-								return (ret);
-							}
-							return(SERVERNAME" Requested MODE/S are not available\r\n");
+								}
 						}
-						else
-							return(irc::ERR_NOPRIVILEGES());
+						if (addrm)
+							return (_clients[cc].send_to_user += resp.c_str(), 0);
+						return(_clients[cc].send_to_user += SERVERNAME" Requested MODE/S are not available\r\n", 0);
 					}
+					else
+						return(_clients[cc].send_to_user += irc::ERR_NOPRIVILEGES(), 0);
 				}
 			}
 		}
-		
 	}
-	return (irc::ERR_USERSDONTMATCH());
+	return(_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
+}
+
+int Server::userexists(std::string username)
+{
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i].nick == username)
+		{
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int Server::mode(int cc, std::vector<std::string> tokens)
+{
+	if (tokens[1].empty() == true)
+		return(_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode), 0);
+	else if (tokens[1].empty() && tokens[2].empty())
+		return(_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
+	if (tokens[1] == _clients[cc].nick || (userexists(tokens[1]) && _clients[cc].mode.find("O")))
+		return(userMode(cc, tokens), 0);
+	else
+		return(channelMode(cc, tokens), 0);
+	return (_clients[cc].send_to_user += irc::ERR_USERSDONTMATCH(), 0);
 }

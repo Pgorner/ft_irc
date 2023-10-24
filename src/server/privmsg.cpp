@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:23:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 14:05:25 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,14 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 	{
 		if (_channels[i].name == tokens[1] && !_channels.empty())
 		{	
-			if(tokens[0] == "KICK")
-				resp <<  tokens[2];
-			else
-			{
-				resp <<  ":" << _clients[cc].nick << "!" << _clients[cc].nick << "@localhost" << " PRIVMSG " << tokens[1] << " :";
-				for (size_t h = 2; h < tokens.size(); h++)
+			resp <<  ":" << _clients[cc].nick << "!" << _clients[cc].nick << "@localhost" << " PRIVMSG " << tokens[1] << " :";
+			for (size_t h = 2; h < tokens.size(); h++)
 				{
 					resp << tokens[h];
 					if (!tokens[h + 1].empty())
 						resp << " ";
 				}
 				resp << "\r\n";
-			}
 			for (size_t j = 0; j < _channels[i].members.size(); j++)
 			{
 				for (size_t k = 0; k < _poll_fds.size(); k++)
@@ -44,10 +39,7 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 					if (_poll_fds[k].fd == _clients[_channels[i].members[j]].fd
 						&& _clients[_channels[i].members[j]].nick != _clients[cc].nick)
 					{
-						std::string response = resp.str();
-						_clients[_channels[i].members[j]].send_to_user +=  response;
-						logsend(_poll_fds[k].fd, _clients[_channels[i].members[j]].send_to_user, cc);
-						_clients[_channels[i].members[j]].send_to_user = "";
+						_clients[_channels[i].members[j]].send_to_user +=  resp.str();
 					}
 				}
 			}

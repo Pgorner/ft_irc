@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 16:00:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/24 16:16:50 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,9 +208,9 @@ int Server::userexists(std::string username)
 
 int Server::mode(int cc, std::vector<std::string> tokens)
 {
-	if (tokens[1].empty() == true)
+	if (tokens.size() == 1)
 		return(_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode), 0);
-	else if (tokens[1].empty() && tokens[2].empty())
+	else if (tokens.size() == 2)
 		return(_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("MODE"), 0);
 	if (tokens[1] == _clients[cc].nick || (userexists(tokens[1]) && (_clients[cc].mode.find("O") || _clients[cc].mode.find("o"))))
 		return(userMode(cc, tokens), 0);

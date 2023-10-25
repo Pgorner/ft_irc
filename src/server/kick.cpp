@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 19:51:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:25:42 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 		channelname = tokens[1];
 	else
 	{
-		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("KICK");
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("KICK"));
 		std::cout << "Wrong channel name format // Missing params" << std::endl;
 		return ;
 	}
@@ -49,7 +49,7 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 		_clients[cc].send_to_user += SERVERNAME" Channel doesn't exist\r\n";
 	}
 	else
-		_clients[cc].send_to_user += irc::ERR_CHANOPRIVSNEEDED(tokens[1]);
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_CHANOPRIVSNEEDED(tokens[1]));
 }
 
 void Server::removefromchannel(std::string channelname, int cc, std::string msg)

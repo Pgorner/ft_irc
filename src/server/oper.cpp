@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:56:35 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:37:15 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:27:28 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int Server::oper(std::vector<std::string> tokens){
 void Server::changeoper(std::vector<std::string> tokens, int cc)
 {
 	if (tokens[1].empty() || tokens[2].empty())
-		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("OPER");
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("OPER"));
 	else if(oper(tokens) == 1)
 	{
 		if(_clients[cc].mode.find('o') != std::string::npos)
@@ -97,12 +97,12 @@ void Server::changeoper(std::vector<std::string> tokens, int cc)
 			_clients[cc].send_to_user += SERVERNAME" You already are an IRC operator\r\n";
 		}
 		addmode('O', cc);
-		_clients[cc].send_to_user += irc::RPL_YOUREOPER();
+		_clients[cc].send_to_user += irc::cEM(irc::RPL_YOUREOPER());
 	}
 	else if(oper(tokens) == 0)
-		_clients[cc].send_to_user += irc::ERR_NOOPERHOST();
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOOPERHOST());
 	else if(oper(tokens) == 2)
-		_clients[cc].send_to_user += irc::ERR_PASSWDMISMATCH();
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_PASSWDMISMATCH());
 	else if(oper(tokens) == 3)
 	{
 		if(_clients[cc].mode.find('o') != std::string::npos)
@@ -110,10 +110,10 @@ void Server::changeoper(std::vector<std::string> tokens, int cc)
 			_clients[cc].send_to_user += SERVERNAME" You already are an IRC Channel operator\r\n";
 		}
 		addmode('o', cc);
-		_clients[cc].send_to_user += irc::RPL_YOUREOPER();
+		_clients[cc].send_to_user += irc::cEM(irc::RPL_YOUREOPER());
 	}
 	else if(oper(tokens) == 4)
-		_clients[cc].send_to_user += irc::ERR_PASSWDMISMATCH();
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_PASSWDMISMATCH());
 }
 
 void Server::rmletter(char letter, int cc){

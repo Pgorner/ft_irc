@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:59:28 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:39:48 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:27:05 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ void Server::names(std::vector<std::string> tokens, int cc)
 			}
 		}
 	}
-	_clients[cc].send_to_user += irc::RPL_NAMREPLY(tokens[1], nicklist);
-	_clients[cc].send_to_user += irc::RPL_ENDOFNAMES(tokens[1]);
+	_clients[cc].send_to_user += irc::cEM(irc::RPL_NAMREPLY(tokens[1], nicklist));
+	_clients[cc].send_to_user += irc::cEM(irc::RPL_ENDOFNAMES(tokens[1]));
 }

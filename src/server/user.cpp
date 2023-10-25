@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:15 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 15:00:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:28:33 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 			user = true;
 	}
 	if (tokens[1].empty() == true)
-	   	_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
+	   	_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("USER"));
 	else if (tokens[1].size() < 1)
 	    _clients[cc].send_to_user += SERVERNAME " USER too short\r\n";
 	else if (tokens.size() > 1 && user == false)
@@ -38,7 +38,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 			else if (tokens[2] == "2")
 				addmode('w', cc);
 			if (tokens[2] == "8" || tokens[2] == "2")
-				_clients[cc].send_to_user += irc::RPL_UMODEIS(_clients[cc].mode);
+				_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode));
 		}
 		if (tokens.size() > 2 && tokens[3].empty() == false && tokens[4].empty() == false)
 		{
@@ -53,5 +53,5 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 	else if (user == true)
 	   	_clients[cc].send_to_user += SERVERNAME " USER has already been taken\r\n" SERVERNAME " Please choose a different one\r\n";
 	else
-		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("USER"));
 }

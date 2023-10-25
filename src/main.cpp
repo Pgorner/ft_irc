@@ -6,13 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 14:33:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:22:14 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/irc.hpp"
-#include <cstdlib> // for atoi
-#include <signal.h> // for signal handling
+#include "../includes/replies.hpp"
 
 Server* Server::server_ptr = NULL;
 

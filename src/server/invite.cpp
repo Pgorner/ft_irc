@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:58:34 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:40:13 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:25:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ void Server::invite(std::vector<std::string> tokens, int cc)
 	if (_clients[cc].mode.find("O") != std::string::npos)
 	{
 		if (tokens.size() != 3)
-			_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("INVITE");
+			_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("INVITE"));
 		else
 		{
 			int invnick = find_nick(tokens[2]);
 			if (invnick != -1)
 			{
-				_clients[invnick].send_to_user += irc::RPL_INVITING(_clients[cc].nick, _clients[invnick].nick, tokens[1]);
-				_clients[cc].send_to_user += irc::RPL_INVITING(_clients[cc].nick, _clients[invnick].nick, tokens[1]);
+				_clients[invnick].send_to_user += irc::cEM(irc::RPL_INVITING(_clients[cc].nick, _clients[invnick].nick, tokens[1]));
+				_clients[cc].send_to_user += irc::cEM(irc::RPL_INVITING(_clients[cc].nick, _clients[invnick].nick, tokens[1]));
 				_channels[find_chan(tokens[1])].invited.push_back(invnick);
 			}
 			else
@@ -32,5 +32,5 @@ void Server::invite(std::vector<std::string> tokens, int cc)
 		}
 	}
 	else
-		_clients[cc].send_to_user += irc::ERR_CHANOPRIVSNEEDED(tokens[1]);
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_CHANOPRIVSNEEDED(tokens[1]));
 }

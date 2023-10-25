@@ -6,12 +6,13 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 14:59:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:37:58 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../../includes/irc.hpp"
+
 
 Server::Server(const int &port, const std::string &pwd)
     : _port(port),
@@ -58,7 +59,7 @@ void Server::addNewClient(bool& hCC)
         new_client_poll_fd.events = POLLIN; // Monitoring for read events.
 		logsend(new_client_poll_fd.fd, SERVERNAME " Enter the password, user and nickname\r\n" SERVERNAME " PASS <password>\r\n" SERVERNAME " USER <username>\r\n" SERVERNAME " NICK <nickname>\r\n", -1);
         _poll_fds.push_back(new_client_poll_fd);
-		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", "", ""));
+		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", "", "", true));
 		hCC = true;
     }
 }
@@ -77,9 +78,6 @@ int Server::handleClient(int i)
 	std::vector<char> buffer(1024);
 	bytes_received = recv(_poll_fds[i].fd, buffer.data(), buffer.size(), 0);
 
-	// char* buffer = nullptr; // Initialize buffer pointer to nullptr
-    // buffer = new char[1024]; // Allocate memory for buffer
-    // bytes_received = recv(_poll_fds[i].fd, buffer, 1024, 0); // Receive data into buffer
     if (bytes_received <= 0)
 	{
 		write_nice(RED, "Client Error occured: ", false);
@@ -92,8 +90,6 @@ int Server::handleClient(int i)
 	{
 		std::string received_data(buffer.begin(), buffer.begin() + bytes_received);
 
-
-        // std::string received_data(buffer, bytes_received);
 		_clients[cc].msg += received_data;
 		if (_clients[cc].msg[_clients[cc].msg.length() - 1] != '\n') 
 			return true;
@@ -120,7 +116,6 @@ int Server::handleClient(int i)
 		debugprint(tokens, cc);
 	}
 	sendmsgstoclients();
-	// delete[] buffer;
 	return 0;
 }
 
@@ -137,7 +132,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		checkPwd(tokens, i, cc);
 	else if (_clients[cc].passwordAccepted == false && tokens[0] != "PASS")
 	{
-		_clients[cc].send_to_user += irc::ERR_NOTREGISTERED();
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOTREGISTERED());
 		return;
 	}
 	//Nick and User authentication
@@ -149,7 +144,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		return;
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
 	{
-		_clients[cc].send_to_user += irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME);
+		_clients[cc].send_to_user += irc::cEM(irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
 		_clients[cc].auth = true;
 	}
 	// individual commands
@@ -167,8 +162,10 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		kick(tokens, cc);
 	else if (tokens[0] == "PING")
 		ping(tokens, cc);
+	else if (tokens[0] == "PONG")
+		pong(cc);
 	else if (tokens[0] == "QUIT")	
-		quit(tokens, i, cc);
+		quit(i, cc, "You have quit the server");
 	else if (tokens[0] == "NAMES")
 		names(tokens, cc);
 }
@@ -222,51 +219,85 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 		for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
 			write_nice(BLUE, it->c_str(), true );
 
-		std::cout << RED << "--------STATUS--------" <<
-			"\nNICK: " << _clients[cc].nick <<
-			"\nUSER: " << _clients[cc].user <<
-			"\nREALNAME: " << _clients[cc].realname <<
-			"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
-			"\nAUTH(0=n/y=1): " << _clients[cc].auth <<
-			"\nMODE: " << _clients[cc].mode <<
-			"\nUSER IN CHANNELS: \n";
+		write_nice(RED, "--------ALL CLIENTS--------\n", false);
+		if (_clients.empty())
+			std::cout << "No Clients\n" << std::endl;
+		else
+			for (size_t i = 0; i < _clients.size(); i++)
+			{
+				std::cout << RED << i << ". NICK:";
+				if (_clients[cc].nick.empty())
+					std::cout << RED << "/";
+				else
+					std::cout << RED << _clients[cc].nick;
+				std::cout << RED << " USER:" ;
+				if (_clients[cc].user.empty())
+					std::cout << RED << "/";
+				else
+					std::cout << RED << _clients[cc].user;
+				std::cout << RED << " REALNAME:";
+				if (_clients[cc].realname.empty())
+					std::cout << RED << "/";
+				else
+					 std::cout << RED << _clients[cc].realname;	
+				std::cout << "\n";
+			}
 
-		if (_clients[cc]._channels.empty()) {
+		write_nice(RED, "--------THIS CLIENT--------", false);
+		
+		std::cout << RED << "\nNICK: ";
+		if (_clients[cc].nick.empty())
+			std::cout << RED << "No nick yet";
+		else
+			std::cout << RED << _clients[cc].nick;
+		std::cout << RED << "\nUSER: " ;
+		if (_clients[cc].user.empty())
+			std::cout << RED << "No username yet";
+		else
+			std::cout << RED << _clients[cc].user;
+		std::cout << RED << "\nREALNAME: ";
+		if (_clients[cc].realname.empty())
+			std::cout << RED << "No realname yet";
+		else
+			 std::cout << RED << _clients[cc].realname;
+		std::cout << RED << 
+		"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
+		"\nAUTH(0=n/y=1): " << _clients[cc].auth <<
+		"\nMODE: " << _clients[cc].mode <<
+		"\nUSER IN CHANNELS: \n";
+
+		if (_clients[cc]._channels.empty())
 			std::cout << "No channels available for this client." << std::endl;
-			return;
-		}
-
-		for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
-		{
-			write_nice(RED, "	", false);
-			write_nice(RED, _clients[cc]._channels[i].c_str(), true);
-		}
+		else
+			for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+			{
+				write_nice(RED, "	", false);
+				write_nice(RED, _clients[cc]._channels[i].c_str(), true);
+			}
 
 		write_nice(RED, "ALL CHANNELS:", true);
 
-		if (_channels.empty()) {
-			std::cout << "No channels available." << std::endl;
-			return;
-		}
+		if (_channels.empty())
+			std::cout << RED << "No channels available." << std::endl;
+		else
+			for (size_t i = 0; i < _channels.size(); i++)
+			{
+				write_nice(RED, "name:	", false);
+				write_nice(RED, _channels[i].name.c_str(), true);
+				write_nice(RED, "mode:	", false);
+				write_nice(RED, _channels[i].mode.c_str(), true);
+				write_nice(RED, "members:	", false);
 
-		for (size_t i = 0; i < _channels.size(); i++)
-		{
-			write_nice(RED, "name:	", false);
-			write_nice(RED, _channels[i].name.c_str(), true);
-			write_nice(RED, "mode:	", false);
-			write_nice(RED, _channels[i].mode.c_str(), true);
-			write_nice(RED, "members:	", false);
-
-			if (_channels[i].members.empty()) {
-				std::cout << "No members in this channel." << std::endl;
-			} else {
-				for (size_t j = 0; j < _channels[i].members.size(); j++){
-					write_nice(RED, _clients[_channels[i].members[j]].nick, false);
-					write_nice(RED, "/", false);
+				if (_channels[i].members.empty()) {
+					std::cout << "No members in this channel." << std::endl;
+				} else {
+					for (size_t j = 0; j < _channels[i].members.size(); j++){
+						write_nice(RED, _clients[_channels[i].members[j]].nick, false);
+						write_nice(RED, "/", false);
+					}
+					write_nice(RED, "", true);
 				}
-				write_nice(RED, "", true);
 			}
-		}
 
 		std::cout << RESET << std::endl;
 	}
@@ -275,11 +306,13 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 
 void Server::run() 
 {
+	int ping = 0;
     int numcount = 0;
 	bool handleClientConnect = false;
     int connection = 0;
 	
-    while (true) {
+    while (true)
+	{
         int num_events = poll(_poll_fds.data(), static_cast<nfds_t>(_poll_fds.size()), POLLTIME);
 		
 		printconnect(connection, numcount, handleClientConnect);
@@ -306,6 +339,26 @@ void Server::run()
 			if (_poll_fds.size() == 1)
             	handleClientConnect = false;
         }
+		ping++;
+		if (ping % 50 == 0)
+		{
+			std::cout << CYAN << "PING TRIGGERED\n" << RESET;
+			for (size_t k = 0; k < _clients.size(); k++) {
+				logsend(_clients[k].fd, "PING\r\n", k);
+				if (_clients[k].ping == false) {
+					for (size_t j = 0; j < _poll_fds.size(); j++)
+					{
+						if (_poll_fds[j].fd == _clients[k].fd)
+						{
+							quit(j, k, "You have been disconnected due to inactivity");
+							break;
+						}
+					}
+				}
+				else
+					_clients[k].ping = false;
+			}
+		}
     }
 }
 

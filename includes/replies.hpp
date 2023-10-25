@@ -6,15 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:04:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/23 17:51:02 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:21:43 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REPLIES_HPP
 #define REPLIES_HPP
-#include "typography.hpp"
-#include <iostream>
-#include <sstream>
 
 namespace irc
 {
@@ -155,5 +152,7 @@ namespace irc
     const char* RPL_ADMINLOC2(const std::string& admin_info);
     const char* RPL_ADMINEMAIL(const std::string& admin_email);
     const char* RPL_TRYAGAIN(const std::string& command);
+    
+    std::string cEM(const char* errorMessage);
 }
 #endif 

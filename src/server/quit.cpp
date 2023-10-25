@@ -6,20 +6,19 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 18:48:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 16:17:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
 
-void Server::quit(std::vector<std::string> tokens, size_t i, int cc)
+void Server::quit(size_t i, int cc, std::string msg)
 {
-    (void)tokens;
-
-    for (size_t j = 0; j < _clients[cc]._channels.size(); j++) {
+    for (size_t j = 0; j < _clients[cc]._channels.size(); j++)
+    {
         removefromchannel(_clients[cc]._channels[j], cc, "Quitting");
     }
-    std::string quitMsg = ":" SERVERNAME " 302 " + _clients[cc].nick + " :You have quit the server\r\n";
+    std::string quitMsg = ":" SERVERNAME " 302 " + _clients[cc].nick + " :" + msg + "\r\n";
     logsend(_clients[cc].fd, quitMsg.c_str(), cc);
 
     close(_clients[cc].fd);

@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/10/25 13:19:20 by pgorner          ###   ########.fr        #
+#    Updated: 2023/10/25 17:36:19 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,12 +25,12 @@ CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address
 
 # List of source files
 SRC = src/main.cpp \
+      src/utils/replies.cpp \
+      src/utils/utils.cpp \
       src/utils/check.cpp \
       src/utils/error.cpp \
-      src/utils/utils.cpp \
       src/utils/file_utils.cpp \
       src/utils/find_utils.cpp \
-      src/utils/replies.cpp \
       src/server/server.cpp \
       src/server/join.cpp \
       src/server/kick.cpp \

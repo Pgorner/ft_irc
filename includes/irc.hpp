@@ -6,15 +6,16 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 14:50:52 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:19:58 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_HPP_
 #define IRC_HPP_
 
-#define SERVERNAME "IRCSERV"
 #define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
+#define SERVERNAME "IRCSERV"
+
 
 
 #include <string>

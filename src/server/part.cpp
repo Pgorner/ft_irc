@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:56:13 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 14:07:43 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:27:36 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,5 @@ void Server::leavechannel(std::vector<std::string> tokens, int cc)
 		removefromchannel(channelname, cc, ":" + _clients[cc].nick + " PART :" + channelname + "\r\n");
 	}
 	else
-		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("PART");
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("PART"));
 }

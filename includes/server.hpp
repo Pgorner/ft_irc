@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/25 14:56:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:13:05 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,9 @@
         std::string num_offense;
         std::string data_buffer;
         std::string msg;
-        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname, std::string send_to_user) \
-                    : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname),send_to_user(send_to_user){}
+        bool ping;
+        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname, std::string send_to_user, bool ping) \
+                    : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname),send_to_user(send_to_user), ping(ping){}
     };
 	
 
@@ -94,12 +95,13 @@ class Server {
     //cmd functions
     void nick(std::vector<std::string> tokens, int cc, int i);
     void ping(std::vector<std::string> tokens, int cc);
+    void pong(int cc);
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens);
     void changeoper(std::vector<std::string> tokens, int cc);
     void handleOpermode(int cc, std::vector<std::string> tokens);
     int mode(int cc, std::vector<std::string> tokens);
-    void quit(std::vector<std::string> tokens, size_t i, int cc);
+    void quit(size_t i, int cc, std::string msg);
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);

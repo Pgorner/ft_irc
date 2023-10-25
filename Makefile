@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/10/24 18:04:58 by pgorner          ###   ########.fr        #
+#    Updated: 2023/10/25 13:17:17 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ AR     = ar rcs
 RM     = rm -rf
 OBJ_DIR = obj
 LOG_DIR = logs
-CFLAGS = -Wall -Werror -Wextra -std=c++98
+CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address
 LDFLAGS = -lncurses
 
 # List of source files
@@ -47,7 +47,6 @@ SRC = src/main.cpp \
       src/server/privmsg.cpp \
       src/server/startup.cpp \
       src/server/ping.cpp \
-      src/server/notice.cpp \
 
 # Convert source files to object files
 OBJS = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
@@ -88,5 +87,6 @@ test:
 
 # Target for recompiling everything
 re: fclean all
+
 
 .PHONY: all clean fclean re

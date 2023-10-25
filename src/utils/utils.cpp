@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/23 18:57:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:06:55 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void    Server::goodbye(void)
         clear(100);
         write_nice(YELLOW, GOODBYE, false);
     }
+    system("leaks ircserv");
 }
 void    write_nice(const char color[6], std::string str, bool nl)
 {

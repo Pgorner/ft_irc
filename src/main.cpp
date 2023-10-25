@@ -6,23 +6,23 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:19:56 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:33:35 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/irc.hpp"
+#include <cstdlib> // for atoi
+#include <signal.h> // for signal handling
 
-Server* Server::server_ptr = nullptr;
-
-// Bot censor_bot(load_words("../src/documentation/words - EN.txt"), load_words("../src/documentation/words - DE.txt"));
+Server* Server::server_ptr = NULL;
 
 void first_exit(int signal)
 {
 	(void)signal;
-	write_nice(RED, "\n	Server shutting down...", true);
-	if (DEBUG){std::this_thread::sleep_for(std::chrono::seconds(3));}
+	write_nice(RED, "\n    Server shutting down...", true);
+	if (DEBUG) sleep(3); // Sleep for 3 seconds, assuming sleep function is available
 	clear(100);
-	exit (0);
+	exit(0);
 }
 
 int sig_handler(void){
@@ -37,13 +37,13 @@ int main(int argc, char **argv)
 	sig_handler();
 	if(welcome(argc, argv))
 	{
-		Server server(std::stoi(argv[1]), argv[2]);
+		Server server(atoi(argv[1]), argv[2]); // Using atoi instead of std::stoi
 		Server::server_ptr = &server;
 		server.start_sock();
 		server.start_poll();
-		write_nice(BLUE, "	SERVER CREATION SUCCESSFUL", true);
+		write_nice(BLUE, "    SERVER CREATION SUCCESSFUL", true);
 		write_nice(WHITE, LINE, false);
 		server.run();
 	}
-	return (0);
+	return 0;
 }

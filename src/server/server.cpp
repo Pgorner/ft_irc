@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:54:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:59:37 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void Server::addNewClient(bool& hCC)
         pollfd new_client_poll_fd;
         new_client_poll_fd.fd = client_socket;
         new_client_poll_fd.events = POLLIN; // Monitoring for read events.
-		logsend(new_client_poll_fd.fd, SERVERNAME" Enter the password, user and nickname\r\n"SERVERNAME" PASS <password>\r\n"SERVERNAME" USER <username>\r\n"SERVERNAME" NICK <nickname>\r\n", -1);
+		logsend(new_client_poll_fd.fd, SERVERNAME " Enter the password, user and nickname\r\n" SERVERNAME " PASS <password>\r\n" SERVERNAME " USER <username>\r\n" SERVERNAME " NICK <nickname>\r\n", -1);
         _poll_fds.push_back(new_client_poll_fd);
 		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", "", ""));
 		hCC = true;
@@ -187,7 +187,7 @@ void Server::sendmsgstoclients()
 	write_nice(WHITE, LINE, true);
 }
 
-void Server::printconnect(int& connection, int& numcount, bool& hCC, std::string& str)
+void Server::printconnect(int& connection, int& numcount, bool& hCC)
 {
 		if (connection == 0 && numcount == 0 && hCC == false)
 			write_nice(YELLOW, "	waiting to connect ", false);
@@ -197,15 +197,12 @@ void Server::printconnect(int& connection, int& numcount, bool& hCC, std::string
 		{
 			numcount = 0;
 			connection++;
-    		str = std::to_string(connection);
 			if (connection == 4)
 			{
 				write(1, "\n", 1);
 				clear(0);
 				connection = 0;
 			}
-			else
-				write_nice(YELLOW, str, false);
 		}
 }
 void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>::size_type cc)
@@ -217,7 +214,7 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 			return;
 		}
 
-		if (cc >= _clients.size() || cc < 0) {
+		if (cc >= _clients.size()) {
 			std::cout << "Invalid client index." << std::endl;
 			return;
 		}
@@ -279,14 +276,13 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 void Server::run() 
 {
     int numcount = 0;
-	std::string str;
 	bool handleClientConnect = false;
     int connection = 0;
 	
     while (true) {
         int num_events = poll(_poll_fds.data(), static_cast<nfds_t>(_poll_fds.size()), POLLTIME);
 		
-		printconnect(connection, numcount, handleClientConnect, str);
+		printconnect(connection, numcount, handleClientConnect);
 
         if (num_events == -1)
 		{

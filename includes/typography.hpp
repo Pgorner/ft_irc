@@ -6,10 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/22 15:38:45 by pgorner           #+#    #+#             */
-/*   Updated: 2023/09/16 17:11:16 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:25:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef TYPOGRAPHY_HPP
+#define TYPOGRAPHY_HPP
 
 // ----- Typography ------
 #if(DEBUG)
@@ -81,3 +83,5 @@ Safe travels and goodbye for now!\n"
   _/        _/    _/  _/  _/_/  _/_/_/      _/    _/        _/_/_/       \n\
  _/        _/    _/  _/    _/  _/          _/    _/        _/            \n\
 _/_/_/_/    _/_/      _/_/_/  _/        _/_/_/  _/_/_/_/  _/_/_/_/       "
+
+#endif

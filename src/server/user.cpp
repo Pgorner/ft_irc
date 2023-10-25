@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:15 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 12:37:37 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 15:00:04 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 	if (tokens[1].empty() == true)
 	   	_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 	else if (tokens[1].size() < 1)
-	    _clients[cc].send_to_user += SERVERNAME" USER too short\r\n";
+	    _clients[cc].send_to_user += SERVERNAME " USER too short\r\n";
 	else if (tokens.size() > 1 && user == false)
 	{
 		_clients[cc].user = tokens[1];
-	    _clients[cc].send_to_user += SERVERNAME" USER has been set to ";
+	    _clients[cc].send_to_user += SERVERNAME " USER has been set to ";
 	    _clients[cc].send_to_user += tokens[1].c_str();
 		_clients[cc].send_to_user += "\r\n";
 		if (tokens[2].empty() == false)
@@ -43,7 +43,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 		if (tokens.size() > 2 && tokens[3].empty() == false && tokens[4].empty() == false)
 		{
 			_clients[cc].realname = tokens[4];
-			_clients[cc].send_to_user += SERVERNAME" REALNAME has been set to ";
+			_clients[cc].send_to_user += SERVERNAME " REALNAME has been set to ";
 			_clients[cc].send_to_user += tokens[4].c_str();
 			_clients[cc].send_to_user += "\r\n";
 		}
@@ -51,7 +51,7 @@ void Server::user(std::vector<std::string> tokens, int cc, int i)
 			_clients[cc].realname = "";
 	}
 	else if (user == true)
-	   	_clients[cc].send_to_user += SERVERNAME" USER has already been taken\r\n"SERVERNAME" Please choose a different one\r\n";
+	   	_clients[cc].send_to_user += SERVERNAME " USER has already been taken\r\n" SERVERNAME " Please choose a different one\r\n";
 	else
 		_clients[cc].send_to_user += irc::ERR_NEEDMOREPARAMS("USER");
 }

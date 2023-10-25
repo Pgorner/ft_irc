@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   replies.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 15:51:08 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:52:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -525,15 +525,6 @@ namespace irc
         return cstr;
     }
 
-    const char* RPL_BOUNCE(const std::string& server_name, int port_number)
-    {
-        std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 005 Try server " + server_name + ", port " + std::to_string(port_number) + "\r\n";
-        char* cstr = new char[outcome.length() + 1];
-        std::strcpy(cstr, outcome.c_str());
-        return cstr;
-    }
-
     const char* RPL_USERHOST(const std::string& reply, const std::vector<std::string>& replies)
     {
         std::string outcome = ":";
@@ -617,14 +608,6 @@ namespace irc
         return cstr;
     }
 
-    const char* RPL_WHOISIDLE(const std::string& nick, int seconds_idle)
-    {
-        std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 317 " + nick + " " + std::to_string(seconds_idle) + " :seconds idle\r\n";
-        char* cstr = new char[outcome.length() + 1];
-        std::strcpy(cstr, outcome.c_str());
-        return cstr;
-    }
 
     const char* RPL_ENDOFWHOIS(const std::string& nick)
     {
@@ -672,15 +655,6 @@ namespace irc
     {
         std::string outcome;
         outcome += ":" + std::string(SERVERNAME) + " 321 Obsolete. Not used.\r\n";
-        char* cstr = new char[outcome.length() + 1];
-        std::strcpy(cstr, outcome.c_str());
-        return cstr;
-    }
-
-    const char* RPL_LIST(const std::string& channel, int num_visible, const std::string& topic)
-    {
-        std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 322 " + channel + " " + std::to_string(num_visible) + " :" + topic + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;
@@ -1128,14 +1102,6 @@ namespace irc
         return cstr;
     }
 
-    const char* RPL_STATSUPTIME(int days, int hours, int minutes, int seconds)
-    {
-        std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 242 :Server Up " + std::to_string(days) + " days " + std::to_string(hours) + outcome += ":" + std::to_string(minutes) + outcome += ":" + std::to_string(seconds) + "\r\n";
-        char* cstr = new char[outcome.length() + 1];
-        std::strcpy(cstr, outcome.c_str());
-        return cstr;
-    }
 
     const char* RPL_STATSOLINE(const std::string& hostmask, const std::string& name)
     {

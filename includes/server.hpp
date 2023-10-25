@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/25 13:55:04 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:56:37 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ class Server {
     int start_sock(void);
 	int start_poll(void);
     void addNewClient(bool& hCC);
-    void printconnect(int& connection, int& i, bool& hCC, std::string& str);
+    void printconnect(int& connection, int& i, bool& hCC);
     int handleClient(int i);
     int sig_handlerserv(void);
     int sig_handler(void);

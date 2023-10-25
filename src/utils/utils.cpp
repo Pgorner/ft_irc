@@ -6,57 +6,52 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:19:59 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:50:06 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "../../includes/irc.hpp"
 
-
-void    clear(int i)
-{
+void clear(int i) {
     for (int k = 0; k <= i; k++)
         std::cout << "\033[A\033[2K";
 }
 
-void    Server::goodbye(void)
-{
-    if (DEBUG){
+void Server::goodbye(void) {
+    if (DEBUG) {
         clear(100);
         clear(100);
         write_nice(YELLOW, GOODBYE, false);
     }
     system("leaks ircserv");
 }
-void    write_nice(const char color[6], std::string str, bool nl)
-{
+
+void write_nice(const char color[6], std::string str, bool nl) {
     setlocale(LC_ALL, "");
     if (nl == true)
         str += "\n";
     unsigned long k = 0;
-    while (k < str.size()) 
-    {
+    while (k < str.size()) {
         std::cout << color << str[k++] << RESET << std::flush;
-        std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));;
-    }
-}
-void    write_irc(void){
-    unsigned long k = 0;
-	std::string str = IRC;
-    while (k < str.size()) 
-    {
-        std::cout << str[k++] << std::flush;
-        std::this_thread::sleep_for(std::chrono::microseconds(WRITESPEED));
+        // Sleep functionality removed for C++98
     }
 }
 
-void log(std::string log)
-{
+void write_irc(void) {
+    unsigned long k = 0;
+    std::string str = IRC;
+    while (k < str.size()) {
+        std::cout << str[k++] << std::flush;
+        // Sleep functionality removed for C++98
+    }
+}
+
+void log(std::string log) {
     LOG << log;
 }
 
-void Server::logsend(int fd, const std::string& msg, int cc)
-{
+void Server::logsend(int fd, const std::string& msg, int cc) {
     LOG << "SERVER SENT: ";
     LOG << msg;
     std::cout << YELLOW << "SERVER SENT:\n" << msg << std::endl;
@@ -76,12 +71,11 @@ bool Server::contains(const std::vector<std::string>& tokens, std::string search
 
 void Server::change_running(int signal) {
     (void)signal;
-    server_ptr->proper_exit();
     exit(0);
 }
 
-void log_creation(void){
-	std::ofstream logFile;
+void log_creation(void) {
+    std::ofstream logFile;
     bool isOpen;
     int logNumber = 0;
 
@@ -93,19 +87,19 @@ void log_creation(void){
     // Find the latest log file number
     DIR *dir;
     struct dirent *ent;
-        if ((dir = opendir(folderName.c_str())) != nullptr) {
-            while ((ent = readdir(dir)) != nullptr) {
-                std::string fileName = ent->d_name;
-                if (fileName.rfind("log_", 0) == 0) { // Check if the file name starts with "log_"
-                    int fileNumber = std::stoi(fileName.substr(4, fileName.find(".txt") - 4));
-                    if (fileNumber > logNumber)
-                        logNumber = fileNumber;
-                }
+    if ((dir = opendir(folderName.c_str())) != NULL) {
+        while ((ent = readdir(dir)) != NULL) {
+            std::string fileName = ent->d_name;
+            if (fileName.rfind("log_", 0) == 0) { // Check if the file name starts with "log_"
+                int fileNumber = atoi(fileName.substr(4, fileName.find(".txt") - 4).c_str());
+                if (fileNumber > logNumber)
+                    logNumber = fileNumber;
             }
-            closedir(dir);
         }
-	logNumber++;
-	std::ostringstream oss;
+        closedir(dir);
+    }
+    logNumber++;
+    std::ostringstream oss;
     oss << folderName << "/log_" << logNumber << ".txt";
     std::string fileName = oss.str();
     logFile.open(fileName.c_str(), std::ios_base::app);
@@ -115,44 +109,42 @@ void log_creation(void){
     LOG << LOGFILE;
 }
 
-bool Server::isAllDigits(const std::string& str)
-{
+bool Server::isAllDigits(const std::string& str) {
     for (std::size_t i = 0; i < str.length(); ++i)
         if (!isdigit(str[i]))
             return false;
     return true;
 }
 
-int Server::sig_handlerserv(void){
-	signal(SIGINT, Server::change_running);
-	signal(SIGQUIT, Server::change_running);
-	return log("sig_handler started"), 0;
+int Server::sig_handlerserv(void) {
+    signal(SIGINT, change_running);
+    signal(SIGQUIT, change_running);
+    return log("sig_handler started"), 0;
 }
 
-void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc)
-{
+void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0))
         logsend(_poll_fds[i].fd, SERVERNAME" : WRONG PASSWORD\r\n", cc);
     else if (tokens[1] == _pwd) 
-	{
+    {
         _clients[cc].passwordAccepted = TRUE;
-		_clients[cc].send_to_user += SERVERNAME" Your PASSWORD is correct\r\n";
-	}
-	else
+        _clients[cc].send_to_user += SERVERNAME" Your PASSWORD is correct\r\n";
+    }
+    else
         logsend(_poll_fds[i].fd, irc::ERR_PASSWDMISMATCH(), cc);
 }
 
 void Server::cap(int fd, const std::vector<std::string>& tokens, bool& cap, int cc) {
-	if (contains(tokens, "CAP") == true && contains(tokens, "LS") == true)
-		logsend(fd, "CAP * LS :\n", cc);
-	else if (contains(tokens, "CAP") == true && contains(tokens, "REQ") == true){
-		std::string req = "CAP * ACK :";
-		if (contains(tokens, "multi-prefix"))
-			req += "multi-prefix";
-		if (contains(tokens, "multiple-channel-joins"))
-			req += "multiple-channel-joins";
-		logsend(fd, req.c_str(), cc);
-	}
-	else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
-		cap = true;
+    if (contains(tokens, "CAP") == true && contains(tokens, "LS") == true)
+        logsend(fd, "CAP * LS :\n", cc);
+    else if (contains(tokens, "CAP") == true && contains(tokens, "REQ") == true){
+        std::string req = "CAP * ACK :";
+        if (contains(tokens, "multi-prefix"))
+            req += "multi-prefix";
+        if (contains(tokens, "multiple-channel-joins"))
+            req += "multiple-channel-joins";
+        logsend(fd, req.c_str(), cc);
+    }
+    else if (contains(tokens, "CAP") == true && contains(tokens, "END") == true)
+        cap = true;
 }

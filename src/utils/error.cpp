@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 18:14:39 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:07:34 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:41:33 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ void Server::proper_exit(void)
     _clients.clear();
     write_nice(RED, "\n	Server shutting down...", true);
 	if (DEBUG){
-    	std::this_thread::sleep_for(std::chrono::seconds(3));
+    	sleep(3);
 		goodbye();
-    	std::this_thread::sleep_for(std::chrono::seconds(3));
+    	sleep(3);
 	}
 	clear(100);
 }

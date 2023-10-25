@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:53:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/04 17:24:14 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 14:40:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int welcome(int argc, char **argv){
 	str += "\n";
 	write_nice(WHITE, str, false);
 	std::cout << LINE;
-	if(DEBUG){std::this_thread::sleep_for(std::chrono::seconds(3));}
+	if(DEBUG){sleep(3);}
 	return log("welcome successfully done"), 1;	
 	}
 	else if (argc == 3 && isValidPort(argv[1]) == false)

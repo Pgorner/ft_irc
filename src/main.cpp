@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:15:38 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:06:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:19:56 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ Server* Server::server_ptr = nullptr;
 void first_exit(int signal)
 {
 	(void)signal;
-	endwin();
 	write_nice(RED, "\n	Server shutting down...", true);
 	if (DEBUG){std::this_thread::sleep_for(std::chrono::seconds(3));}
 	clear(100);

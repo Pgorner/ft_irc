@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/25 13:03:30 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:55:04 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ class Server {
     void sendmsgstoclients();
     void broadcastinchannel(std::string channelname, std::string msg);
 
-    void debugprint(std::vector<std::string> tokens, int cc);
+    void debugprint(std::vector<std::string> tokens, std::vector<ClientData>::size_type cc);
     int start_sock(void);
 	int start_poll(void);
     void addNewClient(bool& hCC);

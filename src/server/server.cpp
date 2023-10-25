@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:03:15 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:54:42 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,12 @@ int Server::handleClient(int i)
             break;
     }
 	
-	char* buffer = nullptr; // Initialize buffer pointer to nullptr
-    buffer = new char[1024]; // Allocate memory for buffer
-    bytes_received = recv(_poll_fds[i].fd, buffer, 1024, 0); // Receive data into buffer
+	std::vector<char> buffer(1024);
+	bytes_received = recv(_poll_fds[i].fd, buffer.data(), buffer.size(), 0);
+
+	// char* buffer = nullptr; // Initialize buffer pointer to nullptr
+    // buffer = new char[1024]; // Allocate memory for buffer
+    // bytes_received = recv(_poll_fds[i].fd, buffer, 1024, 0); // Receive data into buffer
     if (bytes_received <= 0)
 	{
 		write_nice(RED, "Client Error occured: ", false);
@@ -87,7 +90,10 @@ int Server::handleClient(int i)
     }
 	else 
 	{
-        std::string received_data(buffer, bytes_received);
+		std::string received_data(buffer.begin(), buffer.begin() + bytes_received);
+
+
+        // std::string received_data(buffer, bytes_received);
 		_clients[cc].msg += received_data;
 		if (_clients[cc].msg[_clients[cc].msg.length() - 1] != '\n') 
 			return true;
@@ -114,7 +120,7 @@ int Server::handleClient(int i)
 		debugprint(tokens, cc);
 	}
 	sendmsgstoclients();
-	delete[] buffer;
+	// delete[] buffer;
 	return 0;
 }
 
@@ -202,12 +208,23 @@ void Server::printconnect(int& connection, int& numcount, bool& hCC, std::string
 				write_nice(YELLOW, str, false);
 		}
 }
-void Server::debugprint(std::vector<std::string> tokens, int cc)
+void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>::size_type cc)
 {
 	if (!DEBUG)
 	{
+		if (_clients.empty()) {
+			std::cout << "No clients available to display." << std::endl;
+			return;
+		}
+
+		if (cc >= _clients.size() || cc < 0) {
+			std::cout << "Invalid client index." << std::endl;
+			return;
+		}
+
 		for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
 			write_nice(BLUE, it->c_str(), true );
+
 		std::cout << RED << "--------STATUS--------" <<
 			"\nNICK: " << _clients[cc].nick <<
 			"\nUSER: " << _clients[cc].user <<
@@ -216,28 +233,48 @@ void Server::debugprint(std::vector<std::string> tokens, int cc)
 			"\nAUTH(0=n/y=1): " << _clients[cc].auth <<
 			"\nMODE: " << _clients[cc].mode <<
 			"\nUSER IN CHANNELS: \n";
-			for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
-			{
-				write_nice(RED, "	", false);
-				write_nice(RED, _clients[cc]._channels[i].c_str(), true);
-			}
-			write_nice(RED, "ALL CHANNELS:", true);
-			for (size_t i = 0; i < _channels.size(); i++)
-			{
-				write_nice(RED, "name:	", false);
-				write_nice(RED, _channels[i].name.c_str(), true);
-				write_nice(RED, "mode:	", false);
-				write_nice(RED, _channels[i].mode.c_str(), true);
-				write_nice(RED, "members:	", false);
+
+		if (_clients[cc]._channels.empty()) {
+			std::cout << "No channels available for this client." << std::endl;
+			return;
+		}
+
+		for (size_t i = 0; i < _clients[cc]._channels.size(); i++)
+		{
+			write_nice(RED, "	", false);
+			write_nice(RED, _clients[cc]._channels[i].c_str(), true);
+		}
+
+		write_nice(RED, "ALL CHANNELS:", true);
+
+		if (_channels.empty()) {
+			std::cout << "No channels available." << std::endl;
+			return;
+		}
+
+		for (size_t i = 0; i < _channels.size(); i++)
+		{
+			write_nice(RED, "name:	", false);
+			write_nice(RED, _channels[i].name.c_str(), true);
+			write_nice(RED, "mode:	", false);
+			write_nice(RED, _channels[i].mode.c_str(), true);
+			write_nice(RED, "members:	", false);
+
+			if (_channels[i].members.empty()) {
+				std::cout << "No members in this channel." << std::endl;
+			} else {
 				for (size_t j = 0; j < _channels[i].members.size(); j++){
 					write_nice(RED, _clients[_channels[i].members[j]].nick, false);
 					write_nice(RED, "/", false);
 				}
 				write_nice(RED, "", true);
 			}
-			std::cout << RESET << std::endl;
+		}
+
+		std::cout << RESET << std::endl;
 	}
 }
+
 
 void Server::run() 
 {

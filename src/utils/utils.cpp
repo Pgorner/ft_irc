@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 13:06:55 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:19:59 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ bool Server::contains(const std::vector<std::string>& tokens, std::string search
 
 void Server::change_running(int signal) {
     (void)signal;
-    endwin();
     server_ptr->proper_exit();
     exit(0);
 }

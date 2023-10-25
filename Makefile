@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/10/25 13:17:17 by pgorner          ###   ########.fr        #
+#    Updated: 2023/10/25 13:19:20 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,6 @@ RM     = rm -rf
 OBJ_DIR = obj
 LOG_DIR = logs
 CFLAGS = -Wall -Werror -Wextra -std=c++98 -fsanitize=address
-LDFLAGS = -lncurses
 
 # List of source files
 SRC = src/main.cpp \

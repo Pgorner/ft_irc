@@ -6,18 +6,12 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 10:46:57 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 14:38:24 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 11:41:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOG_HPP
 #define LOG_HPP
-
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <ctime>
-#include <cstdlib>
 
 namespace LogDetail {
     struct LogStream {

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/25 18:13:05 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 11:41:48 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,6 @@
 #define SERVER_HPP_
 
 #include "irc.hpp"
-
-#define FALSE 0
-#define TRUE 1
-#define INDETERMINATE 2
-#define BOT 1
-
-#define POLLTIME 500 
-
 
 	struct ClientData;
 

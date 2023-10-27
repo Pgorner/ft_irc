@@ -6,22 +6,27 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:19:58 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 11:42:01 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRC_HPP_
 #define IRC_HPP_
 
+#define FALSE 0
+#define TRUE 1
+#define INDETERMINATE 2
 #define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
 #define SERVERNAME "IRCSERV"
-
+#define POLLTIME 500 
 
 
 #include <string>
 #include <vector>
 #include <csignal>
 #include <fstream>
+#include <ctime>
+#include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <iostream>

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 11:23:34 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 16:04:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void Server::broadcastinchannel(std::string channelname, std::string msg)
 		{
 			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
 			{
+				std::cout << "sending message to: " << _clients[k].nick << " as he is in " << _clients[k]._channels[j] << std::endl;
 				if (_clients[k]._channels[j] == channelname)
 					_clients[k].send_to_user += msg;
 			}

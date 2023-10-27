@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 14:29:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 16:07:23 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,7 @@ void Server::addNewClient(bool& hCC)
     socklen_t client_addr_len = sizeof(client_addr);
     int client_socket = accept(_socket, (struct sockaddr*)&client_addr, &client_addr_len);
 	if (client_socket < 0)
-	{
         std::cout << RED << "Client socket error\n";
-   	}
 	else
 	{
 		write_nice(GREEN, "\n	NEW CLIENT SUCESSFULLY ADDED", true);
@@ -229,11 +227,10 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 					if (_clients[l].fd == _poll_fds[o].fd)
 						std::cout << "  :" << _clients[l].nick;
 					if (_clients[l].ping == false)
-						std::cout << " PING FALSE";
+						std::cout << " PING FALSE" << std::endl;
 					else	
-						std::cout << " PING TRUE";
+						std::cout << " PING TRUE" << std::endl;
 				}
-				std::cout << std::endl;
 			}
 		write_nice(RED, "--------ALL CLIENTS--------\n", false);
 		if (_clients.empty())
@@ -245,23 +242,28 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 				if (_clients[cc].nick.empty())
 					std::cout << RED << "/";
 				else
-					std::cout << RED << _clients[cc].nick;
+					std::cout << RED << _clients[i].nick;
 				std::cout << RED << " USER:" ;
 				std::cout << RED << i << ". PING:";
 				if (_clients[cc].nick.empty())
 					std::cout << RED << "/";
 				else
-					std::cout << RED << _clients[cc].nick;
+					std::cout << RED << _clients[i].nick;
 				std::cout << RED << " USER:" ;
 				if (_clients[cc].user.empty())
 					std::cout << RED << "/";
 				else
-					std::cout << RED << _clients[cc].user;
+					std::cout << RED << _clients[i].user;
 				std::cout << RED << " REALNAME:";
 				if (_clients[cc].realname.empty())
 					std::cout << RED << "/";
 				else
-					 std::cout << RED << _clients[cc].realname;	
+					std::cout << RED << _clients[i].realname;
+
+				for (size_t j = 0; j < _clients[i]._channels.size(); j++)
+				{
+					std::cout << RED << "\nChannel: " << j << " " <<  _clients[i]._channels[j];	
+				}
 				std::cout << "\n";
 			}
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42.fr>            +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/24 15:25:59 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 11:23:34 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 		Channel newChannel(channelname, "", "", "", "itkol");
 		newChannel.members.push_back(cc);
 		_channels.push_back(newChannel);
-		addmode('o', cc);
 		_clients[cc]._channels.push_back(newChannel.name);
 		_clients[cc].send_to_user += ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n";
 		return 1;

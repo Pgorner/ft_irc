@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:37:58 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:41:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,7 +342,7 @@ void Server::run()
 		ping++;
 		if (ping % 50 == 0)
 		{
-			std::cout << CYAN << "PING TRIGGERED\n" << RESET;
+			std::cout << CYAN << "\nPING TRIGGERED\n" << RESET;
 			for (size_t k = 0; k < _clients.size(); k++) {
 				logsend(_clients[k].fd, "PING\r\n", k);
 				if (_clients[k].ping == false) {
@@ -350,6 +350,7 @@ void Server::run()
 					{
 						if (_poll_fds[j].fd == _clients[k].fd)
 						{
+							std::cout << CYAN << _clients[k].nick << "disconnected\n" << RESET;
 							quit(j, k, "You have been disconnected due to inactivity");
 							break;
 						}

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 13:26:19 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 14:29:00 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,8 +225,14 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 			{
 				std::cout << o << ":" << _poll_fds[o].fd;
 				for (size_t l = 0; l < _clients.size(); l++)
+				{
 					if (_clients[l].fd == _poll_fds[o].fd)
 						std::cout << "  :" << _clients[l].nick;
+					if (_clients[l].ping == false)
+						std::cout << " PING FALSE";
+					else	
+						std::cout << " PING TRUE";
+				}
 				std::cout << std::endl;
 			}
 		write_nice(RED, "--------ALL CLIENTS--------\n", false);
@@ -236,6 +242,12 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 			for (size_t i = 0; i < _clients.size(); i++)
 			{
 				std::cout << RED << i << ". NICK:";
+				if (_clients[cc].nick.empty())
+					std::cout << RED << "/";
+				else
+					std::cout << RED << _clients[cc].nick;
+				std::cout << RED << " USER:" ;
+				std::cout << RED << i << ". PING:";
 				if (_clients[cc].nick.empty())
 					std::cout << RED << "/";
 				else

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 12:41:05 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 13:26:19 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,7 @@ int Server::handleClient(int i)
 	{
 		write_nice(RED, "Client Error occured: ", false);
 		write_nice(RED, _clients[cc].nick, false);
-        close(_poll_fds[i].fd);
-        _poll_fds.erase(_poll_fds.begin() + i);
-		_clients.erase(_clients.begin() + cc);
+		quit(i, cc, "An error occured");
     }
 	else 
 	{
@@ -219,6 +217,18 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 		for(std::vector<std::string>::const_iterator it = tokens.begin(); it != tokens.end(); ++it)
 			write_nice(BLUE, it->c_str(), true );
 
+		write_nice(RED, "--------ALL POLL FDS--------\n", false);
+		if (_poll_fds.empty())
+			std::cout << "No FDS\n" << std::endl;
+		else
+			for (size_t o = 0; o < _poll_fds.size(); o++)
+			{
+				std::cout << o << ":" << _poll_fds[o].fd;
+				for (size_t l = 0; l < _clients.size(); l++)
+					if (_clients[l].fd == _poll_fds[o].fd)
+						std::cout << "  :" << _clients[l].nick;
+				std::cout << std::endl;
+			}
 		write_nice(RED, "--------ALL CLIENTS--------\n", false);
 		if (_clients.empty())
 			std::cout << "No Clients\n" << std::endl;

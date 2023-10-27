@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 12:50:14 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 13:22:24 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,19 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 			resp << "\r\n";
 			for (size_t j = 0; j < _channels[i].members.size(); j++)
 			{
+				std::cout << _clients[_channels[i].members[j]].nick << std::endl;
 				for (size_t k = 0; k < _poll_fds.size(); k++)
 				{
-					if (_poll_fds[k].fd == _clients[_channels[i].members[j]].fd
-						&& _clients[_channels[i].members[j]].nick != _clients[cc].nick)
+					std::cout << "poll fd:" << _poll_fds[k].fd << std::endl;
+					if( _poll_fds[k].fd == _clients[_channels[i].members[j]].fd
+					&& _clients[_channels[i].members[j]].nick != _clients[cc].nick)
 					{
 						_clients[_channels[i].members[j]].send_to_user +=  resp.str();
 					}
+					std::cout << "here\n";
 				}
 			}
+				std::cout << "return\n";
 			return ;
 		}
 	}

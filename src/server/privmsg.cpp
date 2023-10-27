@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:27:44 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 12:32:19 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
-	if (tokens[1].empty())
+	if (tokens.size() == 1)
 	{
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("PRIVMSG"));
 		return;
@@ -22,7 +22,7 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 	std::stringstream resp;
     for (size_t i = 0; i < _channels.size(); i++) 
 	{
-		if (_channels[i].name == tokens[1] && !_channels.empty())
+		if (!_channels.empty() && _channels[i].name == tokens[1])
 		{	
 			resp <<  ":" << _clients[cc].nick << "!" << _clients[cc].nick << "@localhost" << " PRIVMSG " << tokens[1] << " :";
 			for (size_t h = 2; h < tokens.size(); h++)
@@ -48,11 +48,12 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 	}
 	if (tokens[1] != _clients[cc].nick)
 	{
+		bool found = false;
 		resp << ":" << _clients[cc].nick << " PRIVMSG " << tokens[1] << " :";
-		for (int i = 2; tokens[i].size() != 0; i++)
+		for (size_t i = 2; i < tokens.size() != 0; i++)
 		{
 			resp << tokens[i];
-			if (!tokens[i + 1].empty())
+			if (i < tokens.size())
 				resp << " ";
 		}
 		resp << "\r\n";
@@ -60,18 +61,14 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 		{
 			if (_clients[i].nick == tokens[1])
 			{
+				found = true;
 				std::string response = resp.str();
 				_clients[i].send_to_user += response;
-				for (size_t k = 0; k < _poll_fds.size(); k++)
-				{
-					if (_poll_fds[k].fd == _clients[i].fd
-						&& _clients[i].nick != _clients[cc].nick)
-					{
-						logsend(_poll_fds[k].fd, _clients[i].send_to_user, cc);
-						_clients[i].send_to_user = "";
-					}
-				}	
 			}
+		}
+		if (found == false)
+		{
+			logsend(_clients[cc].fd, SERVERNAME " USER NOT FOUND\r\n", cc);
 		}
 	}
 }

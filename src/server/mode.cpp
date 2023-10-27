@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:30:15 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 12:15:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int Server::channelMode(int cc, std::vector<std::string> tokens)
 							std::string modes = "it";
 							if(tokens[2][1] == 'k')
 							{
-								if (tokens[2][0] == '+' && tokens[3].empty())
+								if (tokens[2][0] == '+' && tokens.size() == 3)
 									return (_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("MODE")), 0);
 								else if (tokens[2][0] == '+')
 								{

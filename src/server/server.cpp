@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:41:00 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 12:40:39 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,8 @@ int Server::handleClient(int i)
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
 	//Cap handshake
+	if (tokens[0] == "PONG")
+		pong(cc);
 	if (_clients[cc].cap == false && tokens[0] == "CAP")
 	{
 		cap(_poll_fds[i].fd, tokens, _clients[cc].cap, cc);
@@ -162,8 +164,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		kick(tokens, cc);
 	else if (tokens[0] == "PING")
 		ping(tokens, cc);
-	else if (tokens[0] == "PONG")
-		pong(cc);
 	else if (tokens[0] == "QUIT")	
 		quit(i, cc, "You have quit the server");
 	else if (tokens[0] == "NAMES")

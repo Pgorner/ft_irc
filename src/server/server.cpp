@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 12:40:39 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/27 12:41:05 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,7 +340,7 @@ void Server::run()
             	handleClientConnect = false;
         }
 		ping++;
-		if (ping % 50 == 0)
+		if (ping % 100 == 0)
 		{
 			std::cout << CYAN << "\nPING TRIGGERED\n" << RESET;
 			for (size_t k = 0; k < _clients.size(); k++) {

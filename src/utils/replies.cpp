@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 17:12:52 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:21:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 20:45:47 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,7 +351,7 @@ namespace irc
     const char* RPL_CHANNELMODEIS(const std::string& channel, const std::string& mode, const std::string& mode_params)
     {
         std::string outcome;
-        outcome += ":" + std::string(SERVERNAME) + " 324 " + channel + " " + mode + " " + mode_params + "\r\n";
+        outcome += ":" + std::string(SERVERNAME) + " 324 " + channel + " " + mode + " :" + mode_params + "\r\n";
         char* cstr = new char[outcome.length() + 1];
         std::strcpy(cstr, outcome.c_str());
         return cstr;

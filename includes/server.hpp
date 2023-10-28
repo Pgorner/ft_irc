@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/28 19:22:46 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 20:48:45 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 		int ulimit;
 		std::vector<int> members;
 		std::vector<int> invited;
+		std::vector<int> opers;
         Channel(std::string channelname, std::string channeltopic, std::string channelmode, std::string channelpassword, std::string channelmodeparams) : name(channelname), topic(channeltopic), mode(channelmode), pwd(channelpassword), modeparams(channelmodeparams) {}
 	};
     
@@ -95,13 +96,14 @@ class Server {
     void user(std::vector<std::string> tokens, int cc, int i);
     int oper(std::vector<std::string> tokens, int cc);
     void changeoper(std::vector<std::string> tokens, int cc);
-    void handleOpermode(int cc, std::vector<std::string> tokens);
+    void admin_oper(int cc, std::vector<std::string> tokens);
     int mode(int cc, std::vector<std::string> tokens);
     void quit(size_t i, int cc, std::string msg);
 	int joinchannel(std::vector<std::string> tokens , int cc);
 	void sendmsg(std::vector<std::string> tokens, int cc);
     void names(std::vector<std::string> tokens , int cc);
-    int userexists(std::string username);
+    bool userexists(std::string username);
+    bool channelexists(std::string channame);
 	void leavechannel(std::vector<std::string> tokens, int cc);
 	void kick(std::vector<std::string> tokens , int cc);
 	void removefromchannel(std::string channelname, int cc, std::string msg);

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/27 11:41:48 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 13:10:33 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ class Server {
     static void change_running(int signal);
     void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
     void logsend(int fd, const std::string& msg, int cc);
-    bool contains(const std::vector<std::string>& tokens, std::string search);
+    bool token_contains(const std::vector<std::string>& tokens, std::string search);
+    bool string_contains(const std::string& token, char search);
     void cap(int fd, const std::vector<std::string>& tokens, bool& cap, int cc);
     void commands(int i, int cc, std::vector<std::string> tokens);
     void rmletter(char letter, int cc);
@@ -85,7 +86,10 @@ class Server {
     bool isAllDigits(const std::string& str);
 
     //cmd functions
-    void nick(std::vector<std::string> tokens, int cc, int i);
+    bool check_params(std::vector<std::string>& tokens, size_t count);
+    bool check_tokensize(std::string& token, size_t size);
+    bool check_inchannel(int cc, std::string channelname);
+    void nick(std::vector<std::string> tokens, int cc);
     void ping(std::vector<std::string> tokens, int cc);
     void pong(int cc);
     void user(std::vector<std::string> tokens, int cc, int i);

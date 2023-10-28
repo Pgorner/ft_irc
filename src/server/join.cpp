@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 16:04:47 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 13:12:25 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void Server::broadcastinchannel(std::string channelname, std::string msg)
 		{
 			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
 			{
-				std::cout << "sending message to: " << _clients[k].nick << " as he is in " << _clients[k]._channels[j] << std::endl;
 				if (_clients[k]._channels[j] == channelname)
 					_clients[k].send_to_user += msg;
 			}
@@ -31,69 +30,43 @@ void Server::broadcastinchannel(std::string channelname, std::string msg)
 	write_nice(WHITE, LINE, true);
 }
 
+bool Server::check_inchannel(int cc, std::string channelname)
+{
+	for (size_t k = 0; k < _clients[cc]._channels.size(); k++)
+	{
+		if (_clients[cc]._channels[k] == channelname)
+			return(true);
+	}
+	return(true);
+}
+
 int Server::joinchannel(std::vector<std::string> tokens , int cc)
 {
-	if (tokens.size() == 2 || tokens.size() == 3)
+	if (!check_params(tokens, 2)){_clients[cc].send_to_user += SERVERNAME" Wrong JOIN parameters\r\n"; return 0;}
+	if (!(check_tokensize(tokens[1], 2) && tokens[1][0] == '#')){_clients[cc].send_to_user += SERVERNAME" Wrong JOIN parameters\r\n"; return 0;}
+	std::string channelname = tokens[1];
+	int cnum = find_chan(channelname);
+	if (cnum != -1)
 	{
-		std::string channelname;
-		if (tokens[1].length() >= 2 && tokens[1][0] == '#')
-			channelname = tokens[1];
-		else
+		if (check_inchannel(cc, channelname)){ _clients[cc].send_to_user += SERVERNAME" You are already in this channel\r\n"; return 1;}
+		if (string_contains(_channels[cnum].mode, 'i') && std::find(_channels[cnum].invited.begin(), _channels[cnum].invited.end(), cc) == _channels[cnum].invited.end())
+		    return(_clients[cc].send_to_user += SERVERNAME " You have to be invited to join this channel\r\n", 1);
+		if (string_contains(_channels[cnum].mode, 'k'))
 		{
-			std::cout << "Wrong channel name format" << std::endl;
-			return 0;
+			if (!check_params(tokens, 3)){return (_clients[cc].send_to_user += SERVERNAME" This Channel is password protected\r\n", 1);}
+			else if (tokens[2] != _channels[cnum].pwd){ return (_clients[cc].send_to_user += SERVERNAME" Incorrect password for channel\r\n", 1);}
 		}
-		for (size_t i = 0; i < _channels.size(); i++)
-		{
-			if (_channels[i].name == channelname)
-			{
-				for (size_t k = 0; k < _clients[cc]._channels.size(); k++)
-				{
-					std::cout << _clients[cc]._channels[k] << std::endl;
-					if (_clients[cc]._channels[k] == channelname)
-					{
-						_clients[cc].send_to_user += SERVERNAME" You are already in this channel\r\n";
-						return 1;
-					}
-				}
-				bool prot = true;
-				if (_channels[i].mode.find('i') != std::string::npos)
-				{
-					prot = false;
-					for (size_t c = 0; c < _channels[i].invited.size(); c++)
-						if (_channels[i].invited[c] == cc)
-							prot = true;
-				}
-				if (_channels[i].mode.find('k') != std::string::npos)
-				{
-					if (tokens.size() == 2)
-						return (_clients[cc].send_to_user += SERVERNAME" This Channel is password protected\r\n", 1);
-					else if (tokens[2] != _channels[i].pwd)
-						return (_clients[cc].send_to_user += SERVERNAME" Incorrect password for channel\r\n", 1);
-				}
-				if (_channels[i].mode.find('l') != std::string::npos)
-				{
-					if (find_ulimit(i) >= _channels[i].ulimit)
-						return (_clients[cc].send_to_user += SERVERNAME" This channel has reached the maximum allowed amount of users\r\n", 1);
-				}
-				if (prot == false)
-					return (_clients[cc].send_to_user += SERVERNAME" You have to be invited to join this channel\r\n", 1);
-				_channels[i].members.push_back(cc);
-				_clients[cc]._channels.push_back(_channels[i].name);
-				broadcastinchannel(channelname, ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n");
-				return 1;
-			}
-		}
-		Channel newChannel(channelname, "", "", "", "itkol");
-		newChannel.members.push_back(cc);
-		_channels.push_back(newChannel);
-		_clients[cc]._channels.push_back(newChannel.name);
-		_clients[cc].send_to_user += ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n";
+		if (string_contains(_channels[cnum].mode, 'l'))
+			if (find_ulimit(cnum) >= _channels[cnum].ulimit){ return (_clients[cc].send_to_user += SERVERNAME" This channel has reached the maximum allowed amount of users\r\n", 1);}
+		_channels[cnum].members.push_back(cc);
+		_clients[cc]._channels.push_back(_channels[cnum].name);
+		broadcastinchannel(channelname, ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n");
 		return 1;
 	}
-	else
-	{
-		_clients[cc].send_to_user += SERVERNAME" Wrong JOIN parameters\r\n";
-		return 0;
-	}
+	Channel newChannel(channelname, "", "", "", "itkol");
+	newChannel.members.push_back(cc);
+	_channels.push_back(newChannel);
+	_clients[cc]._channels.push_back(newChannel.name);
+	_clients[cc].send_to_user += ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n";
+	return 1;
 }

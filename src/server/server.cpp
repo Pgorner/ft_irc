@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 16:07:23 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 11:56:24 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	}
 	//Nick and User authentication
 	if (tokens[0] == "NICK")
-		nick(tokens, cc, i);
+		nick(tokens, cc);
 	else if (tokens[0] == "USER")
 		user(tokens, cc, i);
 	else if (_clients[cc].auth == false)

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 19:25:30 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:29:59 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,11 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 				if (!find_user_inchan(i, target)){_clients[cc].send_to_user += SERVERNAME" User not found in channel\r\n"; return ;}
 				if (cc == target) {_clients[cc].send_to_user += SERVERNAME" You cannot kick yourself\r\n"; return ;}
 				std::string msg = " :";
-				if (tokens[3].size() != 0)
+				if (tokens.size() > 3 && tokens[3].size() != 0)
 					msg += tokens[3];
+				std::cout << "5\n";
 				removefromchannel(channelname, target, "KICK " + channelname + " " + tokens[2] + msg + "\r\n");
+				std::cout << "6\n";
 				_clients[cc].send_to_user += SERVERNAME" User kicked\r\n";
 				return ;
 			}

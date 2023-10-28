@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 16:43:18 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:41:54 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,16 +147,20 @@ int Server::channelMode(int cc, std::vector<std::string> tokens)
 			if (tokens[2][0] == '+')
 			{
 				if(addchanmode(tokens[2][k], cc, chan) > 0)
+				{
 					_clients[cc].send_to_user += SERVERNAME" Added mode ";
 					_clients[cc].send_to_user += tokens[2][k];
 					_clients[cc].send_to_user += " to channel\r\n";
+				}
 			}
 			else if (tokens[2][0] == '-')
 			{
 				if (rmchanletter(tokens[2][k], cc, chan) > 0)
+				{
 					_clients[cc].send_to_user += SERVERNAME" Removed mode ";
 					_clients[cc].send_to_user += tokens[2][k];
 					_clients[cc].send_to_user += " from channel\r\n";
+				}
 			}
 		}
 	}

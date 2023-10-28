@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 16:18:21 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:42:26 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 	{
 		bool found = false;
 		resp << ":" << _clients[cc].nick << " PRIVMSG " << tokens[1] << " :";
-		for (size_t i = 2; i < tokens.size() != 0; i++)
+		for (size_t i = 2; i < tokens.size(); i++)
 		{
 			resp << tokens[i];
 			if (i < tokens.size())

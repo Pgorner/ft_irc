@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 16:18:48 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:45:39 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,15 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	if (cnum != -1)
 	{
 		if (check_inchannel(cc, channelname)){ _clients[cc].send_to_user += SERVERNAME" You are already in this channel\r\n"; return 1;}
-		if (string_contains(_channels[cnum].mode, 'i') && std::find(_channels[cnum].invited.begin(), _channels[cnum].invited.end(), cc) == _channels[cnum].invited.end())
-		    return(_clients[cc].send_to_user += SERVERNAME " You have to be invited to join this channel\r\n", 1);
+		bool prot;
+		if (string_contains(_channels[cnum].mode, 'i'))
+		{
+			prot = false;
+			for (size_t c = 0; c < _channels[cnum].invited.size(); c++)
+				if (_channels[cnum].invited[c] == cc)
+					prot = true;
+			if (prot == false){return (_clients[cc].send_to_user += SERVERNAME" You have to be invited to join this channel\r\n", 1);}
+		}
 		if (string_contains(_channels[cnum].mode, 'k'))
 		{
 			if (!check_params(tokens, 3)){return (_clients[cc].send_to_user += SERVERNAME" This Channel is password protected\r\n", 1);}

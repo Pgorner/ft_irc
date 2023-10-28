@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/28 13:10:33 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 16:40:21 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ class Server {
     void ping(std::vector<std::string> tokens, int cc);
     void pong(int cc);
     void user(std::vector<std::string> tokens, int cc, int i);
-    int oper(std::vector<std::string> tokens);
+    int oper(std::vector<std::string> tokens, int cc);
     void changeoper(std::vector<std::string> tokens, int cc);
     void handleOpermode(int cc, std::vector<std::string> tokens);
     int mode(int cc, std::vector<std::string> tokens);

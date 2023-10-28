@@ -6,13 +6,13 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:56:35 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 18:27:28 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 16:54:12 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
 
-int Server::oper(std::vector<std::string> tokens){
+int Server::oper(std::vector<std::string> tokens, int cc){
 	std::string folderPath = "src/documentation";
 	DIR* directory;
     struct dirent* entry;
@@ -33,7 +33,7 @@ int Server::oper(std::vector<std::string> tokens){
     					    std::string usertkn[3];
     					    std::istringstream iss(line);
     					    for (int i = 1; i <= 2 && std::getline(iss, usertkn[i], ' '); ++i);
-    					    if (usertkn[1] == tokens[1] &&  usertkn[2] == tokens[2])
+    					    if (usertkn[1] == tokens[1] &&  usertkn[2] == tokens[2] && usertkn[1] == _clients[cc].user)
     					        return 1;
 							else if (usertkn[1] == tokens[1] &&  usertkn[2] != tokens[2])
 								keeptrack = 1;
@@ -66,7 +66,7 @@ int Server::oper(std::vector<std::string> tokens){
     					    std::string usertkn[3];
     					    std::istringstream iss(line);
     					    for (int i = 1; i <= 2 && std::getline(iss, usertkn[i], ' '); ++i);
-    					    if (usertkn[1] == tokens[1] &&  usertkn[2] == tokens[2])
+    					    if (usertkn[1] == tokens[1] &&  usertkn[2] == tokens[2] && usertkn[1] == _clients[cc].user)
     					        return 3;
 							else if (usertkn[1] == tokens[1] &&  usertkn[2] != tokens[2])
 								keeptrack = 1;
@@ -88,32 +88,34 @@ int Server::oper(std::vector<std::string> tokens){
 
 void Server::changeoper(std::vector<std::string> tokens, int cc)
 {
-	if (tokens[1].empty() || tokens[2].empty())
-		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("OPER"));
-	else if(oper(tokens) == 1)
+	std::cout << CYAN << oper(tokens, cc) << std::endl;
+	if (!check_params(tokens, 3)){_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("OPER"));}
+	else if(oper(tokens, cc) == 1)
 	{
-		if(_clients[cc].mode.find('o') != std::string::npos)
+		if(string_contains(_clients[cc].mode, 'O'))
 		{
 			_clients[cc].send_to_user += SERVERNAME" You already are an IRC operator\r\n";
+			return;
 		}
 		addmode('O', cc);
 		_clients[cc].send_to_user += irc::cEM(irc::RPL_YOUREOPER());
 	}
-	else if(oper(tokens) == 0)
-		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOOPERHOST());
-	else if(oper(tokens) == 2)
+	else if(oper(tokens, cc) == 2)
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_PASSWDMISMATCH());
-	else if(oper(tokens) == 3)
+	else if(oper(tokens, cc) == 3)
 	{
-		if(_clients[cc].mode.find('o') != std::string::npos)
+		if(string_contains(_clients[cc].mode, 'o'))
 		{
 			_clients[cc].send_to_user += SERVERNAME" You already are an IRC Channel operator\r\n";
+			return;
 		}
 		addmode('o', cc);
 		_clients[cc].send_to_user += irc::cEM(irc::RPL_YOUREOPER());
 	}
-	else if(oper(tokens) == 4)
+	else if(oper(tokens, cc) == 4)
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_PASSWDMISMATCH());
+	else if(oper(tokens, cc) == 0)
+		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOOPERHOST());
 }
 
 void Server::rmletter(char letter, int cc){

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:56:35 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 16:54:12 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:04:37 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void Server::changeoper(std::vector<std::string> tokens, int cc)
 	}
 	else if(oper(tokens, cc) == 4)
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_PASSWDMISMATCH());
-	else if(oper(tokens, cc) == 0)
+	else
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOOPERHOST());
 }
 

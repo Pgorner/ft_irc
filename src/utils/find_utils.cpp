@@ -6,11 +6,21 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:34:28 by pgorner           #+#    #+#             */
-/*   Updated: 2023/08/27 21:34:39 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:25:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
+
+bool Server::find_user_inchan(int channel, int user)
+{
+	for (size_t i = 0; i < _channels[channel].members.size(); i++)
+	{
+		if (_channels[channel].members[i] == user)
+			return (true);
+	}
+	return (false);
+}
 
 int Server::find_user(std::string username)
 {

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/28 16:40:21 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 19:22:46 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ class Server {
     int channelMode(int cc, std::vector<std::string> tokens);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
 	int find_user(std::string username);
+    bool find_user_inchan(int channel, int user);
 	int find_nick(std::string nickname);
     int find_chan(std::string channelname);
     int find_ulimit(int i);

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 13:12:25 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 16:18:48 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ bool Server::check_inchannel(int cc, std::string channelname)
 		if (_clients[cc]._channels[k] == channelname)
 			return(true);
 	}
-	return(true);
+	return(false);
 }
 
 int Server::joinchannel(std::vector<std::string> tokens , int cc)

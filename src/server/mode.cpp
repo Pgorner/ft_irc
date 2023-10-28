@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 13:34:42 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/28 14:00:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,9 +179,7 @@ int Server::userexists(std::string username)
 	for (size_t i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i].nick == username)
-		{
 			return (1);
-		}
 	}
 	return (0);
 }

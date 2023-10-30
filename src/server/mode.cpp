@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/29 13:29:54 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/29 13:35:49 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,5 +229,5 @@ int Server::mode(int cc, std::vector<std::string> tokens)
 	else if (channelexists(tokens[1]))
 		return(channelMode(cc, tokens), 0);
 	std::cout << channelexists(tokens[1]) << std::endl;
-	return(_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("MODE")), 0);
+	return(_clients[cc].send_to_user += SERVERNAME" Channel or user could not be found \r\n", 0);
 }

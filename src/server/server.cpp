@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 20:09:58 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/30 15:36:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void Server::addNewClient(bool& hCC)
         new_client_poll_fd.events = POLLIN; // Monitoring for read events.
 		logsend(new_client_poll_fd.fd, SERVERNAME " Enter the password, user and nickname\r\n" SERVERNAME " PASS <password>\r\n" SERVERNAME " USER <username>\r\n" SERVERNAME " NICK <nickname>\r\n", -1);
         _poll_fds.push_back(new_client_poll_fd);
-		_clients.push_back(ClientData(client_socket, false, false, false, "", "" ,"", "", "", true));
+		_clients.push_back(ClientData(client_socket, false, false, false, false, "", "", "", "", true));
 		hCC = true;
     }
 }
@@ -137,7 +137,7 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 	if (tokens[0] == "NICK")
 		nick(tokens, cc);
 	else if (tokens[0] == "USER")
-		user(tokens, cc, i);
+		user(tokens, cc);
 	else if (_clients[cc].auth == false)
 		return;
 	if (_clients[cc].user.size() != 0 && _clients[cc].nick.size() != 0 && _clients[cc].auth == false)
@@ -166,6 +166,8 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		quit(i, cc, "You have quit the server");
 	else if (tokens[0] == "NAMES")
 		names(tokens, cc);
+	else if (tokens[0] == "TOPIC")
+		topic(tokens, cc);
 }
 
 void Server::sendmsgstoclients()
@@ -289,7 +291,6 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 		std::cout << RED << 
 		"\nPWDACCEPT(0=n/y=1): " << _clients[cc].passwordAccepted <<
 		"\nAUTH(0=n/y=1): " << _clients[cc].auth <<
-		"\nMODE: " << _clients[cc].mode <<
 		"\nUSER IN CHANNELS: \n";
 
 		if (_clients[cc]._channels.empty())

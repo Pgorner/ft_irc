@@ -6,18 +6,11 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:50:02 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/29 13:35:49 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/30 15:40:36 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
-
-void Server::addmode(char letter, int cc){
-	if(_clients[cc].mode.find(letter) == std::string::npos)
-	{
-		_clients[cc].mode += letter;
-	}
-}
 
 int Server::addchanmode(char letter, int cc, int channel)
 {
@@ -33,71 +26,93 @@ int Server::addchanmode(char letter, int cc, int channel)
 	return 1;
 }
 
-void Server::admin_oper(int cc, std::vector<std::string> tokens)
-{
-	if (!string_contains(_clients[cc].mode, 'O'))
+int Server::rmchanletter(char letter, int cc, int channel){
+	std::string result;
+	bool noletter = true;
+    for (std::size_t i = 0; i < _channels[channel].mode.length(); ++i)
 	{
-		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOPRIVILEGES());
-		return;
-	}
-	for (size_t user = 0; user < _clients.size(); user++)
+        if ( _channels[channel].mode[i] != letter)
+            result +=  _channels[channel].mode[i];
+        else if ( _channels[channel].mode[i] == letter)
+			noletter = false;
+    }
+	if (noletter == true)
 	{
-		if (_clients[user].nick == tokens[1])
-		{
-			if (tokens[2][0] == '-')
-			{
-				for (int i = 1; tokens[2][i]; i++)
-					rmletter(tokens[2][i], user);	
-				_clients[user].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[user].mode));
-				return;
-			}
-			else if (tokens[2][0] == '+')
-			{
-				for (int i = 1; tokens[2][i]; i++)
-				{
-					if ((tokens[2][i] == 'o' 
-						|| tokens[2][i] == 'a'
-						|| tokens[2][i] == 'i'
-						|| tokens[2][i] == 'w'
-						|| tokens[2][i] == 'r'
-						|| tokens[2][i] == 's'))
-						addmode(tokens[2][i], user);
-				}
-			_clients[user].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[user].mode));
-			}
-		_clients[cc].send_to_user += "You have changed " + _clients[user].nick + "\'s Mode\r\n";
-		}
+        _clients[cc].send_to_user += SERVERNAME" Cannot remove MODE \"";
+		_clients[cc].send_to_user += letter;
+		_clients[cc].send_to_user += "\" as it was never active\r\n";
+		return -1;
 	}
+    _channels[channel].mode = result;
+	return 1;
 }
 
-void Server::userMode(int cc, std::vector<std::string> tokens)
-{
-	if (tokens[2][0] == '-')
-	{
-		for (int i = 1; tokens[2][i]; i++)
-			rmletter(tokens[2][i], cc);	
-		_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode));
-		return;
-	}
-	else if (tokens[2][0] == '+')
-	{
-		for (int i = 1; tokens[2][i]; i++)
-		{
-			if ((tokens[2][i] != 'o' 
-				&& tokens[2][i] != 'O'
-				&& tokens[2][i] != 'a') 
-				&& (tokens[2][i] == 'a'
-				|| tokens[2][i] == 'i'
-				|| tokens[2][i] == 'w'
-				|| tokens[2][i] == 'r'
-				|| tokens[2][i] == 's'))
-				addmode(tokens[2][i], cc);
-			if (tokens[2][i] == 'O' || tokens[2][i] == 'o')
-				_clients[cc].send_to_user += SERVERNAME" Use OPER cmd to gain priviledges\r\n";
-		}
-	_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode));
-	}
-}
+// void Server::admin_oper(int cc, std::vector<std::string> tokens)
+// {
+// 	if (!string_contains(_clients[cc].mode, 'O'))
+// 	{
+// 		_clients[cc].send_to_user += irc::cEM(irc::ERR_NOPRIVILEGES());
+// 		return;
+// 	}
+// 	for (size_t user = 0; user < _clients.size(); user++)
+// 	{
+// 		if (_clients[user].nick == tokens[1])
+// 		{
+// 			if (tokens[2][0] == '-')
+// 			{
+// 				for (int i = 1; tokens[2][i]; i++)
+// 					rmletter(tokens[2][i], user);	
+// 				_clients[user].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[user].mode));
+// 				return;
+// 			}
+// 			else if (tokens[2][0] == '+')
+// 			{
+// 				for (int i = 1; tokens[2][i]; i++)
+// 				{
+// 					if ((tokens[2][i] == 'o' 
+// 						|| tokens[2][i] == 'a'
+// 						|| tokens[2][i] == 'i'
+// 						|| tokens[2][i] == 'w'
+// 						|| tokens[2][i] == 'r'
+// 						|| tokens[2][i] == 's'))
+// 						addmode(tokens[2][i], user);
+// 				}
+// 			_clients[user].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[user].mode));
+// 			}
+// 		_clients[cc].send_to_user += "You have changed " + _clients[user].nick + "\'s Mode\r\n";
+// 		}
+// 	}
+// }
+
+// void Server::userMode(int cc, std::vector<std::string> tokens)
+// {
+// 	if (tokens[2][0] == '-')
+// 	{
+// 		for (int i = 1; tokens[2][i]; i++)
+// 			rmletter(tokens[2][i], cc);	
+// 		_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode));
+// 		return;
+// 	}
+// 	else if (tokens[2][0] == '+')
+// 	{
+// 		for (int i = 1; tokens[2][i]; i++)
+// 		{
+// 			if ((tokens[2][i] != 'o' 
+// 				&& tokens[2][i] != 'O'
+// 				&& tokens[2][i] != 'a') 
+// 				&& (tokens[2][i] == 'a'
+// 				|| tokens[2][i] == 'i'
+// 				|| tokens[2][i] == 'w'
+// 				|| tokens[2][i] == 'r'
+// 				|| tokens[2][i] == 's'))
+// 				addmode(tokens[2][i], cc);
+// 			if (tokens[2][i] == 'O' || tokens[2][i] == 'o')
+// 				_clients[cc].send_to_user += SERVERNAME" Use OPER cmd to gain priviledges\r\n";
+// 		}
+// 	_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode));
+// 	}
+// }
+
 
 int Server::channelMode(int cc, std::vector<std::string> tokens)
 {
@@ -106,7 +121,7 @@ int Server::channelMode(int cc, std::vector<std::string> tokens)
 	std::string resp = "";
 	if (tokens.size() == 2){return(_clients[cc].send_to_user += irc::cEM(irc::RPL_CHANNELMODEIS(_channels[chan].name, _channels[chan].mode, _channels[chan].modeparams)), 0);}
 	if (!string_contains(tokens[2], '-') && !string_contains(tokens[2], '+')){ return (_clients[cc].send_to_user += SERVERNAME" Adding or removing MODES requires +/-\r\n", 0);}
-	if(!string_contains(_clients[cc].mode, 'O') && !string_contains(_clients[cc].mode, 'o')){return(_clients[cc].send_to_user += irc::cEM(irc::ERR_NOPRIVILEGES()), 0);}
+	if (_clients[cc].admin == false && !client_oper(cc, find_chan(tokens[1]))){_clients[cc].send_to_user += irc::cEM(irc::ERR_NOPRIVILEGES()); return 0;}
 	if (isalpha(tokens[2][1]))
 	{
 		std::string modes = "it";
@@ -136,8 +151,8 @@ int Server::channelMode(int cc, std::vector<std::string> tokens)
 			{
 				for (size_t g = 0; g < _channels[chan].opers.size(); g++)
 				{
-					if (_channels[chan].opers[g] == u)
-						return(_clients[cc].send_to_user += SERVERNAME" User already has oper mode for this channel\r\n", 0);
+				if (_channels[chan].opers[g] == u)
+					return(_clients[cc].send_to_user += SERVERNAME" User already has oper mode for this channel\r\n", 0);
 				}
 				_channels[chan].opers.push_back(u);
 				return (_clients[cc].send_to_user += SERVERNAME" Oper privs have been granted to " + tokens[3] + " for " + tokens[1] + "\r\n", 0);
@@ -160,7 +175,7 @@ int Server::channelMode(int cc, std::vector<std::string> tokens)
 				_channels[chan].ulimit = -1;
 				return (_clients[cc].send_to_user += SERVERNAME" Userlimit has been removed from channel\r\n", 0);
 			}
-			if ((tokens[2][0] == '+' && !check_params(tokens, 3)) || isAllDigits(tokens[3]) == false)
+			if ((tokens[2][0] == '+' && !check_params(tokens, 4)) || isAllDigits(tokens[3]) == false)
 				return (_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("MODE")), 0);
 			else if (tokens[2][0] == '+')
 			{
@@ -220,14 +235,8 @@ bool Server::channelexists(std::string channame)
 
 int Server::mode(int cc, std::vector<std::string> tokens)
 {
-	if (tokens.size() == 1)
-		return(_clients[cc].send_to_user += irc::cEM(irc::RPL_UMODEIS(_clients[cc].mode)), 0);
-	if (tokens[1] == _clients[cc].nick)
-		return(userMode(cc, tokens), 0);
-	else if (userexists(tokens[1]))
-		return(admin_oper(cc, tokens), 0);
-	else if (channelexists(tokens[1]))
+	if (!check_params(tokens, 3)){_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("OPER"));}
+	if (channelexists(tokens[1]))
 		return(channelMode(cc, tokens), 0);
-	std::cout << channelexists(tokens[1]) << std::endl;
-	return(_clients[cc].send_to_user += SERVERNAME" Channel or user could not be found \r\n", 0);
+	return(_clients[cc].send_to_user += SERVERNAME" Channel could not be found \r\n", 0);
 }

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/28 20:48:45 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/30 15:33:36 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
         bool passwordAccepted; // Flag indicating if the password is accepted for this client
         bool cap; // Flag indicating if CAP has been handled
         bool auth; // Flag indicating successfull authenticated (NICK & USER)
-        std::string mode;
+        bool admin;
 		std::vector<std::string> _channels;
         std::string nick;
         std::string user;       
@@ -48,8 +48,8 @@
         std::string data_buffer;
         std::string msg;
         bool ping;
-        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, std::string mode, std::string nick, std::string user, std::string realname, std::string send_to_user, bool ping) \
-                    : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), mode(mode), nick(nick), user(user), realname(realname),send_to_user(send_to_user), ping(ping){}
+        ClientData(int client_socket, bool pwdAccepted, bool cap, bool auth, bool admin, std::string nick, std::string user, std::string realname, std::string send_to_user, bool ping) \
+                    : fd(client_socket), passwordAccepted(pwdAccepted), cap(cap), auth(auth), admin(admin), nick(nick), user(user), realname(realname),send_to_user(send_to_user), ping(ping){}
     };
 	
 
@@ -74,15 +74,13 @@ class Server {
 	int err(std::string msg);
     void run(); 
     static void change_running(int signal);
-    void checkPwd(const std::vector<std::string>& tokens, int i, int cc);
+    void checkPwd(std::vector<std::string>& tokens, int i, int cc);
     void logsend(int fd, const std::string& msg, int cc);
     bool token_contains(const std::vector<std::string>& tokens, std::string search);
     bool string_contains(const std::string& token, char search);
     void cap(int fd, const std::vector<std::string>& tokens, bool& cap, int cc);
     void commands(int i, int cc, std::vector<std::string> tokens);
-    void rmletter(char letter, int cc);
     int rmchanletter(char letter, int cc, int channel);
-    void addmode(char letter, int cc);
     int addchanmode(char letter, int cc, int channel);
     bool isAllDigits(const std::string& str);
 
@@ -93,10 +91,11 @@ class Server {
     void nick(std::vector<std::string> tokens, int cc);
     void ping(std::vector<std::string> tokens, int cc);
     void pong(int cc);
-    void user(std::vector<std::string> tokens, int cc, int i);
-    int oper(std::vector<std::string> tokens, int cc);
+    void user(std::vector<std::string> tokens, int cc);
+    int oper(int cc ,std::vector<std::string> tokens);
     void changeoper(std::vector<std::string> tokens, int cc);
     void admin_oper(int cc, std::vector<std::string> tokens);
+    bool client_oper(int cc, int channel);
     int mode(int cc, std::vector<std::string> tokens);
     void quit(size_t i, int cc, std::string msg);
 	int joinchannel(std::vector<std::string> tokens , int cc);

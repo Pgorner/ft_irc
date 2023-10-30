@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 19:07:10 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 12:25:44 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/10/30 15:33:29 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,8 @@ int Server::sig_handlerserv(void) {
     return log("sig_handler started"), 0;
 }
 
-void Server::checkPwd(const std::vector<std::string>& tokens, int i, int cc) {
+void Server::checkPwd(std::vector<std::string>& tokens, int i, int cc) {
+    if(!check_params(tokens, 2)){_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("NICK")); return;};
     if ((tokens.empty() || tokens[0].compare(0, 5, "PASS") != 0))
         logsend(_poll_fds[i].fd, SERVERNAME" : WRONG PASSWORD\r\n", cc);
     else if (tokens[1] == _pwd) 

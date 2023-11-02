@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 15:17:04 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 11:42:01 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:51:38 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #define FALSE 0
 #define TRUE 1
 #define INDETERMINATE 2
-#define DEBUG 0 //set to 0 for debugging mode (NO ANIMATIONS)
+#define DEBUG 1 //set to 0 for debugging mode (NO ANIMATIONS)
 #define SERVERNAME "IRCSERV"
 #define POLLTIME 500 
 

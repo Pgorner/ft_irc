@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/10/30 15:33:36 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:56:17 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ class Server {
     int channelMode(int cc, std::vector<std::string> tokens);
 	void sendmsg(std::vector<std::string> tokens, std::string nick);
 	int find_user(std::string username);
+	void broadcastpriv(std::string channelname, std::string msg, int cc);
     bool find_user_inchan(int channel, int user);
 	int find_nick(std::string nickname);
     int find_chan(std::string channelname);

@@ -3,14 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 19:42:26 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:58:58 by ccompote         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
+
+void Server::broadcastpriv(std::string channelname, std::string msg, int cc)
+{
+	for(size_t k = 0; k < _clients.size(); k++)
+	{
+		if (_clients[k]._channels.size() != 0)
+		{
+			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
+			{
+				if (_clients[k]._channels[j] == channelname && _clients[k].fd != cc)
+					_clients[k].send_to_user += msg;
+			}
+		}
+	}
+	write(1, "\n", 1);
+	write_nice(WHITE, LINE, true);
+}
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
@@ -42,21 +59,7 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 					resp << " ";
 			}
 			resp << "\r\n";
-			for (size_t j = 0; j < _channels[i].members.size(); j++)
-			{
-				std::cout << _clients[_channels[i].members[j]].nick << std::endl;
-				for (size_t k = 0; k < _poll_fds.size(); k++)
-				{
-					std::cout << "poll fd:" << _poll_fds[k].fd << std::endl;
-					if( _poll_fds[k].fd == _clients[_channels[i].members[j]].fd
-					&& _clients[_channels[i].members[j]].nick != _clients[cc].nick)
-					{
-						_clients[_channels[i].members[j]].send_to_user +=  resp.str();
-					}
-					std::cout << "here\n";
-				}
-			}
-				std::cout << "return\n";
+			broadcastpriv(_channels[i].name, resp.str(), cc);
 			return ;
 		}
 	}

@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/10/30 15:19:06 by pgorner          ###   ########.fr        #
+#    Updated: 2023/11/02 17:55:27 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -86,6 +86,9 @@ test:
 
 # Target for recompiling everything
 re: fclean all
+
+client:
+	curl -o ~/Desktop/KVIrc.dmg https://nightly.kvirc.net/macos/KVIrc-5.0.1-dev-7883d21.dmg
 
 
 .PHONY: all clean fclean re

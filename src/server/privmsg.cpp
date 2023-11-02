@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 16:58:58 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/11/02 17:39:32 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,29 @@
 
 void Server::broadcastpriv(std::string channelname, std::string msg, int cc)
 {
-	for(size_t k = 0; k < _clients.size(); k++)
+	for(size_t k = 0; k < _channels[find_chan(channelname)].members.size(); k++)
 	{
-		if (_clients[k]._channels.size() != 0)
+		if (_channels[find_chan(channelname)].members[k] != cc)
 		{
-			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
-			{
-				if (_clients[k]._channels[j] == channelname && _clients[k].fd != cc)
-					_clients[k].send_to_user += msg;
-			}
+			std::cout << "K" << _channels[find_chan(channelname)].members[k] << std::endl;
+			std::cout << "FD" << _clients[_channels[find_chan(channelname)].members[k]].fd << std::endl;
+			std::cout << "CC" << cc << std::endl;
+			_clients[_channels[find_chan(channelname)].members[k]].send_to_user += msg;
+			std::cout << "MSG HERE TO :" << _clients[_channels[find_chan(channelname)].members[k]].nick << std::endl;
 		}
 	}
-	write(1, "\n", 1);
-	write_nice(WHITE, LINE, true);
 }
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {
-	if (tokens.size() == 1)
+	if (!check_params(tokens, 2))
 	{
 		_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("PRIVMSG"));
 		return;
 	}
 	std::stringstream resp;
-    for (size_t i = 0; i < _channels.size(); i++) 
+	if (channelexists(tokens[1]))
 	{
-		if (!_channels.empty() && _channels[i].name == tokens[1])
-		{	
 			bool inc = false;
 			std::vector<std::string>& channels = _clients[cc]._channels;
 			for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end();)
@@ -59,33 +55,26 @@ void Server::sendmsg(std::vector<std::string> tokens, int cc)
 					resp << " ";
 			}
 			resp << "\r\n";
-			broadcastpriv(_channels[i].name, resp.str(), cc);
+			broadcastpriv(tokens[1], resp.str(), cc);
 			return ;
-		}
+		
 	}
-	if (tokens[1] != _clients[cc].nick)
+	else if (find_nick(tokens[1]) != -1)
 	{
-		bool found = false;
-		resp << ":" << _clients[cc].nick << " PRIVMSG " << tokens[1] << " :";
-		for (size_t i = 2; i < tokens.size(); i++)
+		if (tokens[1] != _clients[cc].nick)
 		{
-			resp << tokens[i];
-			if (i < tokens.size())
-				resp << " ";
-		}
-		resp << "\r\n";
-		for (size_t i = 0; i < _clients.size(); i++)
-		{
-			if (_clients[i].nick == tokens[1])
+			resp << ":" << _clients[cc].nick << " PRIVMSG " << tokens[1] << " :";
+			for (size_t i = 2; i < tokens.size(); i++)
 			{
-				found = true;
-				std::string response = resp.str();
-				_clients[i].send_to_user += response;
+				resp << tokens[i];
+				if (i < tokens.size())
+					resp << " ";
 			}
+			resp << "\r\n";
+			std::string response = resp.str();
+			_clients[find_nick(tokens[1])].send_to_user += response;
 		}
-		if (found == false)
-		{
-			logsend(_clients[cc].fd, SERVERNAME " USER NOT FOUND\r\n", cc);
-		}
+		else if (tokens[1] != _clients[cc].nick)
+			logsend(_clients[cc].fd, SERVERNAME " CANNOT SEND MSG TO URSELF\r\n", cc);
 	}
 }

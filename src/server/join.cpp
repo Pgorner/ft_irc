@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/30 15:26:59 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 17:50:57 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 	if (!check_params(tokens, 2)){_clients[cc].send_to_user += irc::cEM(irc::ERR_NEEDMOREPARAMS("JOIN")); return 0;}
 	if (!(check_tokensize(tokens[1], 2) && tokens[1][0] == '#')){_clients[cc].send_to_user += SERVERNAME" Wrong JOIN parameters\r\n"; return 0;}
 	std::string channelname = tokens[1];
+	for (size_t i = 0; i < channelname.length(); ++i) channelname[i] = std::tolower(channelname[i]);
 	int cnum = find_chan(channelname);
 	if (cnum != -1)
 	{

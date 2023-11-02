@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:34:28 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/28 19:25:09 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 17:46:55 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,10 @@ int Server::find_ulimit(int i)
 
 int Server::find_chan(std::string channelname)
 {
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		if (_channels[i].name == channelname)
-			return (i);
-	}
-	return (-1);
+    for (size_t i = 0; i < _channels.size(); i++)
+    {
+        if (_channels[i].name.compare(channelname) == 0)
+            return static_cast<int>(i);
+    }
+    return -1;
 }

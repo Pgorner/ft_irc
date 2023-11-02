@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 17:39:32 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:14:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,23 @@
 
 void Server::broadcastpriv(std::string channelname, std::string msg, int cc)
 {
-	for(size_t k = 0; k < _channels[find_chan(channelname)].members.size(); k++)
-	{
-		if (_channels[find_chan(channelname)].members[k] != cc)
-		{
-			std::cout << "K" << _channels[find_chan(channelname)].members[k] << std::endl;
-			std::cout << "FD" << _clients[_channels[find_chan(channelname)].members[k]].fd << std::endl;
-			std::cout << "CC" << cc << std::endl;
-			_clients[_channels[find_chan(channelname)].members[k]].send_to_user += msg;
-			std::cout << "MSG HERE TO :" << _clients[_channels[find_chan(channelname)].members[k]].nick << std::endl;
-		}
-	}
+    size_t chan = find_chan(channelname);
+
+    if (chan < _channels.size()) {
+        std::vector<int>& members = _channels[chan].members;
+
+        for(size_t k = 0; k < members.size(); k++) {
+            size_t memberIndex = members[k];
+
+            if (memberIndex < _clients.size() && memberIndex != static_cast<size_t>(cc)) {
+                if (_clients[memberIndex].fd) {
+                    _clients[memberIndex].send_to_user += msg;
+                }
+            }
+        }
+    }
 }
+
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 
 {

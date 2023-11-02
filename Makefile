@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/11/02 17:55:27 by pgorner          ###   ########.fr        #
+#    Updated: 2023/11/02 18:06:25 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -88,7 +88,7 @@ test:
 re: fclean all
 
 client:
-	curl -o ~/Desktop/KVIrc.dmg https://nightly.kvirc.net/macos/KVIrc-5.0.1-dev-7883d21.dmg
+	curl -o ~/Desktop/KVIrc.dmg https://nightly.kvirc.net/macos/KVIrc-5.0.1-dev-5.0.0-64-g0df9f22f2.dmg
 
 
 .PHONY: all clean fclean re

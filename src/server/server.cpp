@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/30 15:36:07 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:17:38 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,10 @@ int Server::handleClient(int i)
 
 void Server::commands(int i, int cc, std::vector<std::string> tokens)
 {
+	for (size_t j = 0; j < tokens[0].length(); ++j)
+    {
+        tokens[0][j] = std::toupper(tokens[0][j]);
+    }
 	//Cap handshake
 	if (tokens[0] == "PONG")
 		pong(cc);

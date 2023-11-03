@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 18:52:14 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/25 16:12:08 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:42:38 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void Server::ping(std::vector<std::string> tokens,int cc)
 
 void Server::pong(int cc)
 {
+	std::cout << _clients[cc].nick << " Sent pong back\n";
 	if (_clients[cc].ping == false)
 		_clients[cc].ping = true;
 }

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/30 15:43:32 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 15:59:51 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,39 +53,46 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 
 void Server::removefromchannel(std::string channelname, int cc, std::string msg)
 {
-	int track = 0;
-	if (msg.size() != 0)
-		broadcastinchannel(channelname, msg);
-	std::vector<std::string>& channels = _clients[cc]._channels;
-	for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end();)
-	{
-	    if (*it == channelname)
-		{
-	        it = channels.erase(it);
-			track += 1;
-		}
-		else
-	        ++it;
-	}
-	
-	for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
-	{
-	    if (it->name == channelname)
-		{
-	        std::vector<int>& members = it->members;
-	        for (std::vector<int>::iterator iter = members.begin(); iter != members.end();)
-			{
-	            if (*iter == cc)
-				{
-	                iter = members.erase(iter);
-					track += 1;
-	            }
-				else
-	                ++iter;
-	        }
-	        break;
-		}
-	}
-	if (track != 2)
-		_clients[cc].send_to_user += SERVERNAME" User is not found in the channel\r\n";
-}	
+    int track = 0;
+    if (msg.size() != 0)
+        broadcastinchannel(channelname, SERVERNAME" PRIVMSG " + channelname + " :" + msg);
+    std::vector<std::string>& channels = _clients[cc]._channels;
+    std::vector<std::string> updatedChannels;
+    for (size_t i = 0; i < channels.size(); ++i)
+    {
+        if (channels[i] != channelname)
+        {
+            updatedChannels.push_back(channels[i]);
+        }
+        else
+        {
+            track += 1;
+        }
+    }
+    channels = updatedChannels;
+
+    for (size_t i = 0; i < _channels.size(); ++i)
+    {
+        if (_channels[i].name == channelname)
+        {
+            std::vector<int>& members = _channels[i].members;
+            std::vector<int> updatedMembers;
+            for (size_t j = 0; j < members.size(); ++j)
+            {
+                if (members[j] != cc)
+                {
+                    updatedMembers.push_back(members[j]);
+                }
+                else
+                {
+                    track += 1;
+                }
+            }
+            members = updatedMembers;
+            break;
+        }
+    }
+    
+    if (track != 2)
+        _clients[cc].send_to_user += SERVERNAME " User is not found in the channel\r\n";
+}

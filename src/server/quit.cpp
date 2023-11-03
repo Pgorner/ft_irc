@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/27 16:24:44 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/02 19:00:31 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void Server::quit(size_t i, int cc, std::string msg)
             if (_clients[cc].fd == _channels[l].members[k])
             {
                 _channels[l].members.erase(_channels[l].members.begin() + k);
-    
             }
         }
     }

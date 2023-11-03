@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 18:40:44 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 15:58:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,9 +235,10 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 					if (_clients[l].fd == _poll_fds[o].fd)
 						std::cout << "  :" << _clients[l].nick;
 					if (_clients[l].ping == false)
-						std::cout << " PING FALSE" << std::endl;
+						std::cout << " PING FALSE";
 					else	
-						std::cout << " PING TRUE" << std::endl;
+						std::cout << " PING TRUE";
+					std::cout << std::endl;
 				}
 			}
 		write_nice(RED, "--------ALL CLIENTS--------\n", false);
@@ -337,7 +338,7 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 
 void Server::run() 
 {
-	// int ping = 0;
+	int ping = 0;
     int numcount = 0;
 	bool handleClientConnect = false;
     int connection = 0;
@@ -370,27 +371,27 @@ void Server::run()
 			if (_poll_fds.size() == 1)
             	handleClientConnect = false;
         }
-	// 	ping+= 0.5;
-	// 	if (ping % 100)
-	// 	{
-	// 		std::cout << CYAN << "\nPING TRIGGERED\n" << RESET;
-	// 		for (size_t k = 0; k < _clients.size(); k++) {
-	// 			logsend(_clients[k].fd, "PING\r\n", k);
-	// 			if (_clients[k].ping == false) {
-	// 				for (size_t j = 0; j < _poll_fds.size(); j++)
-	// 				{
-	// 					if (_poll_fds[j].fd == _clients[k].fd)
-	// 					{
-	// 						std::cout << CYAN << _clients[k].nick << "disconnected\n" << RESET;
-	// 						quit(j, k, "You have been disconnected due to inactivity");
-	// 						break;
-	// 					}
-	// 				}
-	// 			}
-	// 			else
-	// 				_clients[k].ping = false;
-	// 		}
-	// 	}
+		ping++;
+		if (ping % 100 == 0)
+		{
+			std::cout << CYAN << "\nPING TRIGGERED\n" << RESET;
+			for (size_t k = 0; k < _clients.size(); k++) {
+				logsend(_clients[k].fd, "PING\r\n", k);
+				if (_clients[k].ping == false) {
+					for (size_t j = 0; j < _poll_fds.size(); j++)
+					{
+						if (_poll_fds[j].fd == _clients[k].fd)
+						{
+							std::cout << CYAN << _clients[k].nick << "disconnected\n" << RESET;
+							quit(j, k, "You have been disconnected due to inactivity");
+							break;
+						}
+					}
+				}
+				else
+					_clients[k].ping = false;
+			}
+		}
     }
 }
 

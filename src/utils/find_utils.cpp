@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:34:28 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 17:46:55 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:43:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ bool Server::find_user_inchan(int channel, int user)
 {
 	for (size_t i = 0; i < _channels[channel].members.size(); i++)
 	{
-		if (_channels[channel].members[i] == user)
+		if (_channels[channel].members[i] == _clients[user].nick)
 			return (true);
 	}
 	return (false);

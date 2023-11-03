@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:58:34 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/03 16:02:24 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:47:07 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void Server::invite(std::vector<std::string> tokens, int cc)
 	if (!channelexists(tokens[1])){_clients[cc].send_to_user += SERVERNAME" Channel not found\r\n"; return;};
 	bool inchan = false;
 	for (size_t j = 0; j < _channels[find_chan(tokens[1])].members.size(); ++j) {
-    if (_channels[find_chan(tokens[1])].members[j] == cc) {
+    if (_channels[find_chan(tokens[1])].members[j] == _clients[cc].nick) {
         inchan = true; // Member found in the channel
     }}
 	if (inchan == false){_clients[cc].send_to_user += SERVERNAME" You are not in that Channel\r\n"; return;};

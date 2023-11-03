@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/11/03 17:00:56 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:42:26 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 		std::string pwd;
 		std::string modeparams;
 		int ulimit;
-		std::vector<int> members;
+		std::vector<std::string> members;
 		std::vector<int> invited;
 		std::vector<int> opers;
         Channel(std::string channelname, std::string channeltopic, std::string channelmode, std::string channelpassword, std::string channelmodeparams) : name(channelname), topic(channeltopic), mode(channelmode), pwd(channelpassword), modeparams(channelmodeparams) {}

@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/21 16:59:30 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/03 15:58:52 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:46:15 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,8 +168,6 @@ void Server::commands(int i, int cc, std::vector<std::string> tokens)
 		invite(tokens, cc);
 	else if (tokens[0] == "QUIT")	
 		quit(i, cc, "You have quit the server");
-	else if (tokens[0] == "NAMES")
-		names(tokens, cc);
 	else if (tokens[0] == "TOPIC")
 		topic(tokens, cc);
 }
@@ -324,7 +322,7 @@ void Server::debugprint(std::vector<std::string> tokens, std::vector<ClientData>
 					std::cout << "No members in this channel." << std::endl;
 				} else {
 					for (size_t j = 0; j < _channels[i].members.size(); j++){
-						write_nice(RED, _clients[_channels[i].members[j]].nick, false);
+						write_nice(RED, _channels[i].members[j], false);
 						write_nice(RED, "/", false);
 					}
 					write_nice(RED, "", true);

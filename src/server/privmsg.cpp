@@ -6,30 +6,34 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/03 17:34:17 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:50:48 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/irc.hpp"
+
 
 void Server::broadcastpriv(std::string channelname, std::string msg, int cc)
 {
     size_t chan = find_chan(channelname);
 
     if (chan < _channels.size()) {
-        std::vector<int>& members = _channels[chan].members;
+        std::vector<std::string>& members = _channels[chan].members;
 
         for(size_t k = 0; k < members.size(); k++) {
-            size_t memberIndex = members[k];
+            std::string memberIndex = members[k];
 
-            if (memberIndex < _clients.size() && memberIndex != static_cast<size_t>(cc)) {
-                if (_clients[memberIndex].fd) {
-                    _clients[memberIndex].send_to_user += msg;
+            if (memberIndex != _clients[cc].nick) {
+                if (_clients[find_nick(memberIndex)].fd)
+				{
+                    _clients[find_nick(memberIndex)].send_to_user += msg;
                 }
             }
         }
     }
 }
+
+
 
 
 void Server::sendmsg(std::vector<std::string> tokens, int cc) 

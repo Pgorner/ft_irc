@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/03 16:47:06 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:44:12 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,13 +84,13 @@ int Server::joinchannel(std::vector<std::string> tokens , int cc)
 		}
 		if (string_contains(_channels[cnum].mode, 'l'))
 			if (find_ulimit(cnum) >= _channels[cnum].ulimit){ return (_clients[cc].send_to_user += SERVERNAME" This channel has reached the maximum allowed amount of users\r\n", 1);}
-		_channels[cnum].members.push_back(cc);
+		_channels[cnum].members.push_back(_clients[cc].nick);
 		_clients[cc]._channels.push_back(_channels[cnum].name);
 		broadcastinchannel(channelname, ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n");
 		return 1;
 	}
 	Channel newChannel(channelname, "", "", "", "itkol");
-	newChannel.members.push_back(cc);
+	newChannel.members.push_back(_clients[cc].nick);
 	_channels.push_back(newChannel);
 	_clients[cc]._channels.push_back(newChannel.name);
 	_clients[cc].send_to_user += ":" + _clients[cc].nick + "!" + _clients[cc].nick + "@localhost" + " JOIN :" + channelname + "\r\n";

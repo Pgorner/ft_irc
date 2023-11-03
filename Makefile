@@ -6,7 +6,7 @@
 #    By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/21 15:14:57 by pgorner           #+#    #+#              #
-#    Updated: 2023/11/03 16:49:31 by pgorner          ###   ########.fr        #
+#    Updated: 2023/11/03 17:46:23 by pgorner          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,6 @@ SRC = src/main.cpp \
       src/server/user.cpp \
       src/server/nick.cpp \
       src/server/quit.cpp \
-      src/server/names.cpp \
       src/server/invite.cpp \
       src/server/topic.cpp \
       src/server/privmsg.cpp \

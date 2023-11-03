@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:55:51 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/03 17:33:50 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:44:52 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,11 @@ void Server::kick(std::vector<std::string> tokens , int cc)
 
 void Server::removeMemberFromChannel(const std::string& channelName, int clientID) {
     int i = find_chan(channelName);
-    std::vector<int>& members = _channels[i].members;
+    std::vector<std::string>& members = _channels[i].members;
 
     // Iterate in reverse order to safely remove elements
     for (int j = members.size() - 1; j >= 0; --j) {
-        if (members[j] == clientID) {
+        if (members[j] == _clients[clientID].nick) {
             // Remove the element at index j
             members.erase(members.begin() + j);
             break;  // Exit the loop after removing the element

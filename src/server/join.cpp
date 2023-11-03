@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:52:17 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 17:50:57 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 16:47:06 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,36 @@
 
 void Server::broadcastinchannel(std::string channelname, std::string msg)
 {
-	for(size_t k = 0; k < _clients.size(); k++)
-	{
-		if (_clients[k]._channels.size() != 0)
-		{
-			for (size_t j = 0; j < _clients[k]._channels.size(); j++)
-			{
-				if (_clients[k]._channels[j] == channelname)
-					_clients[k].send_to_user += msg;
-			}
-		}
-	}
-	write(1, "\n", 1);
-	write_nice(WHITE, LINE, true);
+    for (size_t k = 0; k < _clients.size(); ++k)
+    {
+        if (k >= _clients.size()) {
+            // Ensure index is within bounds of _clients vector
+            break;
+        }
+
+        if (_clients[k]._channels.size() != 0)
+        {
+            for (size_t j = 0; j < _clients[k]._channels.size(); ++j)
+            {
+                if (j >= _clients[k]._channels.size()) {
+                    // Ensure index is within bounds of _channels vector for this client
+                    break;
+                }
+
+                if (_clients[k]._channels[j] == channelname)
+                {
+                    // Ensure index is within bounds of send_to_user string
+                    if (_clients[k].send_to_user.size() + msg.size() < _clients[k].send_to_user.max_size()) {
+                        _clients[k].send_to_user += msg;
+                    } else {
+                        // Handle overflow appropriately, e.g., truncate the message or skip adding it
+                    }
+                }
+            }
+        }
+    }
+    write(1, "\n", 1);
+    write_nice(WHITE, LINE, true);
 }
 
 bool Server::check_inchannel(int cc, std::string channelname)
@@ -37,6 +54,7 @@ bool Server::check_inchannel(int cc, std::string channelname)
 		if (_clients[cc]._channels[k] == channelname)
 			return(true);
 	}
+	
 	return(false);
 }
 

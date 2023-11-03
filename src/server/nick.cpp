@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:08 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/30 15:24:33 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:12:02 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,6 @@ void Server::nick(std::vector<std::string> tokens, int cc)
 	}
 	_clients[cc].nick = tokens[1];
 	_clients[cc].send_to_user += SERVERNAME " NICK has been set to " + tokens[1] + "\r\n";
+	if (_clients[cc].auth == true)
+		_clients[cc].send_to_user += irc::cEM(irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
 }

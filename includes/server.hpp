@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccompote <ccompote@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/22 19:49:30 by ccompote          #+#    #+#             */
-/*   Updated: 2023/11/02 16:56:17 by ccompote         ###   ########.fr       */
+/*   Updated: 2023/11/03 17:00:56 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ class Server {
     int find_ulimit(int i);
     void invite(std::vector<std::string> tokens, int cc);
     void topic(std::vector<std::string> tokens, int cc);
+    void removeMemberFromChannel(const std::string& channelName, int clientID);
 
     static Server* server_ptr;
 

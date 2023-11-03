@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 21:00:50 by pgorner           #+#    #+#             */
-/*   Updated: 2023/11/02 19:00:31 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:22:09 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void Server::quit(size_t i, int cc, std::string msg)
 {
     for (size_t j = 0; j < _clients[cc]._channels.size(); j++)
     {
-        removefromchannel(_clients[cc]._channels[j], cc, "Quitting");
+        removefromchannel(_clients[cc]._channels[j], cc, ":" + _clients[cc].nick + " PART :" + _clients[cc]._channels[j] + ":Quitting");
     }
     for (size_t l = 0; l < _channels.size(); l++)
     {

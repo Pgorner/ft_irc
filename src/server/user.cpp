@@ -6,7 +6,7 @@
 /*   By: pgorner <pgorner@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/27 20:57:15 by pgorner           #+#    #+#             */
-/*   Updated: 2023/10/30 15:25:35 by pgorner          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:11:55 by pgorner          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ void Server::user(std::vector<std::string> tokens, int cc)
 		}
 		else
 			_clients[cc].realname = "";
-		std::cout << "4\n" << std::endl;
+		if (_clients[cc].auth == true)
+			_clients[cc].send_to_user += irc::cEM(irc::RPL_WELCOME(_clients[cc].nick, _clients[cc].user, SERVERNAME));
 	}
 	else if (user == true)
 	   	_clients[cc].send_to_user += SERVERNAME " USER has already been taken\r\n" SERVERNAME " Please choose a different one\r\n";
